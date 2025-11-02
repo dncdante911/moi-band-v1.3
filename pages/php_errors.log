@@ -1,0 +1,8 @@
+[28-Oct-2025 13:18:45 Europe/Kyiv] PHP Fatal error:  Uncaught Error: Call to undefined method Auth::getCurrentUserId() in /var/www/www-root/data/www/moi-band.com.ua/pages/chat.php:20
+Stack trace:
+#0 {main}
+  thrown in /var/www/www-root/data/www/moi-band.com.ua/pages/chat.php on line 20
+[28-Oct-2025 13:20:03 Europe/Kyiv] PHP Fatal error:  Uncaught Error: Call to undefined method Auth::getCurrentUserId() in /var/www/www-root/data/www/moi-band.com.ua/pages/chat.php:20
+Stack trace:
+#0 {main}
+  thrown in /var/www/www-root/data/www/moi-band.com.ua/pages/chat.php on line 20

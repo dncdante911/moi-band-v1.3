@@ -1,0 +1,317 @@
+/**
+ * UNIVERSAL THEME CSS
+ * Использует CSS переменные для динамической смены тем
+ */
+
+:root {
+    /* Переменные будут заменяться через JS */
+    --primary: #FFD700;
+    --secondary: #FFA500;
+    --accent: #FF6B1B;
+    --bg-main: #0a0a0a;
+    --bg-card: rgba(15, 15, 25, 0.95);
+    --text: #e0e0e0;
+    --border: rgba(255, 215, 0, 0.3);
+    --glow: 0 0 20px rgba(255, 215, 0, 0.4);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    
+    /* Константы */
+    --transition: 0.3s ease;
+    --radius: 8px;
+}
+
+/* БАЗОВЫЕ ЭЛЕМЕНТЫ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    transition: background var(--transition);
+}
+
+/* ЗАГОЛОВКИ */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--primary);
+    text-shadow: var(--glow);
+    margin-bottom: 1rem;
+    font-weight: bold;
+    transition: all var(--transition);
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; border-bottom: 2px solid var(--primary); padding-bottom: 0.5rem; }
+h3 { font-size: 1.5rem; }
+
+/* ССЫЛКИ */
+a {
+    color: var(--secondary);
+    text-decoration: none;
+    transition: all var(--transition);
+}
+
+a:hover {
+    color: var(--primary);
+    text-shadow: var(--glow);
+}
+
+/* КНОПКИ */
+button, .btn, input[type="submit"], input[type="button"] {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #000;
+    border: 2px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all var(--transition);
+    box-shadow: var(--shadow);
+}
+
+button:hover, .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glow);
+    filter: brightness(1.1);
+}
+
+button:active, .btn:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ФОРМЫ */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px 15px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    transition: all var(--transition);
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 10px var(--primary);
+}
+
+/* КОНТЕЙНЕРЫ */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-content, .card, .panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    transition: all var(--transition);
+}
+
+.page-content:hover, .card:hover {
+    box-shadow: var(--glow);
+}
+
+/* ТАБЛИЦЫ */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: var(--primary);
+    color: #000;
+    padding: 12px;
+    text-align: left;
+    font-weight: bold;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* АЛЕРТЫ */
+.alert {
+    padding: 15px;
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    border: 1px solid;
+}
+
+.alert-success {
+    background: rgba(76, 175, 80, 0.2);
+    border-color: #4CAF50;
+    color: #4CAF50;
+}
+
+.alert-error {
+    background: rgba(244, 67, 54, 0.2);
+    border-color: #F44336;
+    color: #F44336;
+}
+
+.alert-warning {
+    background: rgba(255, 152, 0, 0.2);
+    border-color: #FF9800;
+    color: #FF9800;
+}
+
+.alert-info {
+    background: rgba(33, 150, 243, 0.2);
+    border-color: #2196F3;
+    color: #2196F3;
+}
+
+/* НАВИГАЦИЯ */
+.navbar {
+    background: var(--bg-card);
+    border-bottom: 2px solid var(--primary);
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-link {
+    color: var(--text);
+    padding: 10px 15px;
+    margin: 0 5px;
+    border-radius: var(--radius);
+    transition: all var(--transition);
+}
+
+.nav-link:hover, .nav-link.active {
+    background: var(--primary);
+    color: #000;
+}
+
+/* МОДАЛЬНЫЕ ОКНА */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border: 2px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: var(--glow);
+}
+
+/* АНИМАЦИИ */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.fade-in { animation: fadeIn 0.5s ease; }
+.slide-in { animation: slideIn 0.5s ease; }
+.pulse { animation: pulse 2s infinite; }
+
+/* УТИЛИТЫ */
+.text-center { text-align: center; }
+.text-primary { color: var(--primary); }
+.text-secondary { color: var(--secondary); }
+.mt-1 { margin-top: 10px; }
+.mt-2 { margin-top: 20px; }
+.mb-1 { margin-bottom: 10px; }
+.mb-2 { margin-bottom: 20px; }
+.p-1 { padding: 10px; }
+.p-2 { padding: 20px; }
+
+/* СКРОЛЛБАР */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary);
+}
+
+/* АДАПТИВНОСТЬ */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.2rem; }
+    
+    .page-content, .card, .panel {
+        padding: 15px;
+    }
+    
+    table {
+        font-size: 14px;
+    }
+    
+    th, td {
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.2rem; }
+    
+    button, .btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}

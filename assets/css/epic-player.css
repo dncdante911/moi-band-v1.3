@@ -1,0 +1,936 @@
+/**
+ * MASTER OF ILLUSION - EPIC PLAYER v4.3
+ * Улучшенная версия с регулятором громкости
+ * + Исправления багов и улучшение UX
+ */
+
+:root {
+    --gold: #FFD700;
+    --gold-light: #FFE135;
+    --gold-dark: #DAA520;
+    --dark-bg: #0a0a0f;
+    --card-bg: rgba(15, 15, 25, 0.95);
+}
+
+/* ============================================
+   КОНТЕЙНЕР ПЛЕЕРА
+   ============================================ */
+
+.epic-player {
+    background: linear-gradient(135deg, rgba(10,10,15,0.95) 0%, rgba(20,20,40,0.95) 100%);
+    border: 2px solid var(--gold);
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 900px;
+    margin: 40px auto;
+    box-shadow: 
+        0 0 50px rgba(255,215,0,0.3),
+        inset 0 0 30px rgba(0,0,0,0.5);
+    font-family: 'Roboto', sans-serif;
+    color: #e0e0e0;
+}
+
+/* ============================================
+   ЭКРАН ПЛЕЕРА (ВИДЕО / ОБЛОЖКА)
+   ============================================ */
+
+.player-display {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    box-shadow: 
+        0 0 30px rgba(255,215,0,0.3),
+        inset 0 0 20px rgba(0,0,0,0.8);
+}
+
+.player-display video {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 400px;
+    object-fit: contain;
+    background: #000;
+    border-radius: 8px;
+    display: block;
+}
+
+.player-display audio {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.player-cover {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-cover img {
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.player-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s;
+    background: rgba(0,0,0,0.5);
+}
+
+.player-display:hover .player-overlay {
+    opacity: 1;
+}
+
+.play-big {
+    font-size: 4rem;
+    color: var(--gold);
+    text-shadow: 0 0 20px var(--gold);
+    animation: pulse-play 2s ease-in-out infinite;
+}
+
+@keyframes pulse-play {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* ============================================
+   ИНФОРМАЦИЯ О ТРЕКЕ
+   ============================================ */
+
+.player-info {
+    text-align: center;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(255,215,0,0.2);
+}
+
+.track-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.8rem;
+    color: var(--gold);
+    margin: 0 0 10px;
+    text-shadow: 0 0 10px rgba(255,215,0,0.5);
+}
+
+.track-artist {
+    font-size: 1rem;
+    color: #aaa;
+    margin: 0;
+}
+
+.track-album {
+    font-size: 0.9rem;
+    color: #888;
+    margin: 5px 0 0;
+}
+
+/* ============================================
+   ПРОГРЕСС БАР
+   ============================================ */
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.time {
+    font-size: 0.85rem;
+    color: #aaa;
+    min-width: 45px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,215,0,0.1);
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid var(--gold);
+    overflow: hidden;
+}
+
+.progress-bar:hover {
+    height: 8px;
+    border-color: var(--gold-light);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 10px var(--gold);
+}
+
+.progress-handle {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    background: var(--gold);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--gold);
+    cursor: grab;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.progress-bar:hover .progress-handle {
+    opacity: 1;
+}
+
+/* ============================================
+   РЕГУЛЯТОР ГРОМКОСТИ - НОВОЕ!
+   ============================================ */
+
+.volume-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 0 15px;
+}
+
+.volume-icon {
+    color: var(--gold);
+    font-size: 1.3rem;
+    min-width: 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+    user-select: none;
+}
+
+.volume-icon:hover {
+    transform: scale(1.1);
+    text-shadow: 0 0 10px var(--gold);
+}
+
+.volume-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: rgba(255,215,0,0.1);
+    border-radius: 3px;
+    border: 1px solid var(--gold);
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.volume-slider:hover {
+    height: 8px;
+    border-color: var(--gold-light);
+}
+
+/* Chrome/Safari */
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--gold);
+    border-radius: 50%;
+    cursor: grab;
+    box-shadow: 0 0 15px var(--gold);
+    transition: all 0.3s;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 20px var(--gold-light);
+}
+
+.volume-slider::-webkit-slider-thumb:active {
+    cursor: grabbing;
+}
+
+/* Firefox */
+.volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--gold);
+    border-radius: 50%;
+    cursor: grab;
+    box-shadow: 0 0 15px var(--gold);
+    border: none;
+    transition: all 0.3s;
+}
+
+.volume-slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 20px var(--gold-light);
+}
+
+.volume-slider::-moz-range-thumb:active {
+    cursor: grabbing;
+}
+
+.volume-slider::-moz-range-progress {
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    height: 6px;
+    border-radius: 3px;
+}
+
+.volume-percentage {
+    color: var(--gold);
+    font-size: 0.85rem;
+    min-width: 40px;
+    text-align: right;
+    font-weight: bold;
+}
+
+/* ============================================
+   ЭКВАЛАЙЗЕР - НОВОЕ!
+   ============================================ */
+
+.equalizer-container {
+    background: rgba(0,0,0,0.3);
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.equalizer-title {
+    color: var(--gold);
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.eq-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.eq-preset-btn {
+    padding: 10px 18px;
+    background: transparent;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.eq-preset-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,215,0,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.eq-preset-btn:hover::before {
+    left: 100%;
+}
+
+.eq-preset-btn:hover {
+    border-color: var(--gold-light);
+    box-shadow: 0 0 15px rgba(255,215,0,0.4);
+    transform: translateY(-2px);
+}
+
+.eq-preset-btn.active {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: #000;
+    box-shadow: 0 0 20px rgba(255,215,0,0.6);
+    border-color: var(--gold-light);
+}
+
+.eq-preset-btn.active::before {
+    display: none;
+}
+
+/* Иконки для каждого стиля */
+.eq-preset-btn[data-preset="flat"]::after { content: " 📊"; }
+.eq-preset-btn[data-preset="power-metal"]::after { content: " ⚡"; }
+.eq-preset-btn[data-preset="heavy-metal"]::after { content: " 🤘"; }
+.eq-preset-btn[data-preset="rock"]::after { content: " 🎸"; }
+.eq-preset-btn[data-preset="punk-rock"]::after { content: " 💥"; }
+.eq-preset-btn[data-preset="gothic"]::after { content: " 🦇"; }
+.eq-preset-btn[data-preset="symphonic"]::after { content: " 🎻"; }
+
+/* ============================================
+   КНОПКИ УПРАВЛЕНИЯ
+   ============================================ */
+
+.player-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+.control-btn {
+    width: 50px;
+    height: 50px;
+    border: 2px solid var(--gold);
+    background: linear-gradient(135deg, rgba(255,215,0,0.1) 0%, transparent 100%);
+    color: var(--gold);
+    font-size: 1.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.control-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,215,0,0.2);
+    transition: left 0.3s;
+}
+
+.control-btn:hover {
+    border-color: var(--gold-light);
+    background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.1) 100%);
+    box-shadow: 0 0 20px rgba(255,215,0,0.5);
+    transform: scale(1.1);
+}
+
+.control-btn:hover::before {
+    left: 100%;
+}
+
+.control-btn.play-btn {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+    border-width: 3px;
+}
+
+.control-btn.play-btn:hover {
+    box-shadow: 0 0 40px rgba(255,215,0,0.8);
+}
+
+.control-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.control-btn.active {
+    background: linear-gradient(135deg, rgba(255,215,0,0.3) 0%, rgba(255,215,0,0.2) 100%);
+    box-shadow: 0 0 15px rgba(255,215,0,0.4);
+}
+
+/* ============================================
+   ЭКВАЛАЙЗЕР - НОВОЕ!
+   ============================================ */
+
+.equalizer-container {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.equalizer-container.active {
+    display: block;
+}
+
+.equalizer-title {
+    color: var(--gold);
+    font-weight: bold;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.eq-presets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.eq-preset-btn {
+    padding: 12px 20px;
+    background: rgba(0,0,0,0.3);
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    letter-spacing: 0.5px;
+}
+
+.eq-preset-btn:hover {
+    background: rgba(255,215,0,0.1);
+    box-shadow: 0 0 15px rgba(255,215,0,0.3);
+    transform: translateY(-2px);
+}
+
+.eq-preset-btn.active {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: #000;
+    box-shadow: 0 0 20px rgba(255,215,0,0.6);
+    font-weight: bold;
+}
+
+.eq-preset-btn::before {
+    content: '🎚️ ';
+    margin-right: 5px;
+}
+
+.eq-info {
+    background: rgba(255,215,0,0.05);
+    border: 1px solid rgba(255,215,0,0.2);
+    border-radius: 6px;
+    padding: 15px;
+    color: #ccc;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.eq-info strong {
+    color: var(--gold);
+}
+
+/* ============================================
+   КНОПКИ РЕЖИМОВ
+   ============================================ */
+
+.player-modes {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(255,215,0,0.2);
+    flex-wrap: wrap;
+}
+
+.mode-btn {
+    padding: 10px 20px;
+    border: 2px solid var(--gold);
+    background: transparent;
+    color: var(--gold);
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.mode-btn:hover,
+.mode-btn.active {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: #000;
+    box-shadow: 0 0 20px rgba(255,215,0,0.6);
+}
+
+/* ============================================
+   СПИСОК ТРЕКОВ (ОЧЕРЕДЬ)
+   ============================================ */
+
+.queue-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 0;
+    margin-bottom: 20px;
+    background: rgba(0,0,0,0.3);
+}
+
+.queue-title {
+    font-weight: bold;
+    color: var(--gold);
+    padding: 15px;
+    border-bottom: 1px solid var(--gold);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+}
+
+.queue-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.queue-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255,215,0,0.1);
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.queue-item:hover {
+    background: rgba(255,215,0,0.1);
+}
+
+.queue-item.active {
+    background: rgba(255,215,0,0.2);
+    color: var(--gold);
+}
+
+.queue-number {
+    min-width: 30px;
+    color: var(--gold);
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.queue-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.queue-track-name {
+    font-size: 0.95rem;
+    color: #ddd;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.queue-track-album {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.queue-duration {
+    color: #aaa;
+    font-size: 0.85rem;
+    min-width: 45px;
+    text-align: right;
+}
+
+/* ============================================
+   ТЕКСТ ПЕСНИ (LYRICS)
+   ============================================ */
+
+.lyrics-container {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    padding: 20px;
+    max-height: 500px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.lyrics-container.active {
+    display: block;
+}
+
+.lyrics-text {
+    color: #ddd;
+    line-height: 2;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+}
+
+.no-lyrics {
+    text-align: center;
+    color: #888;
+    padding: 40px 20px;
+}
+
+/* ============================================
+   УВЕДОМЛЕНИЯ ОБ ОШИБКАХ - НОВОЕ!
+   ============================================ */
+
+.player-error {
+    background: rgba(255, 0, 0, 0.1);
+    border: 2px solid #ff4444;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    color: #ff6666;
+    text-align: center;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+/* ============================================
+   ЗАГРУЗКА - НОВОЕ!
+   ============================================ */
+
+.player-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--gold);
+    font-size: 2rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ============================================
+   СКРОЛБАР
+   ============================================ */
+
+.queue-container::-webkit-scrollbar,
+.lyrics-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.queue-container::-webkit-scrollbar-track,
+.lyrics-container::-webkit-scrollbar-track {
+    background: rgba(255,215,0,0.05);
+}
+
+.queue-container::-webkit-scrollbar-thumb,
+.lyrics-container::-webkit-scrollbar-thumb {
+    background: var(--gold);
+    border-radius: 4px;
+}
+
+.queue-container::-webkit-scrollbar-thumb:hover,
+.lyrics-container::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-light);
+}
+
+/* ============================================
+   АДАПТИВНОСТЬ ДЛЯ ПЛАНШЕТОВ
+   ============================================ */
+
+@media (max-width: 768px) {
+    .epic-player {
+        padding: 20px;
+    }
+    
+    /* Скрываем регулятор громкости на планшетах и мобильных */
+    .volume-container {
+        display: none !important;
+    }
+    
+    .player-controls {
+        gap: 15px;
+    }
+    
+    .control-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
+    }
+    
+    .control-btn.play-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+    
+    .track-title {
+        font-size: 1.3rem;
+    }
+    
+    .player-modes {
+        gap: 10px;
+    }
+    
+    .mode-btn {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+    }
+    
+    .volume-container {
+        padding: 0 10px;
+    }
+    
+    .volume-icon {
+        font-size: 1.1rem;
+    }
+    
+    .eq-presets {
+        gap: 8px;
+    }
+    
+    .eq-preset-btn {
+        padding: 8px 14px;
+        font-size: 0.75rem;
+    }
+}
+
+/* ============================================
+   АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ
+   ============================================ */
+
+@media (max-width: 480px) {
+    .epic-player {
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px auto;
+    }
+    
+    .player-controls {
+        gap: 10px;
+    }
+    
+    .control-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .control-btn.play-btn {
+        width: 55px;
+        height: 55px;
+        font-size: 1.3rem;
+    }
+    
+    .track-title {
+        font-size: 1.1rem;
+    }
+    
+    .queue-container {
+        max-height: 250px;
+    }
+    
+    .lyrics-container {
+        max-height: 300px;
+        font-size: 0.85rem;
+    }
+    
+    .volume-container {
+        padding: 0 5px;
+        gap: 8px;
+    }
+    
+    .volume-icon {
+        font-size: 1rem;
+        min-width: 25px;
+    }
+    
+    .volume-percentage {
+        font-size: 0.75rem;
+        min-width: 35px;
+    }
+    
+    .progress-container {
+        gap: 10px;
+    }
+    
+    .time {
+        font-size: 0.75rem;
+        min-width: 40px;
+    }
+    
+    .equalizer-container {
+        padding: 15px;
+    }
+    
+    .equalizer-title {
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+    }
+    
+    .eq-presets {
+        gap: 6px;
+    }
+    
+    .eq-preset-btn {
+        padding: 8px 12px;
+        font-size: 0.7rem;
+    }
+}
+
+/* === ВИДЕО ПЛЕЕР === */
+#video-player {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain;
+    background: #000;
+    border-radius: 8px;
+}
+
+/* === ОБЛОЖКА === */
+.player-cover {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.player-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* === ДИСПЛЕЙ === */
+.player-display {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 0 30px rgba(255,215,0,0.3);
+}
