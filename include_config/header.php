@@ -18,7 +18,7 @@ require_once __DIR__ . '/db_connect.php';  // ← ДОБАВЛЕНО: подкл
     <!-- ✅ ОСНОВНЫЕ СТИЛИ (базис) -->
     <link rel="stylesheet" href="/assets/css/main.css">
     <link rel="stylesheet" href="/assets/css/responsive.css">
-    <link rel="stylesheet" href="/assets/css/mobile-universal.css">
+    <!-- <link rel="stylesheet" href="/assets/css/mobile-universal.css"> -->
     
     <!-- ✅ ОСТАЛЬНЫЕ СПЕЦИФИЧНЫЕ СТИЛИ -->
     <link rel="stylesheet" href="/assets/css/auth.css">

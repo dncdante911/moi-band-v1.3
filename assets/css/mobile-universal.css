@@ -1532,3 +1532,10 @@
         scroll-behavior: smooth;
     }
 }
+
+@media (max-width: 768px) {
+    .album-showcase-card {
+        opacity: 1 !important;
+        animation: none !important;
+    }
+}

@@ -1,7 +1,10 @@
 <?php
 // Файл: admin/index.php
+
+require_once __DIR__ . '/auth_check.php';
 require_once '../include_config/config.php';
 require_once '../include_config/db_connect.php';
+
 $stmt = $pdo->query('SELECT * FROM Track ORDER BY createdAt DESC');
 $tracks = $stmt->fetchAll();
 ?>

@@ -56,7 +56,14 @@
     cursor: pointer;
     animation: cardEntrance 0.8s ease-out forwards;
     animation-delay: var(--delay, 0s);
-    opacity: 0;
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .album-showcase-card {
+        animation: none !important;
+        opacity: 1 !important;
+    }
 }
 
 @keyframes cardEntrance {

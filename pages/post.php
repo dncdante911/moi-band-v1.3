@@ -1,9 +1,10 @@
 <?php
-// Файл: pages/post.php
+/**
+ * pages/post.php - ИСПРАВЛЕННАЯ ВЕРСИЯ
+ */
 
 require_once '../include_config/header.php';
 
-// Проверяем ID поста
 if (!isset($_GET['id']) || !filter_var($_GET['id'], FILTER_VALIDATE_INT)) {
     $postId = null;
 } else {
@@ -12,10 +13,10 @@ if (!isset($_GET['id']) || !filter_var($_GET['id'], FILTER_VALIDATE_INT)) {
 
 $post = null;
 
-// Получаем пост из БД
 if ($postId) {
     try {
-        $stmt = $pdo->prepare("SELECT * FROM Posts WHERE id = ?");
+        // ✅ ИСПРАВЛЕНО: используем news вместо Posts
+        $stmt = $pdo->prepare("SELECT * FROM news WHERE id = ?");
         $stmt->execute([$postId]);
         $post = $stmt->fetch(PDO::FETCH_ASSOC);
     } catch (Exception $e) {
@@ -24,7 +25,6 @@ if ($postId) {
     }
 }
 
-// Если пост не найден
 if (!$post) {
     ?>
     <div class="container">
@@ -40,25 +40,22 @@ if (!$post) {
 }
 ?>
 
-<!-- === BANNER === -->
 <div class="post-banner">
     <h1 class="post-title"><?= htmlspecialchars($post['title']) ?></h1>
     <p class="post-meta">
-        <span>📅 <?= date('d F Y', strtotime($post['createdAt'])) ?></span>
+        <span>📅 <?= date('d F Y', strtotime($post['created_at'])) ?></span>
         <span>⏱️ ~5 мин чтения</span>
     </p>
 </div>
 
-<!-- === MAIN CONTENT === -->
 <div class="container">
     <div class="post-wrapper">
         
-        <!-- MAIN -->
         <div class="post-main">
             <article class="post-content-box">
-                <?php if (!empty($post['imageUrl'])): ?>
+                <?php if (!empty($post['image'])): ?>
                     <figure class="post-image">
-                        <img src="<?= htmlspecialchars($post['imageUrl']) ?>" alt="<?= htmlspecialchars($post['title']) ?>">
+                        <img src="<?= htmlspecialchars($post['image']) ?>" alt="<?= htmlspecialchars($post['title']) ?>">
                     </figure>
                 <?php endif; ?>
 
@@ -67,7 +64,7 @@ if (!$post) {
                 </div>
 
                 <div class="post-tags">
-                    <span class="tag">⚡ Пост</span>
+                    <span class="tag">⚡ <?= htmlspecialchars($post['category']) ?></span>
                     <span class="tag">🎸 Master of Illusion</span>
                 </div>
             </article>
@@ -75,7 +72,6 @@ if (!$post) {
             <a href="/pages/news.php" class="btn-back-bottom">← Вернуться к новостям</a>
         </div>
 
-        <!-- SIDEBAR -->
         <aside class="post-sidebar">
             <div class="sidebar-box about-box">
                 <h3>⚡ Master of Illusion</h3>

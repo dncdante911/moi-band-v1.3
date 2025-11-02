@@ -1,24 +1,21 @@
 <?php
 /**
- * Файл: pages/home.php
- * Главная страница - чистая версия без встроенных стилей
+ * pages/home.php - ПРАВИЛЬНАЯ ВЕРСИЯ
  */
 
 $page_css = '/assets/css/home.css';
 require_once __DIR__ . '/../include_config/db_connect.php';
 
-// Получаем 3 последние новости
-$stmt = $pdo->query('SELECT id, title, content, createdAt FROM Posts ORDER BY createdAt DESC LIMIT 3');
+// ✅ Правильная таблица
+$stmt = $pdo->query('SELECT id, title, content, created_at FROM news ORDER BY created_at DESC LIMIT 3');
 $posts = $stmt->fetchAll();
 
-// Получаем все альбомы, сортируя по дате релиза
 $stmt = $pdo->query('SELECT * FROM Albums ORDER BY releaseDate DESC');
 $albums = $stmt->fetchAll();
 
 require_once __DIR__ . '/../include_config/header.php';
 ?>
 
-<!-- === БАННЕР === -->
 <div class="hero-banner">
     <div class="hero-overlay"></div>
     <div class="hero-glow hero-glow-1"></div>
@@ -35,7 +32,6 @@ require_once __DIR__ . '/../include_config/header.php';
         </div>
     </div>
     
-    <!-- Анимированные частицы света -->
     <div class="particles-container">
         <div class="particle particle-1"></div>
         <div class="particle particle-2"></div>
@@ -45,7 +41,6 @@ require_once __DIR__ . '/../include_config/header.php';
 
 <div class="container page-content">
     
-    <!-- === СЕКЦИЯ НОВОСТЕЙ === -->
     <section class="news-section">
         <div class="section-header">
             <h2 class="section-title">📰 Последние Новости</h2>
@@ -60,7 +55,7 @@ require_once __DIR__ . '/../include_config/header.php';
                     <article class="news-card">
                         <div class="news-card-header">
                             <div class="news-date">
-                                📅 <?= date('d.m.Y', strtotime($post['createdAt'])) ?>
+                                📅 <?= date('d.m.Y', strtotime($post['created_at'])) ?>
                             </div>
                         </div>
                         

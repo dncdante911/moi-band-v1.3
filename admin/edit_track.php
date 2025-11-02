@@ -9,8 +9,9 @@
  * ✅ Исправлена загрузка видео
  */
 
+require_once __DIR__ . '/auth_check.php';
 require_once '../include_config/config.php';
-require_once '../include_config/db_connect.php';
+require_once '../include_config/db_connect.php';;
 
 // Получаем список альбомов
 $stmt_albums = $pdo->query("SELECT id, title FROM Albums ORDER BY title ASC");

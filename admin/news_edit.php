@@ -3,6 +3,7 @@
 
 require_once '../include_config/config.php';
 require_once '../include_config/db_connect.php';
+require_once __DIR__ . '/auth_check.php';
 
 if (!isset($_GET['id']) || !filter_var($_GET['id'], FILTER_VALIDATE_INT)) {
     header('Location: news_list.php');
