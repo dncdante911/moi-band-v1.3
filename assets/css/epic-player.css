@@ -934,3 +934,125 @@
     margin-bottom: 20px;
     box-shadow: 0 0 30px rgba(255,215,0,0.3);
 }
+
+/* === СТАТИСТИКА ТРЕКА === */
+.track-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+    margin: 10px 0;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.track-stats .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: rgba(255, 215, 0, 0.05);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.track-stats .stat-item:hover {
+    background: rgba(255, 215, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.stat-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.stat-btn:hover {
+    transform: scale(1.2);
+}
+
+.stat-btn:active {
+    transform: scale(0.9);
+}
+
+.stat-btn.active {
+    filter: drop-shadow(0 0 8px currentColor);
+}
+
+.like-btn {
+    color: #FFD700;
+}
+
+.like-btn.active .stat-icon {
+    animation: likeAnim 0.5s ease;
+}
+
+.dislike-btn {
+    color: #888;
+}
+
+.dislike-btn.active .stat-icon {
+    animation: dislikeAnim 0.5s ease;
+}
+
+.stat-icon {
+    display: inline-block;
+    font-size: 1.3rem;
+}
+
+.stat-count {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: #FFD700;
+    min-width: 30px;
+    text-align: center;
+}
+
+@keyframes likeAnim {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.5) rotate(20deg); }
+}
+
+@keyframes dislikeAnim {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.5) rotate(-20deg); }
+}
+
+/* Адаптивность для статистики */
+@media (max-width: 768px) {
+    .track-stats {
+        gap: 15px;
+        padding: 12px;
+    }
+    
+    .track-stats .stat-item {
+        gap: 6px;
+        padding: 6px 12px;
+    }
+    
+    .stat-icon {
+        font-size: 1.1rem;
+    }
+    
+    .stat-count {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .track-stats {
+        gap: 10px;
+        padding: 10px;
+    }
+    
+    .track-stats .stat-item {
+        gap: 4px;
+        padding: 5px 10px;
+    }
+}

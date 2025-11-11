@@ -266,14 +266,17 @@ class EpicPlayer {
                         console.log('✅ Audio context resumed on play');
                     });
                 }
-                
+
                 // Подключаем цепь если ещё не подключена
                 if (this.audioContext && !this.audioSource) {
                     this.connectAudioChain();
                 }
-                
+
                 this.isPlaying = true;
                 this.updatePlayButton();
+
+                // Отправляем событие для трекинга прослушивания
+                window.dispatchEvent(new Event('trackPlaying'));
             });
             audio.addEventListener('pause', () => {
                 this.isPlaying = false;
@@ -298,6 +301,9 @@ class EpicPlayer {
             video.addEventListener('play', () => {
                 this.isPlaying = true;
                 this.updatePlayButton();
+
+                // Отправляем событие для трекинга прослушивания
+                window.dispatchEvent(new Event('trackPlaying'));
             });
             video.addEventListener('pause', () => {
                 this.isPlaying = false;
@@ -497,23 +503,28 @@ class EpicPlayer {
     
     loadTrack(index) {
         if (index < 0 || index >= this.queue.length) return;
-        
+
         this.currentIndex = index;
         const track = this.queue[index];
-        
+
         console.log(`🎵 Loading track: ${track.title}`);
-        
+
         this.updateTrackInfo(track);
-        
+
         if (this.currentMode === 'video' && track.videoPath) {
             this.loadVideo(track);
         } else {
             this.loadAudio(track);
         }
-        
+
         this.loadLyrics(track.id);
         this.updateQueueHighlight();
         this.updateAlbumTrackHighlight(track.id);
+
+        // Отправляем событие для TrackStatsManager
+        window.dispatchEvent(new CustomEvent('trackChanged', {
+            detail: { trackId: track.id, track: track }
+        }));
     }
     
     loadAudio(track) {

@@ -22,7 +22,27 @@
         <p class="track-artist">Master of Illusion</p>
         <p class="track-album">Альбом</p>
     </div>
-    
+
+    <!-- СТАТИСТИКА ТРЕКА -->
+    <div class="track-stats">
+        <div class="stat-item">
+            <button class="stat-btn like-btn" data-action="like" title="Нравится" aria-label="Лайк">
+                <span class="stat-icon">👍</span>
+            </button>
+            <span class="stat-count" id="likes-count">0</span>
+        </div>
+        <div class="stat-item">
+            <button class="stat-btn dislike-btn" data-action="dislike" title="Не нравится" aria-label="Дизлайк">
+                <span class="stat-icon">👎</span>
+            </button>
+            <span class="stat-count" id="dislikes-count">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-icon">👁️</span>
+            <span class="stat-count" id="views-count">0</span>
+        </div>
+    </div>
+
     <!-- ПРОГРЕСС БАР -->
     <div class="progress-container">
         <span class="time">0:00</span>
@@ -98,3 +118,4 @@
 <link rel="stylesheet" href="/assets/css/epic-player.css">
 <script src="/assets/js/epic-player.js"></script>
 <script src="/assets/js/visualizer.js"></script>
+<script src="/assets/js/track-stats.js"></script>

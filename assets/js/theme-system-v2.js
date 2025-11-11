@@ -119,7 +119,7 @@ class AdvancedThemeSystem {
                     '--border': '#9D00FF',
                     '--glow': '0 0 40px rgba(157, 0, 255, 0.7)',
                     '--shadow': '0 15px 50px rgba(106, 13, 173, 0.5)',
-                    '--hover-transform': 'translateY(-6px) scale(1.03) rotate(-1deg)',
+                    '--hover-transform': 'translateY(-5px) scale(1.02)',
                     '--radius': '12px',
                     '--radius-large': '20px',
                     '--border-width': '2px',
@@ -146,12 +146,11 @@ class AdvancedThemeSystem {
                         pointer-events: none;
                     `,
                     cardHover: `
-                        transform: translateY(-8px) rotate(-2deg) scale(1.03);
+                        transform: translateY(-6px) scale(1.02);
                         border-color: #FF1493;
-                        box-shadow: 0 20px 60px rgba(157, 0, 255, 0.6), 
-                                    0 0 40px rgba(255, 20, 147, 0.4),
-                                    inset 0 0 30px rgba(157, 0, 255, 0.1);
-                        filter: drop-shadow(0 0 15px #9D00FF);
+                        box-shadow: 0 15px 40px rgba(157, 0, 255, 0.5),
+                                    0 0 20px rgba(255, 20, 147, 0.3);
+                        filter: drop-shadow(0 0 10px #9D00FF);
                     `,
                     heading: `
                         font-family: 'Crimson Text', serif;
@@ -197,7 +196,7 @@ class AdvancedThemeSystem {
                     '--border': '#FF0080',
                     '--glow': '0 0 40px rgba(255, 0, 128, 0.8), 0 0 80px rgba(0, 255, 255, 0.4)',
                     '--shadow': '5px 5px 0 #00FFFF, -5px -5px 0 #FFFF00, 0 0 40px rgba(255, 0, 128, 0.5)',
-                    '--hover-transform': 'translateY(-6px) scale(1.05) rotate(2deg)',
+                    '--hover-transform': 'translateY(-4px) scale(1.03)',
                     '--radius': '0px',
                     '--radius-large': '0px',
                     '--border-width': '3px',
@@ -226,11 +225,11 @@ class AdvancedThemeSystem {
                         filter: drop-shadow(0 0 10px #FFFF00);
                     `,
                     cardHover: `
-                        transform: skew(-1deg, -0.5deg) scale(1.08) rotate(-2deg);
+                        transform: skew(-1deg, -0.5deg) scale(1.05);
                         border-color: #00FFFF;
-                        box-shadow: 8px 8px 0 #FF0080, -8px -8px 0 #00FFFF, 
-                                    0 0 50px #FF0080, 0 0 80px #00FFFF;
-                        filter: contrast(1.3) saturate(1.5);
+                        box-shadow: 6px 6px 0 #FF0080, -6px -6px 0 #00FFFF,
+                                    0 0 30px #FF0080;
+                        filter: contrast(1.2) saturate(1.3);
                     `,
                     heading: `
                         font-family: 'Bebas Neue', sans-serif;
@@ -308,12 +307,11 @@ class AdvancedThemeSystem {
                         transform: translate(-50%, -50%);
                     `,
                     cardHover: `
-                        transform: translateY(-12px) scale(1.10) rotateY(5deg);
+                        transform: translateY(-8px) scale(1.06);
                         border-color: #DC143C;
-                        box-shadow: 0 25px 70px rgba(255, 69, 0, 0.8), 
-                                    0 0 60px rgba(220, 20, 60, 0.6),
-                                    inset 0 0 40px rgba(255, 69, 0, 0.2);
-                        filter: brightness(1.3) drop-shadow(0 0 20px #FF4500);
+                        box-shadow: 0 20px 50px rgba(255, 69, 0, 0.6),
+                                    0 0 30px rgba(220, 20, 60, 0.4);
+                        filter: brightness(1.2) drop-shadow(0 0 15px #FF4500);
                     `,
                     heading: `
                         font-family: 'Black Ops One', sans-serif;
@@ -388,12 +386,11 @@ class AdvancedThemeSystem {
                         color: #9370DB;
                     `,
                     cardHover: `
-                        transform: translateY(-10px) scale(1.06) rotateX(3deg);
+                        transform: translateY(-7px) scale(1.04);
                         border-color: #9370DB;
-                        box-shadow: 0 18px 60px rgba(65, 105, 225, 0.6), 
-                                    0 0 40px rgba(147, 112, 219, 0.5),
-                                    inset 0 0 35px rgba(65, 105, 225, 0.1);
-                        filter: drop-shadow(0 0 20px #4169E1);
+                        box-shadow: 0 15px 45px rgba(65, 105, 225, 0.5),
+                                    0 0 25px rgba(147, 112, 219, 0.4);
+                        filter: drop-shadow(0 0 15px #4169E1);
                     `,
                     heading: `
                         font-family: 'Playfair Display', serif;
@@ -710,7 +707,12 @@ class AdvancedThemeSystem {
             .page-content, .card, .panel, .album-showcase-card, .blog-card, .news-item {
                 ${theme.blockStyles.card}
                 opacity: 1 !important;
-                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                            opacity 0.3s ease,
+                            box-shadow 0.3s ease,
+                            border-color 0.3s ease;
+                will-change: transform;
+                transform: translateZ(0);
             }
             
             .page-content::before, .card::before, .panel::before,
@@ -740,12 +742,15 @@ class AdvancedThemeSystem {
                 padding: 12px 28px;
                 border-radius: var(--radius);
                 cursor: pointer;
-                transition: all 0.3s ease;
+                transition: transform 0.2s ease,
+                            box-shadow 0.2s ease,
+                            filter 0.2s ease;
+                transform: translateZ(0);
                 animation: ${theme.animations.buttonPulse};
             }
-            
+
             button:hover, .btn:hover {
-                transform: var(--hover-transform);
+                transform: translateY(-2px) translateZ(0);
                 box-shadow: var(--glow);
                 filter: brightness(1.2);
             }
@@ -760,7 +765,8 @@ class AdvancedThemeSystem {
             .nav-link {
                 font-family: ${theme.fonts.body};
                 color: var(--text);
-                transition: all 0.3s;
+                transition: color 0.2s ease,
+                            text-shadow 0.2s ease;
                 position: relative;
             }
             
