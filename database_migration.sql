@@ -59,6 +59,6 @@ CREATE TABLE IF NOT EXISTS `TrackReactions` (
 -- Создаем индексы для оптимизации запросов
 CREATE INDEX `idx_track_likes` ON `Track` (`likes` DESC);
 CREATE INDEX `idx_track_views` ON `Track` (`views` DESC);
-CREATE INDEX `idx_playlist_public` ON `Playlists` (`is_public`, `created_at` DESC);
+CREATE INDEX `idx_playlist_public` ON `Playlists` (`isPublic`, `created_at` DESC);
 
 -- Все готово!
