@@ -959,8 +959,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 15px;
-    padding: 10px;
+    gap: 25px;
+    padding: 15px;
     margin: 10px 0 20px;
 }
 
@@ -968,84 +968,177 @@
 .stat-compact-item {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 6px 12px;
+    gap: 6px;
+    padding: 8px 16px;
     background: rgba(255, 215, 0, 0.05);
     border: 1px solid rgba(255, 215, 0, 0.2);
-    border-radius: 6px;
-    font-size: 0.85rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
     color: var(--gold);
     transition: all 0.3s ease;
     cursor: pointer;
-}
-
-.stat-compact-btn {
     font-weight: 500;
 }
 
 .stat-compact-item {
     cursor: default;
+    background: rgba(255, 215, 0, 0.08);
 }
 
-.stat-compact-btn:hover {
-    background: rgba(255, 215, 0, 0.15);
-    border-color: var(--gold);
-    transform: translateY(-2px);
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+/* КНОПКА ЛАЙКА - ЗЕЛЁНЫЙ АКЦЕНТ */
+.like-btn {
+    background: rgba(76, 175, 80, 0.1);
+    border-color: rgba(76, 175, 80, 0.3);
+    color: #4caf50;
+    margin-right: 8px;
 }
 
+.like-btn:hover {
+    background: rgba(76, 175, 80, 0.2);
+    border-color: #4caf50;
+    transform: translateY(-3px);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+}
+
+.like-btn.active {
+    background: rgba(76, 175, 80, 0.3);
+    border-color: #66bb6a;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+    animation: likeAnim 0.5s ease;
+}
+
+/* КНОПКА ДИЗЛАЙКА - КРАСНЫЙ АКЦЕНТ */
+.dislike-btn {
+    background: rgba(244, 67, 54, 0.1);
+    border-color: rgba(244, 67, 54, 0.3);
+    color: #f44336;
+    margin-left: 8px;
+    position: relative;
+}
+
+/* Визуальный разделитель перед дизлайком */
+.dislike-btn::before {
+    content: '';
+    position: absolute;
+    left: -17px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 60%;
+    background: linear-gradient(to bottom, transparent, rgba(255, 215, 0, 0.4), transparent);
+    border-radius: 2px;
+}
+
+.dislike-btn:hover {
+    background: rgba(244, 67, 54, 0.2);
+    border-color: #f44336;
+    transform: translateY(-3px);
+    box-shadow: 0 0 15px rgba(244, 67, 54, 0.4);
+}
+
+.dislike-btn.active {
+    background: rgba(244, 67, 54, 0.3);
+    border-color: #ef5350;
+    box-shadow: 0 0 20px rgba(244, 67, 54, 0.6);
+    animation: dislikeAnim 0.5s ease;
+}
+
+/* Общие стили для hover и active */
 .stat-compact-btn:active {
     transform: translateY(0);
 }
 
-.stat-compact-btn.active {
-    background: rgba(255, 215, 0, 0.2);
-    border-color: var(--gold-light);
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+/* Разделитель перед счётчиком просмотров */
+.stat-compact-item {
+    margin-left: 10px;
+    position: relative;
 }
 
-.like-btn.active {
-    animation: likeAnim 0.5s ease;
-}
-
-.dislike-btn.active {
-    animation: dislikeAnim 0.5s ease;
+.stat-compact-item::before {
+    content: '';
+    position: absolute;
+    left: -18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 70%;
+    background: linear-gradient(to bottom, transparent, rgba(255, 215, 0, 0.5), transparent);
+    border-radius: 2px;
 }
 
 @keyframes likeAnim {
-    0%, 100% { transform: translateY(-2px) scale(1); }
-    50% { transform: translateY(-2px) scale(1.2) rotate(10deg); }
+    0%, 100% { transform: translateY(-3px) scale(1); }
+    25% { transform: translateY(-3px) scale(1.15) rotate(5deg); }
+    75% { transform: translateY(-3px) scale(1.15) rotate(-5deg); }
 }
 
 @keyframes dislikeAnim {
-    0%, 100% { transform: translateY(-2px) scale(1); }
-    50% { transform: translateY(-2px) scale(1.2) rotate(-10deg); }
+    0%, 100% { transform: translateY(-3px) scale(1); }
+    25% { transform: translateY(-3px) scale(1.15) rotate(-5deg); }
+    75% { transform: translateY(-3px) scale(1.15) rotate(5deg); }
 }
 
 /* Адаптивность для компактной статистики */
 @media (max-width: 768px) {
     .track-stats-compact {
-        gap: 10px;
-        padding: 8px;
+        gap: 18px;
+        padding: 12px;
     }
 
     .stat-compact-btn,
     .stat-compact-item {
-        padding: 5px 10px;
-        font-size: 0.8rem;
-        gap: 4px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+        gap: 5px;
+    }
+
+    .like-btn {
+        margin-right: 6px;
+    }
+
+    .dislike-btn {
+        margin-left: 6px;
+    }
+
+    .dislike-btn::before,
+    .stat-compact-item::before {
+        left: -13px;
     }
 }
 
 @media (max-width: 480px) {
     .track-stats-compact {
-        gap: 8px;
-        padding: 6px;
+        gap: 12px;
+        padding: 10px;
+        flex-wrap: wrap;
     }
 
     .stat-compact-btn,
     .stat-compact-item {
-        padding: 4px 8px;
-        font-size: 0.75rem;
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    .like-btn {
+        margin-right: 4px;
+    }
+
+    .dislike-btn {
+        margin-left: 4px;
+    }
+
+    .dislike-btn::before {
+        left: -10px;
+        height: 50%;
+    }
+
+    .stat-compact-item {
+        margin-left: 0;
+        flex-basis: 100%;
+        justify-content: center;
+    }
+
+    .stat-compact-item::before {
+        display: none;
     }
 }
