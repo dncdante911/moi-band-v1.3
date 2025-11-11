@@ -1,7 +1,7 @@
 <?php
 // Файл: admin/news_delete.php
 
-require_once __DIR__ . '/auth_check.php';
+require_once 'auth_check.php'; // ✅ ДОБАВЛЕНО
 require_once '../include_config/config.php';
 require_once '../include_config/db_connect.php';
 
@@ -10,22 +10,20 @@ if (!isset($_GET['id']) || !filter_var($_GET['id'], FILTER_VALIDATE_INT)) {
     exit;
 }
 
-$postId = (int)$_GET['id'];
+$newsId = (int)$_GET['id'];
 
-// Находим пост, чтобы получить путь к картинке для удаления
-$stmt = $pdo->prepare("SELECT imageUrl FROM Posts WHERE id = ?");
-$stmt->execute([$postId]);
-$post = $stmt->fetch();
+// ✅ ИСПРАВЛЕНО: используем таблицу news
+$stmt = $pdo->prepare("SELECT image FROM news WHERE id = ?");
+$stmt->execute([$newsId]);
+$news = $stmt->fetch();
 
-if ($post && !empty($post['imageUrl'])) {
-    // Если у поста была картинка, удаляем ее с сервера
-    @unlink('..' . $post['imageUrl']);
+if ($news && !empty($news['image'])) {
+    @unlink('..' . $news['image']);
 }
 
-// Удаляем саму запись из базы данных
-$stmt = $pdo->prepare("DELETE FROM Posts WHERE id = ?");
-$stmt->execute([$postId]);
+// ✅ ИСПРАВЛЕНО: удаляем из таблицы news
+$stmt = $pdo->prepare("DELETE FROM news WHERE id = ?");
+$stmt->execute([$newsId]);
 
-// Возвращаемся на страницу со списком новостей
 header('Location: news_list.php');
 exit;

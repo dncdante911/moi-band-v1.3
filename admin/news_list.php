@@ -5,6 +5,7 @@ require_once __DIR__ . '/auth_check.php';
 require_once '../include_config/config.php';
 require_once '../include_config/db_connect.php';
 
+$stmt = $pdo->prepare("SELECT image FROM news WHERE id = ?");
 $stmt = $pdo->query('SELECT * FROM news ORDER BY created_at DESC');
 $news = $stmt->fetchAll();
 ?>
