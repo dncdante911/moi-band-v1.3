@@ -49,7 +49,7 @@ $news = $query->fetchAll(PDO::FETCH_ASSOC);
                             <h3><?= htmlspecialchars($item['title']) ?></h3>
                             <p><?= htmlspecialchars(substr($item['content'], 0, 150)) ?>...</p>
                             
-                            <a href="/pages/news-detail.php?id=<?= $item['id'] ?>" class="read-more">
+                            <a href="/pages/post.php?id=<?= $item['id'] ?>" class="read-more">
                                 Читать полностью →
                             </a>
                         </div>

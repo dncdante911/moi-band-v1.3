@@ -22,9 +22,9 @@ require_once __DIR__ . '/../include_config/header.php';
     <div class="hero-glow hero-glow-2"></div>
     
     <div class="hero-content">
-        <h1 class="hero-title">🎸 ХРОНИКИ ЗАБЫТЫХ МИРОВ</h1>
-        <p class="hero-subtitle">Power Metal</p>
-        <p class="hero-description">Новый альбом. Эпическое путешествие через легенды, которые мир забыл</p>
+        <h1 class="hero-title">🎸 Перекрестки Времен</h1>
+        <p class="hero-subtitle">Historycal heavy metal</p>
+        <p class="hero-description">Новый альбом. Окунитесь в перекрестки истории, которые мир не забыл</p>
         
         <div class="hero-buttons">
             <a href="#albums" class="hero-button primary">▶️ Слушать альбом</a>

@@ -11,6 +11,11 @@
  * ✅ Логирование подозрительной активности
  */
 
+if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
+    header('Location: https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+    exit;
+}
+
 require_once 'include_config/config.php';
 require_once 'include_config/db_connect.php';
 require_once 'include_config/header.php';

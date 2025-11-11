@@ -5,6 +5,7 @@
  * Power Metal & Hard Rock Style
  */
 ?>
+
     </main>
 
     <!-- === ПОДВАЛ САЙТА === -->
@@ -432,9 +433,8 @@
         }
     });
     </script>
-    <!-- <script src="/assets/js/theme-manager-pro.js"></script> -->
-    <script src="/assets/js/theme-system-v2.js"></script>
-<script src="/assets/js/epic-player.js"></script>
-
+  <!--  <script src="/assets/js/theme-system-v2.js"></script> -->
+<script src="/assets/js/scroll-to-top.js"></script>
+<script src="/assets/js/toast.js"></script>
 </body>
 </html>

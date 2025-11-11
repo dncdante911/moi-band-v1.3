@@ -12,12 +12,21 @@ require_once __DIR__ . '/db_connect.php';  // ← ДОБАВЛЕНО: подкл
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="description" content="Master of Illusion - AI Metal музыка с SUNO. Слушайте альбомы, смотрите галерею">
+    <meta name="keywords" content="metal music, AI music, SUNO, Master of Illusion, метал музыка">
+    <meta name="author" content="Master of Illusion">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars(SITE_NAME) ?></title>
+        <title><?= htmlspecialchars(SITE_NAME) ?></title>
+   
+
     
-    <!-- ✅ ОСНОВНЫЕ СТИЛИ (базис) -->
+    <!-- ✅ ОСНОВНЫЕ Сблиотеки(базис) -->
+    <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="/assets/css/responsive.css">
+    <link rel="preload" href="/assets/js/theme-system-v2.js" as="script">
     <!-- <link rel="stylesheet" href="/assets/css/mobile-universal.css"> -->
     
     <!-- ✅ ОСТАЛЬНЫЕ СПЕЦИФИЧНЫЕ СТИЛИ -->
@@ -39,6 +48,12 @@ require_once __DIR__ . '/db_connect.php';  // ← ДОБАВЛЕНО: подкл
     
     <!-- === БИБЛИОТЕКИ === -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script src="/assets/js/theme-system-v2.js"></script>
+
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#FFD700">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 
     <!-- === ДИАГНОСТИКА ТЕМ === -->
     <script>
@@ -143,6 +158,7 @@ require_once __DIR__ . '/db_connect.php';  // ← ДОБАВЛЕНО: подкл
                 </ul>
             </nav>
         </div>
+        <script src="/assets/js/protection.js"></script>
     </header>
 
     <!-- === ОСНОВНОЙ КОНТЕНТ === -->

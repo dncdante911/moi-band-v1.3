@@ -92,8 +92,9 @@ if (!$post) {
                 <h3>🔥 Рекомендуем</h3>
                 <ul class="category-list">
                     <li><a href="/pages/albums.php">📀 Слушать альбомы</a></li>
-                    <li><a href="/pages/gallery.php">🖼️ Галерея</a></li>
-                    <li><a href="/pages/chat.php">💬 Чат</a></li>
+                    <li><a href="/pages/gallery.php">🖼️ Галерея</a></li
+                    <li><a href="https://music.worldmates.club">📀 Музыкальное хранилище</a></li>
+                   <!-- <li><a href="/pages/chat.php">💬 Чат</a></li> -->
                 </ul>
             </div>
         </aside>
