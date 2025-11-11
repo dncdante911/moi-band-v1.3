@@ -23,26 +23,6 @@
         <p class="track-album">Альбом</p>
     </div>
 
-    <!-- СТАТИСТИКА ТРЕКА -->
-    <div class="track-stats">
-        <div class="stat-item">
-            <button class="stat-btn like-btn" data-action="like" title="Нравится" aria-label="Лайк">
-                <span class="stat-icon">👍</span>
-            </button>
-            <span class="stat-count" id="likes-count">0</span>
-        </div>
-        <div class="stat-item">
-            <button class="stat-btn dislike-btn" data-action="dislike" title="Не нравится" aria-label="Дизлайк">
-                <span class="stat-icon">👎</span>
-            </button>
-            <span class="stat-count" id="dislikes-count">0</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-icon">👁️</span>
-            <span class="stat-count" id="views-count">0</span>
-        </div>
-    </div>
-
     <!-- ПРОГРЕСС БАР -->
     <div class="progress-container">
         <span class="time">0:00</span>
@@ -76,6 +56,19 @@
         <button class="mode-btn" data-mode="queue" role="tab">📋 ОЧЕРЕДЬ</button>
         <button class="mode-btn" data-mode="lyrics" role="tab">📄 ТЕКСТ</button>
         <button class="mode-btn" data-mode="equalizer" role="tab">🎚️ ЭКВАЛАЙЗЕР</button>
+    </div>
+
+    <!-- СТАТИСТИКА ТРЕКА (КОМПАКТНО) -->
+    <div class="track-stats-compact">
+        <button class="stat-compact-btn like-btn" data-action="like" title="Нравится">
+            👍 <span id="likes-count">0</span>
+        </button>
+        <button class="stat-compact-btn dislike-btn" data-action="dislike" title="Не нравится">
+            👎 <span id="dislikes-count">0</span>
+        </button>
+        <div class="stat-compact-item" title="Просмотры">
+            👁️ <span id="views-count">0</span>
+        </div>
     </div>
     
     <!-- ЭКВАЛАЙЗЕР - НОВОЕ! -->

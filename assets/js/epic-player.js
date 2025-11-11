@@ -604,21 +604,34 @@ class EpicPlayer {
     renderQueue() {
         const queueList = this.container?.querySelector('.queue-list');
         if (!queueList) return;
-        
+
         queueList.innerHTML = this.queue.map((track, index) => `
             <li class="queue-item" data-index="${index}" data-track-id="${this.escapeHtml(track.id)}">
                 <span class="queue-number">${index + 1}</span>
                 <div class="queue-info">
                     <div class="queue-track-name">${this.escapeHtml(track.title)}</div>
                     <div class="queue-track-album">${this.escapeHtml(track.albumTitle || '')}</div>
+                    <div class="queue-track-stats">
+                        <span class="queue-stat" title="Лайки">👍 ${this.formatStatNumber(track.likes || 0)}</span>
+                        <span class="queue-stat" title="Просмотры">👁️ ${this.formatStatNumber(track.views || 0)}</span>
+                    </div>
                 </div>
                 <span class="queue-duration">${this.formatTime(track.duration || 0)}</span>
             </li>
         `).join('');
-        
+
         queueList.querySelectorAll('.queue-item').forEach((item, index) => {
             item.addEventListener('click', () => this.playTrack(index));
         });
+    }
+
+    formatStatNumber(num) {
+        if (num >= 1000000) {
+            return (num / 1000000).toFixed(1) + 'M';
+        } else if (num >= 1000) {
+            return (num / 1000).toFixed(1) + 'K';
+        }
+        return num.toString();
     }
     
     updateQueueHighlight() {
