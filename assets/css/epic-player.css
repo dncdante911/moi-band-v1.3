@@ -964,6 +964,12 @@
     margin: 10px 0 20px;
 }
 
+/* СКРЫВАЕМ ЛАЙКИ И ДИЗЛАЙКИ */
+.like-btn,
+.dislike-btn {
+    display: none !important;
+}
+
 .stat-compact-btn,
 .stat-compact-item {
     display: inline-flex;

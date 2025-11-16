@@ -29,8 +29,8 @@ class AdvancedThemeSystem {
                 icon: '⚔️',
                 description: 'Героическая эпичность с золотым свечением',
                 fonts: {
-                    heading: "'Cinzel', 'Cinzel Decorative', serif",
-                    body: "'Roboto', sans-serif"
+                    heading: "'Bebas Neue', 'Cinzel Decorative', sans-serif",
+                    body: "'Montserrat', 'Roboto', sans-serif"
                 },
                 css: {
                     '--primary': '#FFD700',
@@ -105,8 +105,8 @@ class AdvancedThemeSystem {
                 icon: '🦇',
                 description: 'Мистическая атмосфера с фиолетовым свечением',
                 fonts: {
-                    heading: "'Crimson Text', 'Old Standard TT', serif",
-                    body: "'Lato', sans-serif"
+                    heading: "'IM Fell English SC', 'Cinzel', serif",
+                    body: "'Crimson Text', serif"
                 },
                 css: {
                     '--primary': '#9D00FF',
@@ -182,8 +182,8 @@ class AdvancedThemeSystem {
                 icon: '🤘',
                 description: 'Энергичный киберпанк с неоновыми эффектами',
                 fonts: {
-                    heading: "'Bebas Neue', 'Anton', sans-serif",
-                    body: "'Oswald', 'Barlow Condensed', sans-serif"
+                    heading: "'Oswald', 'Bebas Neue', sans-serif",
+                    body: "'Roboto Condensed', sans-serif"
                 },
                 css: {
                     '--primary': '#FF0080',
@@ -420,10 +420,10 @@ class AdvancedThemeSystem {
             'dark-ambient': {
                 name: 'Dark Ambient',
                 icon: '🌑',
-                description: 'Минималистичная элегантность в темноте',
+                description: 'Минималистичная элегантность в темноте (Literary Dark)',
                 fonts: {
-                    heading: "'Raleway', sans-serif",
-                    body: "'Inter', 'Quicksand', sans-serif"
+                    heading: "'Playfair Display', serif",
+                    body: "'Merriweather', serif"
                 },
                 css: {
                     '--primary': '#708090',
@@ -605,12 +605,12 @@ class AdvancedThemeSystem {
     
     loadAllFonts() {
         const fontsToLoad = [
-            'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@700&display=swap',
-            'https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600&family=Old+Standard+TT:wght@400;700&display=swap',
-            'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Anton&family=Oswald:wght@300;500;700&family=Barlow+Condensed:wght@400;600&display=swap',
+            'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;700;800;900&family=Cinzel+Decorative:wght@700;900&display=swap',
+            'https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@700;900&display=swap',
+            'https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto+Condensed:wght@400;700&family=Bebas+Neue&display=swap',
+            'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap',
             'https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Bungee&family=Rajdhani:wght@400;600;700&family=Exo+2:wght@400;700&display=swap',
-            'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400;600&display=swap',
-            'https://fonts.googleapis.com/css2?family=Raleway:wght@200;400;600&family=Quicksand:wght@300;400;600&family=Inter:wght@300;400;600&display=swap',
+            'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&display=swap',
             'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Lato:wght@300;400;700&display=swap'
         ];
         
@@ -1062,7 +1062,7 @@ class AdvancedThemeSystem {
                 #theme-switcher-v3 {
                     position: fixed;
                     bottom: 30px;
-                    right: 30px;
+                    left: 30px;
                     z-index: 10000;
                 }
                 
@@ -1090,7 +1090,7 @@ class AdvancedThemeSystem {
                 .theme-options-v3 {
                     position: absolute;
                     bottom: 75px;
-                    right: 0;
+                    left: 0;
                     background: var(--bg-card);
                     border: var(--border-width) solid var(--border);
                     border-radius: var(--radius-large);
@@ -1150,18 +1150,18 @@ class AdvancedThemeSystem {
                 @media (max-width: 768px) {
                     #theme-switcher-v3 {
                         bottom: 20px;
-                        right: 20px;
+                        left: 20px;
                     }
-                    
+
                     .theme-fab {
                         width: 50px;
                         height: 50px;
                         font-size: 24px;
                     }
-                    
+
                     .theme-options-v3 {
                         bottom: 65px;
-                        right: -10px;
+                        left: 0;
                         min-width: 200px;
                     }
                 }
