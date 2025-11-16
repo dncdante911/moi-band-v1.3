@@ -15,8 +15,8 @@
     --border-color: #FF00FF;         /* Неоновая граница */
     
     /* ============ ШРИФТЫ ============ */
-    --heading-font: 'Cinzel Decorative', serif;
-    --body-font: 'Roboto', sans-serif;
+    --heading-font: 'Oswald', 'Bebas Neue', sans-serif;
+    --body-font: 'Roboto Condensed', sans-serif;
     
     --heading-size-lg: 2.5rem;
     --heading-size-md: 2rem;

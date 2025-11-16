@@ -15,8 +15,8 @@
     --border-color: #9D00FF;         /* Фиолетовая граница */
     
     /* ============ ШРИФТЫ ============ */
-    --heading-font: 'Cinzel Decorative', serif;
-    --body-font: 'Roboto', sans-serif;
+    --heading-font: 'IM Fell English SC', 'Cinzel', serif;
+    --body-font: 'Crimson Text', serif;
     
     --heading-size-lg: 2.5rem;
     --heading-size-md: 2rem;

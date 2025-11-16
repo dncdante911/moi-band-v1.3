@@ -81,38 +81,71 @@ h2 {
 }
 
 @keyframes glowPulseGothic {
-    0% {
-        text-shadow: 0 0 10px rgba(157, 0, 255, 0.4);
-        box-shadow: 0 0 15px rgba(157, 0, 255, 0.3);
+    0%, 100% {
+        text-shadow: 0 0 15px rgba(157, 0, 255, 0.5), 0 0 25px rgba(106, 13, 173, 0.3);
+        box-shadow: 0 0 20px rgba(157, 0, 255, 0.4);
     }
     50% {
-        text-shadow: 0 0 20px rgba(157, 0, 255, 0.7);
-        box-shadow: 0 0 25px rgba(157, 0, 255, 0.6);
+        text-shadow: 0 0 30px rgba(157, 0, 255, 0.9), 0 0 50px rgba(217, 70, 239, 0.6);
+        box-shadow: 0 0 40px rgba(157, 0, 255, 0.7), 0 0 60px rgba(106, 13, 173, 0.4);
+    }
+}
+
+@keyframes darkPulse {
+    0%, 100% {
+        opacity: 0.8;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.02);
+    }
+}
+
+@keyframes gothicFade {
+    0% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
     }
     100% {
-        text-shadow: 0 0 10px rgba(157, 0, 255, 0.4);
-        box-shadow: 0 0 15px rgba(157, 0, 255, 0.3);
+        opacity: 0.6;
     }
 }
 
 h1, h2, h3 {
-    animation: glowPulseGothic 3s ease-in-out infinite;
+    animation: glowPulseGothic 4s ease-in-out infinite, darkPulse 3s ease-in-out infinite;
+    position: relative;
+}
+
+h1::after, h2::after, h3::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    background: radial-gradient(circle, rgba(157, 0, 255, 0.1), transparent);
+    animation: gothicFade 5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
 }
 
 @keyframes strongGlowGothic {
     0% {
-        box-shadow: 0 0 20px rgba(157, 0, 255, 0.5);
+        box-shadow: 0 0 25px rgba(157, 0, 255, 0.6);
+        transform: scale(1);
     }
     50% {
-        box-shadow: 0 0 35px rgba(217, 70, 239, 0.8), 0 0 50px rgba(157, 0, 255, 0.6);
+        box-shadow: 0 0 45px rgba(217, 70, 239, 0.9), 0 0 65px rgba(157, 0, 255, 0.7);
+        transform: scale(1.08);
     }
     100% {
-        box-shadow: 0 0 20px rgba(157, 0, 255, 0.5);
+        box-shadow: 0 0 25px rgba(157, 0, 255, 0.6);
+        transform: scale(1);
     }
 }
 
 button:hover, .btn:hover {
-    animation: strongGlowGothic 0.5s ease;
+    animation: strongGlowGothic 1s ease-in-out infinite;
 }
 
 @keyframes underlineExpand {
