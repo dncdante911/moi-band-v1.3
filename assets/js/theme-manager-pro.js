@@ -203,7 +203,7 @@
             .bg-theme-switcher {
                 position: fixed;
                 bottom: 30px;
-                right: 30px;
+                left: 30px;
                 z-index: 9999;
                 font-family: Arial, sans-serif;
             }
@@ -234,7 +234,7 @@
             .bg-theme-menu {
                 position: absolute;
                 bottom: 65px;
-                right: 0;
+                left: 0;
                 background: rgba(15, 15, 15, 0.98);
                 border: 2px solid #FFD700;
                 border-radius: 10px;
@@ -293,7 +293,7 @@
             @media (max-width: 768px) {
                 .bg-theme-switcher {
                     bottom: 20px;
-                    right: 20px;
+                    left: 20px;
                 }
 
                 .bg-theme-btn {

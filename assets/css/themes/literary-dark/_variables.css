@@ -15,8 +15,8 @@
     --border-color: #D4A574;         /* Золотисто-коричневая граница */
     
     /* ============ ШРИФТЫ ============ */
-    --heading-font: 'Cinzel Decorative', serif;
-    --body-font: 'Roboto', sans-serif;
+    --heading-font: 'Playfair Display', serif;
+    --body-font: 'Merriweather', serif;
     
     --heading-size-lg: 2.5rem;
     --heading-size-md: 2rem;

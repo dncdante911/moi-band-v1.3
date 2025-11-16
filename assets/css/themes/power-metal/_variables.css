@@ -18,8 +18,8 @@
     --border-color: #FFD700;         /* Золотая граница */
     
     /* ============ ШРИФТЫ ============ */
-    --heading-font: 'Cinzel Decorative', serif;
-    --body-font: 'Roboto', sans-serif;
+    --heading-font: 'Bebas Neue', 'Cinzel Decorative', sans-serif;
+    --body-font: 'Montserrat', sans-serif;
     
     --heading-size-lg: 2.5rem;
     --heading-size-md: 2rem;

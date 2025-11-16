@@ -81,38 +81,69 @@ h2 {
 }
 
 @keyframes glowPulseLit {
-    0% {
-        text-shadow: 0 0 8px rgba(212, 165, 116, 0.3);
-        box-shadow: 0 0 12px rgba(212, 165, 116, 0.2);
+    0%, 100% {
+        text-shadow: 0 0 12px rgba(212, 165, 116, 0.4), 0 0 20px rgba(139, 115, 85, 0.2);
+        box-shadow: 0 0 18px rgba(212, 165, 116, 0.3);
     }
     50% {
-        text-shadow: 0 0 16px rgba(212, 165, 116, 0.5);
-        box-shadow: 0 0 20px rgba(212, 165, 116, 0.4);
+        text-shadow: 0 0 24px rgba(212, 165, 116, 0.6), 0 0 35px rgba(199, 168, 104, 0.4);
+        box-shadow: 0 0 30px rgba(212, 165, 116, 0.5), 0 0 45px rgba(139, 115, 85, 0.3);
     }
-    100% {
-        text-shadow: 0 0 8px rgba(212, 165, 116, 0.3);
-        box-shadow: 0 0 12px rgba(212, 165, 116, 0.2);
+}
+
+@keyframes warmBreath {
+    0%, 100% {
+        opacity: 0.9;
+        filter: brightness(1);
+    }
+    50% {
+        opacity: 1;
+        filter: brightness(1.1);
+    }
+}
+
+@keyframes elegantFloat {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-3px);
     }
 }
 
 h1, h2, h3 {
-    animation: glowPulseLit 2.5s ease-in-out infinite;
+    animation: glowPulseLit 4s ease-in-out infinite, warmBreath 3.5s ease-in-out infinite;
+    position: relative;
+    transition: all 0.5s ease;
+}
+
+h1:hover, h2:hover, h3:hover {
+    animation: glowPulseLit 4s ease-in-out infinite, warmBreath 3.5s ease-in-out infinite, elegantFloat 2s ease-in-out;
 }
 
 @keyframes strongGlowLit {
     0% {
-        box-shadow: 0 0 15px rgba(212, 165, 116, 0.3);
+        box-shadow: 0 0 20px rgba(212, 165, 116, 0.4);
+        transform: scale(1);
     }
     50% {
-        box-shadow: 0 0 30px rgba(212, 165, 116, 0.5), 0 0 40px rgba(199, 168, 104, 0.4);
+        box-shadow: 0 0 40px rgba(212, 165, 116, 0.7), 0 0 55px rgba(199, 168, 104, 0.5);
+        transform: scale(1.05);
     }
     100% {
-        box-shadow: 0 0 15px rgba(212, 165, 116, 0.3);
+        box-shadow: 0 0 20px rgba(212, 165, 116, 0.4);
+        transform: scale(1);
     }
 }
 
+@keyframes candleFlicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.95; }
+    75% { opacity: 0.98; }
+}
+
 button:hover, .btn:hover {
-    animation: strongGlowLit 0.5s ease;
+    animation: strongGlowLit 1s ease-in-out infinite, candleFlicker 2s ease-in-out infinite;
 }
 
 @keyframes underlineExpand {
