@@ -1243,22 +1243,22 @@ class AdvancedThemeSystem {
   <line x1="600" y1="-10" x2="820" y2="850"/><line x1="600" y1="-10" x2="980" y2="850"/>
   <line x1="600" y1="-10" x2="1130" y2="850"/><line x1="600" y1="-10" x2="1270" y2="850"/>
 </g>
-<g class="pm-sl" transform="translate(55,30)" opacity="0.28" fill="#FFD700">
+<g transform="translate(55,30)" opacity="0.28" fill="#FFD700"><g class="pm-sl">
   <polygon points="12,0 18,450 12,485 6,450"/>
   <rect x="-22" y="138" width="68" height="11" rx="3"/>
   <rect x="8" y="149" width="8" height="80" fill="#8B6914"/>
   <circle cx="12" cy="240" r="12"/>
   <line x1="12" y1="4" x2="12" y2="138" stroke="#B8860B" stroke-width="2" opacity="0.5"/>
   <circle cx="12" cy="4" r="4" fill="#FFF8DC"/>
-</g>
-<g class="pm-sr" transform="translate(1145,30) scale(-1,1)" opacity="0.28" fill="#FFD700">
+</g></g>
+<g transform="translate(1145,30) scale(-1,1)" opacity="0.28" fill="#FFD700"><g class="pm-sr">
   <polygon points="12,0 18,450 12,485 6,450"/>
   <rect x="-22" y="138" width="68" height="11" rx="3"/>
   <rect x="8" y="149" width="8" height="80" fill="#8B6914"/>
   <circle cx="12" cy="240" r="12"/>
   <line x1="12" y1="4" x2="12" y2="138" stroke="#B8860B" stroke-width="2" opacity="0.5"/>
   <circle cx="12" cy="4" r="4" fill="#FFF8DC"/>
-</g>
+</g></g>
 <g class="pm-crown" transform="translate(498,18)" opacity="0.16" fill="#FFD700">
   <polygon points="102,0 204,0 184,55 160,30 132,60 102,25 72,60 44,30 20,55 0,0"/>
   <rect x="20" y="55" width="164" height="22" rx="4"/>
@@ -1280,6 +1280,18 @@ class AdvancedThemeSystem {
 </svg>`,
 
 'gothic-metal': `<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes gm-arch{0%,100%{opacity:.1}50%{opacity:.2}}
+@keyframes gm-bat-p{0%,100%{opacity:.22}55%{opacity:.44}}
+@keyframes gm-moon-p{0%,100%{opacity:.35}50%{opacity:.15}}
+.gm-arch{animation:gm-arch 9s ease-in-out infinite}
+.gm-bat1{animation:gm-bat-p 5.5s ease-in-out infinite}
+.gm-bat2{animation:gm-bat-p 6.5s ease-in-out infinite 1s}
+.gm-bat3{animation:gm-bat-p 5s ease-in-out infinite .5s}
+.gm-bat4{animation:gm-bat-p 7s ease-in-out infinite 1.5s}
+.gm-moon{animation:gm-moon-p 6s ease-in-out infinite}
+[data-layer]{transition:transform .18s ease-out}
+</style>
 <defs>
   <radialGradient id="hgm" cx="50%" cy="40%" r="55%">
     <stop offset="0%" stop-color="#9D00FF" stop-opacity="0.2"/>
@@ -1338,6 +1350,20 @@ class AdvancedThemeSystem {
 </svg>`,
 
 'punk-rock': `<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes pr-fl{0%,85%,100%{opacity:.28}90%{opacity:.52}95%{opacity:.35}}
+@keyframes pr-fr{0%,80%,100%{opacity:.28}87%{opacity:.5}93%{opacity:.32}}
+@keyframes pr-tw{0%,100%{opacity:.45}50%{opacity:.9}}
+@keyframes pr-a{0%,100%{opacity:.07}50%{opacity:.13}}
+.pr-bolt-l{animation:pr-fl 2.8s ease-in-out infinite}
+.pr-bolt-r{animation:pr-fr 3.2s ease-in-out infinite .4s}
+.pr-star1{animation:pr-tw 1.6s ease-in-out infinite}
+.pr-star2{animation:pr-tw 2.1s ease-in-out infinite .4s}
+.pr-star3{animation:pr-tw 1.9s ease-in-out infinite .8s}
+.pr-star4{animation:pr-tw 2.4s ease-in-out infinite 1.2s}
+.pr-anarchy{animation:pr-a 5s ease-in-out infinite}
+[data-layer]{transition:transform .18s ease-out}
+</style>
 <g stroke="#FF1493" stroke-opacity="0.055" stroke-width="1" fill="none">
   <line x1="0" y1="0" x2="0" y2="800"/><line x1="120" y1="0" x2="120" y2="800"/>
   <line x1="240" y1="0" x2="240" y2="800"/><line x1="360" y1="0" x2="360" y2="800"/>
@@ -1370,6 +1396,18 @@ class AdvancedThemeSystem {
 </svg>`,
 
 'heavy-metal': `<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes hm-f1{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.07) translateY(-8px)}}
+@keyframes hm-f2{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.05) translateY(-5px)}}
+@keyframes hm-sp{0%,100%{opacity:.45}50%{opacity:.78}}
+@keyframes hm-g{0%,100%{opacity:1}50%{opacity:.6}}
+.hm-flame-l{animation:hm-f1 2.6s ease-in-out infinite;transform-box:fill-box;transform-origin:bottom center}
+.hm-flame-r{animation:hm-f1 2.6s ease-in-out infinite .5s;transform-box:fill-box;transform-origin:bottom center}
+.hm-flame-c{animation:hm-f2 2s ease-in-out infinite .2s;transform-box:fill-box;transform-origin:bottom center}
+.hm-spark{animation:hm-sp 1.4s ease-in-out infinite}
+.hm-glow{animation:hm-g 4s ease-in-out infinite}
+[data-layer]{transition:transform .18s ease-out}
+</style>
 <defs>
   <radialGradient id="hhm" cx="50%" cy="100%" r="65%">
     <stop offset="0%" stop-color="#FF4500" stop-opacity="0.28"/>
@@ -1412,6 +1450,20 @@ class AdvancedThemeSystem {
 </svg>`,
 
 'symphonic-metal': `<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes sm-glow{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes sm-tw{0%,100%{opacity:.42}50%{opacity:.9}}
+@keyframes sm-frame{0%,100%{opacity:1}50%{opacity:.55}}
+.sm-clef{animation:sm-glow 9s ease-in-out infinite}
+.sm-notes{animation:sm-glow 7s ease-in-out infinite 2s}
+.sm-star1{animation:sm-tw 2s ease-in-out infinite}
+.sm-star2{animation:sm-tw 2.8s ease-in-out infinite .5s}
+.sm-star3{animation:sm-tw 2.3s ease-in-out infinite 1s}
+.sm-star4{animation:sm-tw 3.1s ease-in-out infinite 1.5s}
+.sm-star5{animation:sm-tw 1.8s ease-in-out infinite .3s}
+.sm-frame{animation:sm-frame 12s ease-in-out infinite}
+[data-layer]{transition:transform .18s ease-out}
+</style>
 <defs>
   <radialGradient id="hsm" cx="50%" cy="38%" r="52%">
     <stop offset="0%" stop-color="#4169E1" stop-opacity="0.2"/>
@@ -1464,7 +1516,21 @@ class AdvancedThemeSystem {
 </g>
 </svg>`,
 
-'literary-dark': `<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+'dark-ambient': `<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes ld-tw{0%,100%{opacity:.38}50%{opacity:.82}}
+@keyframes ld-moon-p{0%,100%{opacity:.32}50%{opacity:.14}}
+@keyframes ld-glow{0%,100%{opacity:.065}50%{opacity:.12}}
+@keyframes ld-quill-p{0%,100%{opacity:.26}50%{opacity:.42}}
+.ld-star1{animation:ld-tw 2.2s ease-in-out infinite}
+.ld-star2{animation:ld-tw 3s ease-in-out infinite .6s}
+.ld-star3{animation:ld-tw 1.9s ease-in-out infinite 1.2s}
+.ld-star4{animation:ld-tw 2.7s ease-in-out infinite .3s}
+.ld-moon{animation:ld-moon-p 7s ease-in-out infinite}
+.ld-book{animation:ld-glow 9s ease-in-out infinite}
+.ld-quill{animation:ld-quill-p 8s ease-in-out infinite}
+[data-layer]{transition:transform .18s ease-out}
+</style>
 <defs>
   <radialGradient id="hld" cx="50%" cy="38%" r="52%">
     <stop offset="0%" stop-color="#8B0000" stop-opacity="0.16"/>
