@@ -12,7 +12,12 @@ $releaseDate = '';
 
 // Обрабатываем отправку формы
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = trim($_POST['title'] ?? '');
+    // Проверка CSRF-токена
+    if (!isset($_POST['csrf_token']) || !verify_csrf_token($_POST['csrf_token'])) {
+        $errors[] = 'Неверный CSRF-токен. Попробуйте ещё раз.';
+    }
+
+    $title       = trim($_POST['title'] ?? '');
     $description = trim($_POST['description'] ?? '');
     $releaseDate = trim($_POST['releaseDate'] ?? '');
     $coverImagePath = null;
@@ -25,14 +30,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Необходимо загрузить обложку.';
     }
 
+    // Серверная проверка MIME типа обложки
+    if (empty($errors)) {
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $detectedMime = finfo_file($finfo, $_FILES['cover']['tmp_name']);
+        finfo_close($finfo);
+        if (!in_array($detectedMime, $allowedMimes, true) || @getimagesize($_FILES['cover']['tmp_name']) === false) {
+            $errors[] = 'Недопустимый тип файла обложки. Разрешены: JPG, PNG, WebP.';
+        }
+    }
+
     // Обработка загрузки обложки
     if (empty($errors)) {
         $uploadDir = '../public/uploads/album_covers/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);
         }
-        $fileExtension = pathinfo($_FILES['cover']['name'], PATHINFO_EXTENSION);
-        $fileName = uniqid() . '.' . $fileExtension;
+        $fileExtension = strtolower(pathinfo($_FILES['cover']['name'], PATHINFO_EXTENSION));
+        $fileName = hash('sha256', uniqid() . time()) . '.' . $fileExtension;
         $uploadPath = $uploadDir . $fileName;
 
         if (move_uploaded_file($_FILES['cover']['tmp_name'], $uploadPath)) {
@@ -80,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <form action="album_add.php" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
             <div class="form-group">
                 <label for="title">Название альбома</label>
                 <input type="text" id="title" name="title" value="<?= htmlspecialchars($title) ?>" required>

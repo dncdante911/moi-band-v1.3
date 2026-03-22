@@ -11,7 +11,11 @@ class JWTHandler {
     private $token_lifetime = 86400; // 24 часа
     
     public function __construct() {
-        $this->secret_key = SITE_EMAIL . '_' . md5(SITE_NAME) . '_secret_key_2025';
+        $key = getenv('JWT_SECRET');
+        if (empty($key)) {
+            throw new \RuntimeException('JWT_SECRET не задан в .env');
+        }
+        $this->secret_key = $key;
     }
     
     /**

@@ -5,6 +5,9 @@
  * Страница входа в админ-панель с дополнительными функциями
  */
 
+define('SKIP_SESSION_START', true); // config.php не должен снова запускать сессию
+require_once __DIR__ . '/../include_config/config.php';
+
 session_start();
 
 // Если уже авторизован, перенаправляем
@@ -40,10 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $username = trim($_POST['username'] ?? '');
         $password = $_POST['password'] ?? '';
         
-        // ⚠️ ВАЖНО: Замените эти данные на свои!
-        $admin_username = 'admin';
-        // Для генерации хеша используйте generate_password_hash.php
-        $admin_password_hash = '$2y$10$WcJS2KvcK8UsMjGBO/q9nu0nEv2cKkF8MKs1ZhBW0N8qGsW1ZPdE2';
+        $admin_username = getenv('ADMIN_USERNAME') ?: 'admin';
+        $admin_password_hash = getenv('ADMIN_PASSWORD_HASH') ?: '';
         
         if ($username === $admin_username && password_verify($password, $admin_password_hash)) {
             // Успешная авторизация

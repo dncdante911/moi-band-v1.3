@@ -1,0 +1,22 @@
+# Блокируем прямой доступ к аудиофайлам.
+# Все запросы проходят через api/player/stream.php, который проверяет сессию/Referer.
+
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /public/uploads/full/
+
+    # Перенаправляем аудиофайлы через защищённый стриминг-прокси
+    # (внутренний rewrite — URL в браузере не меняется)
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^(.+\.(mp3|wav|flac|ogg|m4a))$ /api/player/stream.php?id=%{QUERY_STRING}&_file=$1 [L,QSA]
+</IfModule>
+
+# Если mod_rewrite недоступен — запрещаем доступ напрямую
+<IfModule !mod_rewrite.c>
+    <FilesMatch "\.(mp3|wav|flac|ogg|m4a)$">
+        Order Allow,Deny
+        Deny from all
+    </FilesMatch>
+</IfModule>

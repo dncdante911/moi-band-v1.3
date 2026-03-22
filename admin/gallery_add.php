@@ -9,8 +9,18 @@ $errors = [];
 $success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = $_POST['title'] ?? '';
-    $category = $_POST['category'] ?? 'studio';
+    // Проверка CSRF-токена
+    if (!isset($_POST['csrf_token']) || !verify_csrf_token($_POST['csrf_token'])) {
+        $errors[] = 'Неверный CSRF-токен. Попробуйте ещё раз.';
+    }
+
+    $title    = trim($_POST['title'] ?? '');
+    $category = trim($_POST['category'] ?? 'studio');
+
+    $allowedCategories = ['studio', 'concert', 'event', 'promo'];
+    if (!in_array($category, $allowedCategories, true)) {
+        $category = 'studio';
+    }
 
     if (empty($title)) {
         $errors[] = 'Заполни название фото!';
@@ -20,14 +30,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Выбери изображение!';
     }
 
+    // Серверная проверка MIME типа (клиентский accept легко обойти)
+    if (empty($errors) && !empty($_FILES['image']['name'])) {
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $detectedMime = finfo_file($finfo, $_FILES['image']['tmp_name']);
+        finfo_close($finfo);
+
+        if (!in_array($detectedMime, $allowedMimes, true)) {
+            $errors[] = 'Недопустимый тип файла. Разрешены: JPG, PNG, WebP, GIF.';
+        }
+
+        // Проверяем что это действительно изображение (не polyglot-файл)
+        if (empty($errors) && @getimagesize($_FILES['image']['tmp_name']) === false) {
+            $errors[] = 'Файл повреждён или не является изображением.';
+        }
+    }
+
     if (empty($errors) && !empty($_FILES['image']['name'])) {
         $upload_dir = '../assets/uploads/gallery/';
         if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
-        
-        $image_name = time() . '_' . basename($_FILES['image']['name']);
+
+        // Безопасное имя файла с хешем
+        $ext        = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+        $image_name = hash('sha256', uniqid() . time()) . '.' . $ext;
         $image_path = $upload_dir . $image_name;
-        
+
         if (move_uploaded_file($_FILES['image']['tmp_name'], $image_path)) {
+            @chmod($image_path, 0644);
             $image_url = '/assets/uploads/gallery/' . $image_name;
             
             $stmt = $pdo->prepare("INSERT INTO gallery (title, category, image_url, created_at) VALUES (?, ?, ?, NOW())");
@@ -107,6 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
         
         <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
             <div class="form-group">
                 <label for="title">📝 Название фото *</label>
                 <input type="text" id="title" name="title" required placeholder="Описание фото">
