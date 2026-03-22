@@ -53,6 +53,21 @@ ServerSignature Off
     Header always unset Server
 </IfModule>
 
+# ── MIME типы аудио + поддержка Range-запросов для плеера ────────
+<IfModule mod_mime.c>
+    AddType audio/mpeg        .mp3
+    AddType audio/wav         .wav
+    AddType audio/ogg         .ogg
+    AddType audio/flac        .flac
+    AddType video/mp4         .mp4
+</IfModule>
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.(mp3|wav|ogg|flac|mp4)$">
+        Header set Accept-Ranges bytes
+    </FilesMatch>
+</IfModule>
+
 # ── Сжатие (Gzip) для ускорения ──────────────────────────────────
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/css text/javascript
