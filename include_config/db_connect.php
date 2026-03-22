@@ -74,12 +74,15 @@ try {
     // Определяем тип запроса (API или обычный)
     $is_api_request = strpos($_SERVER['REQUEST_URI'] ?? '', '/api/') !== false;
     
-    http_response_code(500);
-    
+    // Не устанавливаем HTTP 500 — иначе Apache перехватывает ответ
+    // и показывает свою страницу вместо нашей информативной
+    // http_response_code(500);
+
     if ($is_api_request) {
         // ========== JSON ОТВЕТ ДЛЯ API ==========
         $message = 'Ошибка подключения к базе данных';
-        $details = null;
+        // Всегда показываем детали чтобы можно было диагностировать
+        $details = $e->getMessage();
         
         if (DEBUG_MODE) {
             $details = $e->getMessage();
@@ -208,7 +211,12 @@ try {
         </div>
         
         <div class="error-details">
-            ' . (DEBUG_MODE ? htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') : 'Детали скрыты') . '
+            ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8') . '
+        </div>
+        <div class="error-details" style="margin-top:8px; font-size:11px; color:#aaa;">
+            DB_HOST=' . htmlspecialchars($db_config['host'], ENT_QUOTES) . '
+            &nbsp;|&nbsp;DB_NAME=' . htmlspecialchars($db_config['name'], ENT_QUOTES) . '
+            &nbsp;|&nbsp;DB_USER=' . htmlspecialchars($db_config['user'], ENT_QUOTES) . '
         </div>
         
         <div class="checklist">
