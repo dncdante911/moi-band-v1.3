@@ -7,6 +7,29 @@ require_once __DIR__ . '/auth_check.php';
 require_once '../include_config/config.php';
 require_once '../include_config/db_connect.php';
 
+// ── Автоматически создаём таблицу если её нет ─────────────────────
+try {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `SiteSettings` (
+        `id`            INT AUTO_INCREMENT PRIMARY KEY,
+        `setting_key`   VARCHAR(100) NOT NULL UNIQUE,
+        `setting_value` TEXT NULL,
+        `updated_at`    DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    // Вставляем дефолты если таблица только что создана (INSERT IGNORE)
+    $pdo->exec("INSERT IGNORE INTO `SiteSettings` (`setting_key`, `setting_value`) VALUES
+        ('hero_title',       '🎸 Перекрестки Времен'),
+        ('hero_subtitle',    'Historycal Heavy Metal'),
+        ('hero_description', 'Новый альбом. Окунитесь в перекрестки истории, которые мир не забыл'),
+        ('hero_btn1_text',   '▶️ Слушать альбом'),
+        ('hero_btn1_url',    '#albums'),
+        ('hero_btn2_text',   '📖 О проекте'),
+        ('hero_btn2_url',    '/pages/about.php')
+    ");
+} catch (Exception $e) {
+    // Таблица уже существует или нет прав — продолжаем
+}
+
 $message = '';
 $error   = '';
 
