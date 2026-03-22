@@ -40,6 +40,7 @@ require_once __DIR__ . '/db_connect.php';  // ← ДОБАВЛЕНО: подкл
     <link rel="stylesheet" href="/assets/css/epic-home.css"> 
     <link rel="stylesheet" href="/assets/css/visualizer.css">
     <link rel="stylesheet" href="/assets/css/universal-theme.css">
+    <link rel="stylesheet" href="/assets/css/mobile.css">
     
     <!-- === ШРИФТЫ === -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -160,6 +161,26 @@ require_once __DIR__ . '/db_connect.php';  // ← ДОБАВЛЕНО: подкл
             </nav>
         </div>
         <script src="/assets/js/protection.js"></script>
+        <script>
+        (function(){
+            const btn = document.getElementById('hamburger');
+            const nav = document.getElementById('mainNav');
+            if (!btn || !nav) return;
+            btn.addEventListener('click', function(e){
+                e.stopPropagation();
+                const open = nav.classList.toggle('active');
+                btn.setAttribute('aria-expanded', open);
+                btn.textContent = open ? '✕' : '☰';
+            });
+            document.addEventListener('click', function(e){
+                if (!nav.contains(e.target) && e.target !== btn) {
+                    nav.classList.remove('active');
+                    btn.setAttribute('aria-expanded', 'false');
+                    btn.textContent = '☰';
+                }
+            });
+        })();
+        </script>
     </header>
 
     <!-- === ОСНОВНОЙ КОНТЕНТ === -->

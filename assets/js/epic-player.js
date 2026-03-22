@@ -259,6 +259,16 @@ class EpicPlayer {
             audio.addEventListener('timeupdate', () => this.updateProgress());
             audio.addEventListener('ended', () => this.onTrackEnded());
             audio.addEventListener('loadedmetadata', () => this.updateDuration());
+            // durationchange срабатывает когда браузер обновляет duration
+            // (например переходит из Infinity в реальное значение при буферизации)
+            audio.addEventListener('durationchange', () => {
+                if (isFinite(audio.duration) && audio.duration > 0) {
+                    this.updateDuration();
+                    this.updateProgress();
+                }
+            });
+            // canplay — финальная попытка обновить duration когда данных достаточно
+            audio.addEventListener('canplay', () => this.updateProgress());
             audio.addEventListener('play', () => {
                 // Resume audio context если приостановлен (мобильные браузеры)
                 if (this.audioContext && this.audioContext.state === 'suspended') {

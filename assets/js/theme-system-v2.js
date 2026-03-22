@@ -705,11 +705,371 @@ class AdvancedThemeSystem {
     }
 
     applyBackground(theme) {
-        // Только градиент — SVG-паттерн (base64 data URL) тайлится браузером
-        // на каждый кадр и вызывает постоянный repaint всего viewport.
-        document.body.style.background = theme.css['--bg-gradient'];
+        // Градиент на body (дёшево — GPU-слой не создаём)
+        document.body.style.background    = theme.css['--bg-gradient'];
         document.body.style.backgroundImage = '';
         document.body.style.backgroundSize  = '';
+
+        // Уникальный SVG-декор для каждой темы — фиксированный слой z-index:-1
+        // Статичный inline SVG, без анимаций → никаких repaints.
+        this._applyThemeSVGDecor(this.currentTheme);
+    }
+
+    _applyThemeSVGDecor(themeName) {
+        let el = document.getElementById('theme-svg-decor');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'theme-svg-decor';
+            el.style.cssText =
+                'position:fixed;top:0;left:0;width:100%;height:100%;' +
+                'pointer-events:none;z-index:0;overflow:hidden;opacity:1;' +
+                'transition:opacity .5s ease;';
+            document.body.insertBefore(el, document.body.firstChild);
+        }
+
+        // Плавная смена: сначала fade out, потом меняем SVG, потом fade in
+        el.style.opacity = '0';
+        setTimeout(() => {
+            el.innerHTML = this._themeSVGs[themeName] || '';
+            el.style.opacity = '1';
+        }, 300);
+    }
+
+    get _themeSVGs() {
+        return {
+            // ──────────────────────────────────────────────────────
+            // ⚔️ POWER METAL — перекрещённые мечи и щит
+            // ──────────────────────────────────────────────────────
+            'power-metal': `<svg width="100%" height="100%" viewBox="0 0 1440 900"
+                xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <radialGradient id="pm-glow" cx="50%" cy="40%" r="55%">
+                        <stop offset="0%" stop-color="#FFD700" stop-opacity="0.12"/>
+                        <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+                    </radialGradient>
+                    <filter id="pm-blur"><feGaussianBlur stdDeviation="2"/></filter>
+                </defs>
+                <!-- Фоновое свечение -->
+                <rect width="100%" height="100%" fill="url(#pm-glow)"/>
+                <!-- Меч 1 (диагональ \\) -->
+                <g opacity="0.07" filter="url(#pm-blur)" transform="translate(720,450)">
+                    <line x1="-220" y1="-320" x2="220" y2="320" stroke="#FFD700" stroke-width="12" stroke-linecap="round"/>
+                    <polygon points="-220,-320 -230,-340 -210,-340" fill="#FFD700"/>
+                    <rect x="-18" y="-60" width="36" height="14" rx="3" fill="#FFD700"/>
+                    <!-- Меч 2 (диагональ /) -->
+                    <line x1="220" y1="-320" x2="-220" y2="320" stroke="#FFD700" stroke-width="12" stroke-linecap="round"/>
+                    <polygon points="220,-320 230,-340 210,-340" fill="#FFD700"/>
+                </g>
+                <!-- Щит по центру -->
+                <g opacity="0.06" transform="translate(720,430)">
+                    <path d="M0,-90 L70,-50 L70,20 Q70,80 0,110 Q-70,80 -70,20 L-70,-50 Z"
+                          fill="none" stroke="#FFD700" stroke-width="4"/>
+                    <text x="0" y="20" text-anchor="middle" font-size="40"
+                          fill="#FFD700" font-family="serif">✦</text>
+                </g>
+                <!-- Угловые орнаменты -->
+                <g opacity="0.05" stroke="#FFD700" stroke-width="2" fill="none">
+                    <path d="M0,0 L80,0 L80,80 M0,0 L0,80 L80,80" transform="translate(20,20)"/>
+                    <path d="M0,0 L-80,0 L-80,80 M0,0 L0,80 L-80,80" transform="translate(1420,20)"/>
+                    <path d="M0,0 L80,0 L80,-80 M0,0 L0,-80 L80,-80" transform="translate(20,880)"/>
+                    <path d="M0,0 L-80,0 L-80,-80 M0,0 L0,-80 L-80,-80" transform="translate(1420,880)"/>
+                </g>
+                <!-- Лучи рассвета снизу -->
+                <g opacity="0.04" stroke="#FFD700" stroke-width="1">
+                    <line x1="720" y1="900" x2="200" y2="300"/>
+                    <line x1="720" y1="900" x2="400" y2="250"/>
+                    <line x1="720" y1="900" x2="600" y2="220"/>
+                    <line x1="720" y1="900" x2="720" y2="210"/>
+                    <line x1="720" y1="900" x2="840" y2="220"/>
+                    <line x1="720" y1="900" x2="1040" y2="250"/>
+                    <line x1="720" y1="900" x2="1240" y2="300"/>
+                </g>
+            </svg>`,
+
+            // ──────────────────────────────────────────────────────
+            // 🦇 GOTHIC METAL — готические окна и летучие мыши
+            // ──────────────────────────────────────────────────────
+            'gothic-metal': `<svg width="100%" height="100%" viewBox="0 0 1440 900"
+                xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <radialGradient id="gm-glow" cx="50%" cy="30%" r="60%">
+                        <stop offset="0%" stop-color="#9D00FF" stop-opacity="0.15"/>
+                        <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+                    </radialGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#gm-glow)"/>
+                <!-- Готическое окно по центру-верху -->
+                <g opacity="0.08" stroke="#9D00FF" stroke-width="2" fill="none"
+                   transform="translate(620,30)">
+                    <path d="M0,0 L0,300 M200,0 L200,300"/>
+                    <path d="M0,0 Q100,-80 200,0"/>
+                    <!-- Переплёт -->
+                    <line x1="0" y1="120" x2="200" y2="120"/>
+                    <line x1="100" y1="0" x2="100" y2="300"/>
+                    <!-- Розетка -->
+                    <circle cx="100" cy="60" r="35"/>
+                    <circle cx="100" cy="60" r="20"/>
+                    <circle cx="100" cy="60" r="6"/>
+                    <line x1="65" y1="60" x2="135" y2="60"/>
+                    <line x1="100" y1="25" x2="100" y2="95"/>
+                    <line x1="75" y1="35" x2="125" y2="85"/>
+                    <line x1="125" y1="35" x2="75" y2="85"/>
+                </g>
+                <!-- Летучие мыши -->
+                <g opacity="0.1" fill="#9D00FF">
+                    <path d="M0,0 Q-15,-10 -30,0 Q-15,8 0,0 Q15,-10 30,0 Q15,8 0,0 Z
+                             M0,0 L0,12 M-6,0 L-10,8 M6,0 L10,8"
+                          transform="translate(200,150) scale(1.4)"/>
+                    <path d="M0,0 Q-15,-10 -30,0 Q-15,8 0,0 Q15,-10 30,0 Q15,8 0,0 Z"
+                          transform="translate(1100,200) scale(1.8)"/>
+                    <path d="M0,0 Q-12,-8 -24,0 Q-12,6 0,0 Q12,-8 24,0 Q12,6 0,0 Z"
+                          transform="translate(350,300) scale(1.2)"/>
+                    <path d="M0,0 Q-12,-8 -24,0 Q-12,6 0,0 Q12,-8 24,0 Q12,6 0,0 Z"
+                          transform="translate(1200,120) scale(1.0)"/>
+                </g>
+                <!-- Кельтские узлы в углах -->
+                <g opacity="0.06" stroke="#FF1493" stroke-width="1.5" fill="none">
+                    <circle cx="60" cy="60" r="40"/>
+                    <circle cx="60" cy="60" r="25"/>
+                    <path d="M60,20 L60,100 M20,60 L100,60"/>
+                    <path d="M34,34 L86,86 M86,34 L34,86"/>
+                    <circle cx="1380" cy="60" r="40"/>
+                    <circle cx="1380" cy="60" r="25"/>
+                    <path d="M1380,20 L1380,100 M1340,60 L1420,60"/>
+                    <path d="M1354,34 L1406,86 M1406,34 L1354,86"/>
+                </g>
+            </svg>`,
+
+            // ──────────────────────────────────────────────────────
+            // 🤘 PUNK ROCK — анархия, молнии, хаос
+            // ──────────────────────────────────────────────────────
+            'punk-rock': `<svg width="100%" height="100%" viewBox="0 0 1440 900"
+                xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <linearGradient id="pr-diag" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FF0080" stop-opacity="0.06"/>
+                        <stop offset="50%" stop-color="#00FFFF" stop-opacity="0.04"/>
+                        <stop offset="100%" stop-color="#FFFF00" stop-opacity="0.05"/>
+                    </linearGradient>
+                </defs>
+                <!-- Диагональные полосы -->
+                <g opacity="1" stroke="#FF0080" stroke-width="1">
+                    <line x1="-100" y1="200" x2="600" y2="-100" opacity="0.05"/>
+                    <line x1="100" y1="400" x2="800" y2="100" opacity="0.04"/>
+                    <line x1="300" y1="600" x2="1000" y2="300" opacity="0.03"/>
+                    <line x1="600" y1="900" x2="1300" y2="600" opacity="0.04"/>
+                    <line x1="900" y1="900" x2="1440" y2="560" opacity="0.03"/>
+                </g>
+                <!-- Большой анарх (A) по центру -->
+                <g opacity="0.05" stroke="#FF0080" stroke-width="3" fill="none"
+                   transform="translate(620,250)">
+                    <path d="M100,300 L0,0 L200,0 L100,300"/>
+                    <circle cx="100" cy="150" r="110"/>
+                    <line x1="10" y1="140" x2="190" y2="140"/>
+                </g>
+                <!-- Молнии -->
+                <g opacity="0.08" fill="#FFFF00">
+                    <polygon points="120,100 100,180 125,180 105,280 155,170 130,170 155,100"
+                             transform="translate(80,60)"/>
+                    <polygon points="120,100 100,180 125,180 105,280 155,170 130,170 155,100"
+                             transform="translate(1200,120) scale(0.8)"/>
+                </g>
+                <!-- Штриховка углов (хаос) -->
+                <g opacity="0.04" stroke="#00FFFF" stroke-width="1">
+                    <line x1="0" y1="0" x2="150" y2="150"/>
+                    <line x1="30" y1="0" x2="180" y2="150"/>
+                    <line x1="60" y1="0" x2="200" y2="140"/>
+                    <line x1="1290" y1="0" x2="1440" y2="150"/>
+                    <line x1="1320" y1="0" x2="1440" y2="120"/>
+                    <line x1="1360" y1="0" x2="1440" y2="80"/>
+                </g>
+            </svg>`,
+
+            // ──────────────────────────────────────────────────────
+            // 🔥 HEAVY METAL — череп и пламя
+            // ──────────────────────────────────────────────────────
+            'heavy-metal': `<svg width="100%" height="100%" viewBox="0 0 1440 900"
+                xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <radialGradient id="hm-fire" cx="50%" cy="100%" r="70%">
+                        <stop offset="0%" stop-color="#FF4500" stop-opacity="0.25"/>
+                        <stop offset="40%" stop-color="#DC143C" stop-opacity="0.12"/>
+                        <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+                    </radialGradient>
+                    <radialGradient id="hm-top" cx="50%" cy="0%" r="40%">
+                        <stop offset="0%" stop-color="#FF6600" stop-opacity="0.08"/>
+                        <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+                    </radialGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#hm-fire)"/>
+                <rect width="100%" height="100%" fill="url(#hm-top)"/>
+                <!-- Языки пламени снизу -->
+                <g opacity="0.12" fill="#FF4500">
+                    <path d="M0,900 Q120,700 80,550 Q140,650 200,900 Z"/>
+                    <path d="M200,900 Q280,720 240,580 Q320,680 360,900 Z"/>
+                    <path d="M400,900 Q500,680 440,500 Q540,620 580,900 Z"/>
+                    <path d="M640,900 Q740,650 700,480 Q800,600 840,900 Z"/>
+                    <path d="M880,900 Q960,700 920,560 Q1000,660 1040,900 Z"/>
+                    <path d="M1080,900 Q1160,720 1120,580 Q1200,680 1240,900 Z"/>
+                    <path d="M1260,900 Q1350,700 1320,560 Q1380,660 1440,900 Z"/>
+                </g>
+                <!-- Череп (абстрактный) по центру -->
+                <g opacity="0.06" stroke="#FF4500" stroke-width="3" fill="none"
+                   transform="translate(660,320)">
+                    <!-- Голова -->
+                    <ellipse cx="60" cy="50" rx="60" ry="65"/>
+                    <!-- Глазницы -->
+                    <ellipse cx="35" cy="45" rx="18" ry="20"/>
+                    <ellipse cx="85" cy="45" rx="18" ry="20"/>
+                    <!-- Нос -->
+                    <path d="M55,72 L65,72 L60,85 Z"/>
+                    <!-- Зубы -->
+                    <line x1="30" y1="105" x2="90" y2="105"/>
+                    <line x1="40" y1="105" x2="40" y2="118"/>
+                    <line x1="52" y1="105" x2="52" y2="120"/>
+                    <line x1="64" y1="105" x2="64" y2="120"/>
+                    <line x1="76" y1="105" x2="76" y2="118"/>
+                    <!-- Нижняя челюсть -->
+                    <path d="M28,105 Q30,130 60,135 Q90,130 92,105"/>
+                </g>
+                <!-- Узоры по бокам -->
+                <g opacity="0.05" stroke="#DC143C" stroke-width="2" fill="none">
+                    <path d="M0,400 Q50,350 0,300 Q50,250 0,200"/>
+                    <path d="M1440,400 Q1390,350 1440,300 Q1390,250 1440,200"/>
+                </g>
+            </svg>`,
+
+            // ──────────────────────────────────────────────────────
+            // 🎻 SYMPHONIC METAL — нотный стан и скрипичный ключ
+            // ──────────────────────────────────────────────────────
+            'symphonic-metal': `<svg width="100%" height="100%" viewBox="0 0 1440 900"
+                xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <radialGradient id="sm-glow" cx="30%" cy="50%" r="70%">
+                        <stop offset="0%" stop-color="#4169E1" stop-opacity="0.15"/>
+                        <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+                    </radialGradient>
+                    <radialGradient id="sm-glow2" cx="80%" cy="60%" r="50%">
+                        <stop offset="0%" stop-color="#9370DB" stop-opacity="0.1"/>
+                        <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+                    </radialGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#sm-glow)"/>
+                <rect width="100%" height="100%" fill="url(#sm-glow2)"/>
+                <!-- Нотный стан (5 линий через весь экран) -->
+                <g opacity="0.06" stroke="#C0C0FF" stroke-width="1">
+                    <line x1="0" y1="330" x2="1440" y2="330"/>
+                    <line x1="0" y1="355" x2="1440" y2="355"/>
+                    <line x1="0" y1="380" x2="1440" y2="380"/>
+                    <line x1="0" y1="405" x2="1440" y2="405"/>
+                    <line x1="0" y1="430" x2="1440" y2="430"/>
+                </g>
+                <!-- Ноты на нотном стане -->
+                <g opacity="0.08" fill="#9370DB">
+                    <ellipse cx="200" cy="367" rx="14" ry="10" transform="rotate(-15,200,367)"/>
+                    <line x1="212" y1="367" x2="212" y2="300" stroke="#9370DB" stroke-width="2"/>
+                    <ellipse cx="320" cy="393" rx="14" ry="10" transform="rotate(-15,320,393)"/>
+                    <line x1="332" y1="393" x2="332" y2="326" stroke="#9370DB" stroke-width="2"/>
+                    <ellipse cx="460" cy="355" rx="14" ry="10" transform="rotate(-15,460,355)"/>
+                    <line x1="472" y1="355" x2="472" y2="288" stroke="#9370DB" stroke-width="2"/>
+                    <ellipse cx="600" cy="380" rx="14" ry="10" transform="rotate(-15,600,380)"/>
+                    <line x1="612" y1="380" x2="612" y2="313" stroke="#9370DB" stroke-width="2"/>
+                    <ellipse cx="800" cy="342" rx="14" ry="10" transform="rotate(-15,800,342)"/>
+                    <line x1="812" y1="342" x2="812" y2="275" stroke="#9370DB" stroke-width="2"/>
+                    <ellipse cx="980" cy="405" rx="14" ry="10" transform="rotate(-15,980,405)"/>
+                    <line x1="992" y1="405" x2="992" y2="338" stroke="#9370DB" stroke-width="2"/>
+                    <ellipse cx="1150" cy="367" rx="14" ry="10" transform="rotate(-15,1150,367)"/>
+                    <line x1="1162" y1="367" x2="1162" y2="300" stroke="#9370DB" stroke-width="2"/>
+                    <ellipse cx="1300" cy="393" rx="14" ry="10" transform="rotate(-15,1300,393)"/>
+                    <line x1="1312" y1="393" x2="1312" y2="326" stroke="#9370DB" stroke-width="2"/>
+                </g>
+                <!-- Скрипичный ключ -->
+                <g opacity="0.07" stroke="#4169E1" stroke-width="3" fill="none"
+                   transform="translate(660,200) scale(1.6)">
+                    <path d="M30,10 Q50,-5 55,20 Q60,50 40,70 Q60,80 65,110
+                             Q70,145 45,160 Q20,175 15,155 Q10,135 30,125
+                             Q50,115 48,95 Q45,75 25,70 Q5,65 8,40 Q11,15 30,10 Z"
+                          stroke-linejoin="round"/>
+                    <line x1="30" y1="160" x2="30" y2="200"/>
+                    <circle cx="30" cy="210" r="8"/>
+                </g>
+                <!-- Звёзды (оркестровое небо) -->
+                <g opacity="0.07" fill="#E8E8FF">
+                    <circle cx="100" cy="80" r="2"/>
+                    <circle cx="250" cy="120" r="1.5"/>
+                    <circle cx="420" cy="60" r="2.5"/>
+                    <circle cx="600" cy="100" r="1.5"/>
+                    <circle cx="900" cy="70" r="2"/>
+                    <circle cx="1100" cy="90" r="2.5"/>
+                    <circle cx="1280" cy="50" r="1.5"/>
+                    <circle cx="1380" cy="110" r="2"/>
+                    <circle cx="150" cy="800" r="1.5"/>
+                    <circle cx="380" cy="820" r="2"/>
+                    <circle cx="750" cy="800" r="1.5"/>
+                    <circle cx="1050" cy="830" r="2"/>
+                    <circle cx="1350" cy="810" r="1.5"/>
+                </g>
+            </svg>`,
+
+            // ──────────────────────────────────────────────────────
+            // 📚 DARK AMBIENT / LITERARY — книга и звёзды
+            // ──────────────────────────────────────────────────────
+            'literary-dark': `<svg width="100%" height="100%" viewBox="0 0 1440 900"
+                xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <radialGradient id="la-glow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#8B0000" stop-opacity="0.08"/>
+                        <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+                    </radialGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#la-glow)"/>
+                <!-- Звёздное поле -->
+                <g opacity="0.25" fill="#ffffff">
+                    <circle cx="80" cy="60" r="1"/><circle cx="200" cy="30" r="1.5"/>
+                    <circle cx="340" cy="90" r="1"/><circle cx="490" cy="45" r="1.5"/>
+                    <circle cx="620" cy="75" r="1"/><circle cx="780" cy="25" r="2"/>
+                    <circle cx="910" cy="85" r="1"/><circle cx="1040" cy="40" r="1.5"/>
+                    <circle cx="1180" cy="70" r="1"/><circle cx="1350" cy="55" r="1.5"/>
+                    <circle cx="150" cy="180" r="1.5"/><circle cx="300" cy="200" r="1"/>
+                    <circle cx="550" cy="160" r="2"/><circle cx="700" cy="190" r="1"/>
+                    <circle cx="850" cy="150" r="1.5"/><circle cx="1000" cy="170" r="1"/>
+                    <circle cx="1200" cy="140" r="2"/><circle cx="1400" cy="180" r="1"/>
+                    <circle cx="50" cy="750" r="1.5"/><circle cx="220" cy="780" r="1"/>
+                    <circle cx="430" cy="760" r="2"/><circle cx="680" cy="790" r="1"/>
+                    <circle cx="920" cy="750" r="1.5"/><circle cx="1130" cy="770" r="1"/>
+                    <circle cx="1320" cy="740" r="2"/><circle cx="1420" cy="800" r="1"/>
+                </g>
+                <!-- Луна -->
+                <g opacity="0.1">
+                    <circle cx="1300" cy="120" r="70" fill="none" stroke="#8B8B8B" stroke-width="1"/>
+                    <circle cx="1330" cy="100" r="70" fill="#050505"/>
+                </g>
+                <!-- Раскрытая книга по центру -->
+                <g opacity="0.07" stroke="#8B0000" stroke-width="2" fill="none"
+                   transform="translate(560,350)">
+                    <!-- Левая страница -->
+                    <path d="M160,0 Q80,-10 0,20 L0,200 Q80,170 160,180 Z"/>
+                    <!-- Правая страница -->
+                    <path d="M160,0 Q240,-10 320,20 L320,200 Q240,170 160,180 Z"/>
+                    <!-- Линии текста — левая -->
+                    <line x1="20" y1="50" x2="140" y2="45"/>
+                    <line x1="20" y1="70" x2="140" y2="65"/>
+                    <line x1="20" y1="90" x2="140" y2="85"/>
+                    <line x1="20" y1="110" x2="140" y2="105"/>
+                    <line x1="20" y1="130" x2="140" y2="125"/>
+                    <line x1="20" y1="150" x2="120" y2="145"/>
+                    <!-- Линии текста — правая -->
+                    <line x1="180" y1="50" x2="300" y2="45"/>
+                    <line x1="180" y1="70" x2="300" y2="65"/>
+                    <line x1="180" y1="90" x2="300" y2="85"/>
+                    <line x1="180" y1="110" x2="300" y2="105"/>
+                    <line x1="180" y1="130" x2="300" y2="125"/>
+                    <line x1="180" y1="150" x2="260" y2="145"/>
+                    <!-- Корешок -->
+                    <line x1="160" y1="0" x2="160" y2="180" stroke-width="3"/>
+                </g>
+            </svg>`
+        };
     }
     
     applyBlockStyles(theme) {
