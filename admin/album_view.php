@@ -37,7 +37,7 @@ $tracks = $stmt_tracks->fetchAll();
         .album-cover img { border-radius: 4px; border: 1px solid #444; }
         .album-details h2 { margin-top: 0; }
         .album-actions { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
-        .album-actions a, .album-actions button { 
+        .album-actions a, .album-actions button {
             padding: 10px 20px;
             background-color: #333;
             border: 1px solid #555;
@@ -48,12 +48,20 @@ $tracks = $stmt_tracks->fetchAll();
             cursor: pointer;
             transition: all 0.3s;
         }
-        .album-actions a:hover, .album-actions button:hover { 
+        .album-actions a:hover, .album-actions button:hover {
             background-color: #9B1C1C;
             border-color: #ff3333;
         }
         .album-actions .delete-link { background-color: #8B0000; border-color: #c53030; }
         .album-actions .delete-link:hover { background-color: #c53030; }
+        /* Inline delete form in track table */
+        .track-delete-form { display: inline; }
+        .track-del-btn {
+            background: none; border: none; color: #e53e3e;
+            font-weight: bold; cursor: pointer; font-size: inherit;
+            font-family: inherit; padding: 0; text-decoration: none;
+        }
+        .track-del-btn:hover { color: #ff6666; text-decoration: underline; }
         .success-message {
             background-color: #38A169;
             color: #fff;
@@ -96,7 +104,8 @@ $tracks = $stmt_tracks->fetchAll();
                 
                 <div class="album-actions action-links">
                     <a href="album_edit.php?id=<?= $albumId ?>">✏️ Редактировать информацию</a>
-                    <a href="album_add_tracks.php?album_id=<?= $albumId ?>">➕ Массово загрузить треки</a>
+                    <a href="add_track.php?album_id=<?= $albumId ?>">🎵 Добавить один трек</a>
+                    <a href="album_add_tracks.php?album_id=<?= $albumId ?>">📂 Массово загрузить треки</a>
                     <a href="album_add.php" style="background-color: #2b6cb0; border-color: #3182ce;">📀 Добавить новый альбом</a>
                     <a href="albums_list.php" style="background-color: #555; border-color: #777;">📋 К списку альбомов</a>
                     <a href="album_delete.php?id=<?= $albumId ?>" class="delete-link" onclick="return confirm('⚠️ ВНИМАНИЕ: Это удалит альбом и ВСЕ <?= count($tracks) ?> треков в нём!\n\nЭтого действия нельзя отменить. Вы уверены?');">🗑️ Удалить альбом</a>
@@ -125,7 +134,12 @@ $tracks = $stmt_tracks->fetchAll();
                             <td><?= mb_substr(htmlspecialchars($track['description'] ?? ''), 0, 50) ?>...</td>
                             <td class="action-links">
                                 <a href="edit_track.php?id=<?= (int)$track['id'] ?>&album_id=<?= $albumId ?>">✏️ Редактировать</a>
-                                <a href="delete_track.php?id=<?= (int)$track['id'] ?>" class="delete" onclick="return confirm('Вы уверены? Это удалит трек и все его файлы.');">🗑️ Удалить</a>
+                                <form method="POST" action="delete_track.php" class="track-delete-form"
+                                      onsubmit="return confirm('Удалить трек «<?= htmlspecialchars(addslashes($track['title'])) ?>»?');">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'] ?? '') ?>">
+                                    <input type="hidden" name="id" value="<?= (int)$track['id'] ?>">
+                                    <button type="submit" class="track-del-btn">🗑️ Удалить</button>
+                                </form>
                             </td>
                         </tr>
                     <?php endforeach; ?>

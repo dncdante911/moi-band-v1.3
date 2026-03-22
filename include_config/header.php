@@ -115,6 +115,7 @@ require_once __DIR__ . '/db_connect.php';  // ← ДОБАВЛЕНО: подкл
         console.log('='.repeat(50));
     </script>
     <script src="/assets/js/visualizer.js"></script>
+    <script src="/assets/js/track-stats.js"></script>
     <script src="/assets/js/chat-v2.js"></script>
 </head>
 <body>
