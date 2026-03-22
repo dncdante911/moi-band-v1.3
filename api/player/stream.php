@@ -125,14 +125,22 @@ if (isset($_SERVER['HTTP_RANGE'])) {
     http_response_code(200);
 }
 
+// ── Очищаем выходной буфер PHP чтобы заголовок Content-Length
+//    не превратился в Transfer-Encoding: chunked через Nginx ──────
+while (ob_get_level() > 0) {
+    ob_end_clean();
+}
+
 // ── Заголовки ─────────────────────────────────────────────────────
 header('Content-Type: ' . $mime);
 header('Content-Length: ' . $length);
 header('Accept-Ranges: bytes');
 header('Content-Disposition: inline'); // НЕ attachment — предотвращает автоскачивание
 header('X-Robots-Tag: noindex, nofollow');
-header('Cache-Control: no-store');
-header('Pragma: no-cache');
+// Разрешаем кешировать аудио в браузере — это критично для перемотки:
+// без кеша браузер вынужден делать новый запрос при каждом seek-е
+header('Cache-Control: public, max-age=3600');
+header('X-Content-Duration: ' . round($fileSize / 16000, 2)); // приблизительно для MP3 128kbps
 
 // ── Стримим файл ──────────────────────────────────────────────────
 $fp = fopen($filePath, 'rb');
@@ -141,15 +149,19 @@ if (!$fp) {
     exit('Ошибка чтения файла');
 }
 
-fseek($fp, $start);
-$remaining = $length;
-$chunkSize = 8192; // 8 KB
+// Для полного файла (не Range) используем readfile — быстрее и надёжнее
+if ($start === 0 && $length === $fileSize) {
+    fclose($fp);
+    readfile($filePath);
+} else {
+    fseek($fp, $start);
+    $remaining = $length;
+    $chunkSize = 65536; // 64 KB — крупные чанки снижают накладные расходы
 
-while ($remaining > 0 && !feof($fp) && !connection_aborted()) {
-    $read = min($chunkSize, $remaining);
-    echo fread($fp, $read);
-    $remaining -= $read;
-    flush();
+    while ($remaining > 0 && !feof($fp) && !connection_aborted()) {
+        $read = min($chunkSize, $remaining);
+        echo fread($fp, $read);
+        $remaining -= $read;
+    }
+    fclose($fp);
 }
-
-fclose($fp);

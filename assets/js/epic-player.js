@@ -291,6 +291,10 @@ class EpicPlayer {
             audio.addEventListener('pause', () => {
                 this.isPlaying = false;
                 this.updatePlayButton();
+                window.dispatchEvent(new Event('trackPaused'));
+            });
+            audio.addEventListener('ended', () => {
+                window.dispatchEvent(new Event('trackEnded'));
             });
             audio.addEventListener('error', (e) => this.handleMediaError(e, 'audio'));
             audio.addEventListener('volumechange', () => this.updateVolumeDisplay());
@@ -318,6 +322,10 @@ class EpicPlayer {
             video.addEventListener('pause', () => {
                 this.isPlaying = false;
                 this.updatePlayButton();
+                window.dispatchEvent(new Event('trackPaused'));
+            });
+            video.addEventListener('ended', () => {
+                window.dispatchEvent(new Event('trackEnded'));
             });
             video.addEventListener('error', (e) => this.handleMediaError(e, 'video'));
         }

@@ -678,19 +678,28 @@ class AdvancedThemeSystem {
             document.head.appendChild(style);
         }
         style.innerHTML = `
-            h1, h2, h3, h4, h5, h6, .heading, .title, .section-title {
+            /* Заголовки получают heading-шрифт темы */
+            h1, h2, h3, h4, h5, h6, .heading, .title, .section-title,
+            .hero-title, .album-title, .track-title {
                 font-family: ${fonts.heading} !important;
             }
 
-            body, p, div, span, td, input, textarea {
+            /* Логотип — тоже heading-шрифт; выглядит эффектно */
+            .logo, .logo a {
+                font-family: ${fonts.heading} !important;
+                white-space: nowrap !important;
+                letter-spacing: 0.05em !important;
+            }
+
+            /* Весь остальной текст — body-шрифт */
+            body, p, span, td, li, input, textarea, button:not(.nav-link) {
                 font-family: ${fonts.body} !important;
             }
 
-            /* Хедер навигации НЕ меняем шрифт — разные шрифты разной ширины
-               вызывали перенос пунктов на вторую строку и прыжки хедера */
-            .site-header, .site-header *,
-            .main-nav, .main-nav a, .main-nav li,
-            .logo, .logo a {
+            /* Навигационные ссылки — НЕ меняем, чтобы они не переносились.
+               Разные шрифты имеют разную ширину глифов и ломают layout хедера. */
+            .main-nav a, .main-nav li, .nav-link,
+            .hamburger-menu {
                 font-family: inherit !important;
                 white-space: nowrap !important;
             }

@@ -13,6 +13,25 @@ $posts = $stmt->fetchAll();
 $stmt = $pdo->query('SELECT * FROM Albums ORDER BY releaseDate DESC');
 $albums = $stmt->fetchAll();
 
+// Загружаем настройки героя из БД (с фолбэком на дефолты)
+function getHeroSetting(PDO $pdo, string $key, string $default): string {
+    try {
+        $s = $pdo->prepare("SELECT setting_value FROM SiteSettings WHERE setting_key = ?");
+        $s->execute([$key]);
+        $row = $s->fetch();
+        return ($row && $row['setting_value'] !== '') ? $row['setting_value'] : $default;
+    } catch (Exception $e) {
+        return $default;
+    }
+}
+$heroTitle       = getHeroSetting($pdo, 'hero_title',       '🎸 Перекрестки Времен');
+$heroSubtitle    = getHeroSetting($pdo, 'hero_subtitle',    'Historycal Heavy Metal');
+$heroDescription = getHeroSetting($pdo, 'hero_description', 'Новый альбом. Окунитесь в перекрестки истории, которые мир не забыл');
+$heroBtn1Text    = getHeroSetting($pdo, 'hero_btn1_text',   '▶️ Слушать альбом');
+$heroBtn1Url     = getHeroSetting($pdo, 'hero_btn1_url',    '#albums');
+$heroBtn2Text    = getHeroSetting($pdo, 'hero_btn2_text',   '📖 О проекте');
+$heroBtn2Url     = getHeroSetting($pdo, 'hero_btn2_url',    '/pages/about.php');
+
 require_once __DIR__ . '/../include_config/header.php';
 ?>
 
@@ -22,13 +41,13 @@ require_once __DIR__ . '/../include_config/header.php';
     <div class="hero-glow hero-glow-2"></div>
     
     <div class="hero-content">
-        <h1 class="hero-title">🎸 Перекрестки Времен</h1>
-        <p class="hero-subtitle">Historycal heavy metal</p>
-        <p class="hero-description">Новый альбом. Окунитесь в перекрестки истории, которые мир не забыл</p>
-        
+        <h1 class="hero-title"><?= htmlspecialchars($heroTitle) ?></h1>
+        <p class="hero-subtitle"><?= htmlspecialchars($heroSubtitle) ?></p>
+        <p class="hero-description"><?= htmlspecialchars($heroDescription) ?></p>
+
         <div class="hero-buttons">
-            <a href="#albums" class="hero-button primary">▶️ Слушать альбом</a>
-            <a href="/pages/about.php" class="hero-button secondary">📖 О проекте</a>
+            <a href="<?= htmlspecialchars($heroBtn1Url) ?>" class="hero-button primary"><?= htmlspecialchars($heroBtn1Text) ?></a>
+            <a href="<?= htmlspecialchars($heroBtn2Url) ?>" class="hero-button secondary"><?= htmlspecialchars($heroBtn2Text) ?></a>
         </div>
     </div>
     

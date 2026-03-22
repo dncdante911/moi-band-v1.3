@@ -42,6 +42,8 @@ $tracks = $stmt->fetchAll();
             <a href="news_list.php">Управление новостями</a>
             <span class="admin-nav-separator">|</span>
             <a href="gallery_list.php">Управление галереей</a>
+            <span class="admin-nav-separator">|</span>
+            <a href="hero_settings.php">🎸 Шапка сайта</a>
         </div>
 
         <?php if (isset($_GET['success'])): ?>

@@ -10,10 +10,13 @@
 
 class TrackStatsManager {
     constructor() {
-        this.currentTrackId = null;
+        this.currentTrackId  = null;
         this.userReaction    = null;
         this.viewTracked     = false;
-        this._viewTimer      = null; // таймер 30 с для засчёта просмотра
+        this._viewTimer      = null; // таймер для засчёта просмотра
+        this._playStartTime  = null; // когда начали играть (для накопительного счёта)
+        this._playedSeconds  = 0;    // накопленное время воспроизведения
+        this._VIEW_THRESHOLD = 10;   // секунд прослушивания для засчёта просмотра
 
         this._bindLikeButtons(); // вешаем кнопки если уже в DOM
 
@@ -37,13 +40,50 @@ class TrackStatsManager {
     async setCurrentTrack(trackId) {
         if (!trackId) return;
 
-        // Отменяем предыдущий таймер, чтобы не засчитать просмотр старого трека
+        // Отменяем предыдущий таймер и сбрасываем накопленное время
         clearTimeout(this._viewTimer);
+        this._playedSeconds  = 0;
+        this._playStartTime  = null;
 
         this.currentTrackId = String(trackId);
         this.viewTracked     = false;
 
         await this.loadStats();
+    }
+
+    // ── Начало воспроизведения (фиксируем момент) ─────────────────────
+    onPlayStart() {
+        this._playStartTime = Date.now();
+        // Запускаем таймер-страховку: если пользователь не остановит плеер,
+        // засчитываем просмотр через _VIEW_THRESHOLD секунд от накопленного времени
+        clearTimeout(this._viewTimer);
+        const remaining = (this._VIEW_THRESHOLD - this._playedSeconds) * 1000;
+        if (remaining > 0) {
+            this._viewTimer = setTimeout(() => this._checkAndTrackView(), remaining);
+        } else {
+            this._checkAndTrackView();
+        }
+    }
+
+    // ── Пауза/стоп — накапливаем сыгранное время ─────────────────────
+    onPlayStop() {
+        if (this._playStartTime !== null) {
+            this._playedSeconds += (Date.now() - this._playStartTime) / 1000;
+            this._playStartTime  = null;
+        }
+        clearTimeout(this._viewTimer);
+    }
+
+    // ── Проверка порога и засчёт просмотра ───────────────────────────
+    _checkAndTrackView() {
+        // Добавляем время которое идёт прямо сейчас
+        if (this._playStartTime !== null) {
+            this._playedSeconds += (Date.now() - this._playStartTime) / 1000;
+            this._playStartTime  = Date.now(); // сброс точки отсчёта
+        }
+        if (this._playedSeconds >= this._VIEW_THRESHOLD) {
+            this.trackView();
+        }
     }
 
     // ── Загрузка статистики из API ────────────────────────────────────
@@ -173,10 +213,18 @@ window.addEventListener('trackChanged', (event) => {
     }
 });
 
+// Плеер начал воспроизведение
 window.addEventListener('trackPlaying', () => {
-    // Засчитываем просмотр через 30 секунд реального воспроизведения
-    clearTimeout(window.trackStatsManager._viewTimer);
-    window.trackStatsManager._viewTimer = setTimeout(() => {
-        window.trackStatsManager.trackView();
-    }, 30000);
+    window.trackStatsManager.onPlayStart();
+});
+
+// Плеер поставлен на паузу
+window.addEventListener('trackPaused', () => {
+    window.trackStatsManager.onPlayStop();
+});
+
+// Трек закончился — засчитываем просмотр немедленно (песня прослушана до конца)
+window.addEventListener('trackEnded', () => {
+    window.trackStatsManager.onPlayStop();
+    window.trackStatsManager._checkAndTrackView();
 });
