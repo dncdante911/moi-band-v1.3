@@ -671,17 +671,30 @@ class AdvancedThemeSystem {
     }
     
     applyFonts(fonts) {
-        const style = document.getElementById('theme-fonts') || document.createElement('style');
-        style.id = 'theme-fonts';
+        let style = document.getElementById('theme-fonts');
+        if (!style) {
+            style = document.createElement('style');
+            style.id = 'theme-fonts';
+            document.head.appendChild(style);
+        }
         style.innerHTML = `
             h1, h2, h3, h4, h5, h6, .heading, .title, .section-title {
                 font-family: ${fonts.heading} !important;
             }
-            
-            body, p, div, span, a, li, td, input, textarea, button {
+
+            body, p, div, span, td, input, textarea {
                 font-family: ${fonts.body} !important;
             }
-            
+
+            /* Хедер навигации НЕ меняем шрифт — разные шрифты разной ширины
+               вызывали перенос пунктов на вторую строку и прыжки хедера */
+            .site-header, .site-header *,
+            .main-nav, .main-nav a, .main-nav li,
+            .logo, .logo a {
+                font-family: inherit !important;
+                white-space: nowrap !important;
+            }
+
             @media (max-width: 768px) {
                 h1 { font-size: clamp(1.8rem, 5vw, 2.5rem) !important; }
                 h2 { font-size: clamp(1.4rem, 4vw, 2rem) !important; }
@@ -689,19 +702,14 @@ class AdvancedThemeSystem {
                 body, p { font-size: clamp(14px, 2.5vw, 16px) !important; }
             }
         `;
-        // appendChild только если элемент ещё не в DOM (иначе уже там по id)
-        if (!document.getElementById('theme-fonts')) {
-            document.head.appendChild(style);
-        }
     }
 
     applyBackground(theme) {
+        // Только градиент — SVG-паттерн (base64 data URL) тайлится браузером
+        // на каждый кадр и вызывает постоянный repaint всего viewport.
         document.body.style.background = theme.css['--bg-gradient'];
-        
-        if (theme.css['--bg-pattern'] && theme.css['--bg-pattern'] !== 'none') {
-            document.body.style.backgroundImage = `${theme.css['--bg-pattern']}, ${theme.css['--bg-gradient']}`;
-            document.body.style.backgroundSize = '60px 60px, cover';
-        }
+        document.body.style.backgroundImage = '';
+        document.body.style.backgroundSize  = '';
     }
     
     applyBlockStyles(theme) {
@@ -717,11 +725,10 @@ class AdvancedThemeSystem {
                 ${theme.blockStyles.card}
                 opacity: 1 !important;
                 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                            opacity 0.3s ease,
                             box-shadow 0.3s ease,
                             border-color 0.3s ease;
-                will-change: transform;
-                transform: translateZ(0);
+                /* will-change и translateZ(0) убраны: создавали GPU-слой
+                   для каждой карточки → много памяти и compositing-лаги */
             }
             
             .page-content::before, .card::before, .panel::before,

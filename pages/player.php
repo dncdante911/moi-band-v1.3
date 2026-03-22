@@ -13,7 +13,7 @@
         </div>
         
         <video id="video-player" controls controlsList="nodownload" style="display: none; width: 100%; height: 100%; object-fit: contain; background: #000;"></video>
-        <audio id="audio-player" crossorigin="anonymous" style="display: none;"></audio>
+        <audio id="audio-player" preload="metadata" crossorigin="anonymous" style="display: none;"></audio>
     </div>
     
     <!-- ИНФОРМАЦИЯ О ТРЕКЕ -->

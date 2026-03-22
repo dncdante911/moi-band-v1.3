@@ -829,12 +829,20 @@ class EpicPlayer {
     seekTo(e) {
         const progressBar = this.container?.querySelector('.progress-bar');
         const media = this.getCurrentMedia();
-        
-        if (!progressBar || !media || !media.duration) return;
-        
+
+        if (!progressBar || !media) return;
+
         const rect = progressBar.getBoundingClientRect();
-        const percent = (e.clientX - rect.left) / rect.width;
-        media.currentTime = percent * media.duration;
+        const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+
+        if (isFinite(media.duration) && media.duration > 0) {
+            media.currentTime = percent * media.duration;
+        } else if (media.buffered.length > 0) {
+            // Если duration=Infinity (стриминг/неправильный WAV-заголовок)
+            // — перематываем внутри буферизованного диапазона
+            const bufferedEnd = media.buffered.end(media.buffered.length - 1);
+            media.currentTime = percent * bufferedEnd;
+        }
     }
     
     updateProgress() {
