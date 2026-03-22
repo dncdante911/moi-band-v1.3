@@ -651,6 +651,8 @@ class AdvancedThemeSystem {
 
         // SVG-декор в hero-баннере главной страницы (если он есть на странице)
         this._applyHeroSVGDecor(themeName);
+        // SVG-декор в баннере страницы альбома (если есть)
+        this._applyAlbumBannerDecor(themeName);
 
         // Применяем стили блоков
         this.applyBlockStyles(theme);
@@ -1211,6 +1213,61 @@ class AdvancedThemeSystem {
         }
     }
 
+
+    _applyAlbumBannerDecor(themeName) {
+        const banner = document.querySelector('.album-page-banner');
+        if (!banner) return;
+        // Обновляем цвет .banner-glow под текущую тему
+        const glow = banner.querySelector('.banner-glow');
+        if (glow) {
+            const glowColors = {
+                'power-metal':    'rgba(255,215,0,0.14)',
+                'gothic-metal':   'rgba(157,0,255,0.14)',
+                'punk-rock':      'rgba(255,20,147,0.14)',
+                'heavy-metal':    'rgba(255,69,0,0.16)',
+                'symphonic-metal':'rgba(65,105,225,0.14)',
+                'dark-ambient':   'rgba(139,0,0,0.14)',
+            };
+            const c = glowColors[themeName] || 'rgba(255,215,0,0.12)';
+            glow.style.background = `radial-gradient(circle, ${c} 0%, transparent 70%)`;
+        }
+        let el = document.getElementById('album-banner-decor');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'album-banner-decor';
+            el.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden;opacity:0;transition:opacity 0.7s ease;';
+            banner.appendChild(el);
+        }
+        const svg = this._albumBannerSVGs[themeName];
+        if (!svg) return;
+        el.style.opacity = '0';
+        el.innerHTML = svg;
+        requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; }));
+        if (!banner.dataset.albumParallaxInit) {
+            banner.dataset.albumParallaxInit = '1';
+            let raf = null;
+            banner.addEventListener('mousemove', (e) => {
+                if (raf) return;
+                raf = requestAnimationFrame(() => {
+                    raf = null;
+                    const decor = document.getElementById('album-banner-decor');
+                    if (!decor) return;
+                    const r = banner.getBoundingClientRect();
+                    const dx = (e.clientX - r.left - r.width / 2) / r.width;
+                    const dy = (e.clientY - r.top - r.height / 2) / r.height;
+                    decor.querySelectorAll('[data-layer="bg"]').forEach(g  => { g.style.transform = `translate(${dx*6}px,${dy*4}px)`;  });
+                    decor.querySelectorAll('[data-layer="mid"]').forEach(g => { g.style.transform = `translate(${dx*14}px,${dy*10}px)`; });
+                    decor.querySelectorAll('[data-layer="fg"]').forEach(g  => { g.style.transform = `translate(${dx*22}px,${dy*16}px)`; });
+                });
+            }, { passive: true });
+            banner.addEventListener('mouseleave', () => {
+                const decor = document.getElementById('album-banner-decor');
+                if (!decor) return;
+                decor.querySelectorAll('[data-layer]').forEach(g => { g.style.transform = ''; });
+            });
+        }
+    }
+
     get _heroThemeSVGs() {
         return {
 
@@ -1582,6 +1639,335 @@ class AdvancedThemeSystem {
   <path d="M0,0 Q55,-35 88,22 Q121,79 66,112 Q11,145 34,178 Q57,211 112,198"/>
   <path d="M112,198 Q145,186 133,152 Q121,118 88,130 Q55,142 68,178"/>
   <path d="M0,0 Q-22,32 12,56 Q46,80 34,114"/>
+</g>
+</svg>`
+
+        };
+    }
+
+
+    get _albumBannerSVGs() {
+        return {
+
+'power-metal': `<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 1440 500" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes abpm-p{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes abpm-r{0%,100%{opacity:.08}50%{opacity:.16}}
+@keyframes abpm-c{0%,100%{opacity:.2}50%{opacity:.38}}
+.abpm-glow{animation:abpm-p 8s ease-in-out infinite}
+.abpm-rays{animation:abpm-r 10s ease-in-out infinite 1s}
+.abpm-crown{animation:abpm-c 5s ease-in-out infinite}
+[data-layer]{transition:transform .18s ease-out}
+</style>
+<defs>
+  <radialGradient id="abpm-bg" cx="50%" cy="50%" r="55%">
+    <stop offset="0%" stop-color="#FFD700" stop-opacity="0.14"/>
+    <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<g data-layer="bg"><ellipse class="abpm-glow" cx="720" cy="250" rx="680" ry="260" fill="url(#abpm-bg)"/></g>
+<g data-layer="bg" class="abpm-rays" stroke="#FFD700" stroke-opacity="0.055" stroke-width="1.2" fill="none">
+  <line x1="720" y1="560" x2="80" y2="-20"/><line x1="720" y1="560" x2="260" y2="-20"/>
+  <line x1="720" y1="560" x2="460" y2="-20"/><line x1="720" y1="560" x2="660" y2="-20"/>
+  <line x1="720" y1="560" x2="780" y2="-20"/><line x1="720" y1="560" x2="980" y2="-20"/>
+  <line x1="720" y1="560" x2="1180" y2="-20"/><line x1="720" y1="560" x2="1360" y2="-20"/>
+</g>
+<g data-layer="mid" transform="translate(48,15)" opacity="0.26" fill="#FFD700">
+  <polygon points="9,0 14,320 9,345 4,320"/>
+  <rect x="-18" y="98" width="54" height="9" rx="2.5"/>
+  <rect x="6" y="107" width="6" height="62" fill="#8B6914"/>
+  <circle cx="9" cy="5" r="4.5" fill="#FFF8DC"/>
+</g>
+<g data-layer="mid" transform="translate(1392,15) scale(-1,1)" opacity="0.26" fill="#FFD700">
+  <polygon points="9,0 14,320 9,345 4,320"/>
+  <rect x="-18" y="98" width="54" height="9" rx="2.5"/>
+  <rect x="6" y="107" width="6" height="62" fill="#8B6914"/>
+  <circle cx="9" cy="5" r="4.5" fill="#FFF8DC"/>
+</g>
+<g data-layer="fg" class="abpm-crown" transform="translate(660,8)" opacity="0.2" fill="#FFD700">
+  <polygon points="60,0 120,0 108,32 88,18 72,36 60,14 48,36 32,18 12,32 0,0"/>
+  <rect x="12" y="32" width="96" height="12" rx="3"/>
+  <circle cx="28" cy="16" r="3.5" fill="#FF6600"/>
+  <circle cx="60" cy="6" r="3.5" fill="#FF6600"/>
+  <circle cx="92" cy="16" r="3.5" fill="#FF6600"/>
+</g>
+<g data-layer="fg" stroke="#FFD700" stroke-opacity="0.28" fill="none" stroke-width="1.5">
+  <path d="M12,12 L90,12 M12,12 L12,90"/><path d="M26,26 L72,26 M26,26 L26,72"/>
+  <path d="M1428,12 L1350,12 M1428,12 L1428,90"/><path d="M1414,26 L1368,26 M1414,26 L1414,72"/>
+  <path d="M12,488 L90,488 M12,488 L12,410"/><path d="M26,474 L72,474 M26,474 L26,428"/>
+  <path d="M1428,488 L1350,488 M1428,488 L1428,410"/><path d="M1414,474 L1368,474 M1414,474 L1414,428"/>
+</g>
+</svg>`,
+
+'gothic-metal': `<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 1440 500" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes abgm-p{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes abgm-bat{0%,100%{opacity:.2}55%{opacity:.44}}
+@keyframes abgm-moon{0%,100%{opacity:.32}50%{opacity:.14}}
+.abgm-glow{animation:abgm-p 9s ease-in-out infinite}
+.abgm-bat1{animation:abgm-bat 5.5s ease-in-out infinite}
+.abgm-bat2{animation:abgm-bat 6.8s ease-in-out infinite 1s}
+.abgm-bat3{animation:abgm-bat 4.8s ease-in-out infinite .5s}
+.abgm-moon{animation:abgm-moon 7s ease-in-out infinite}
+[data-layer]{transition:transform .18s ease-out}
+</style>
+<defs>
+  <radialGradient id="abgm-bg" cx="50%" cy="45%" r="55%">
+    <stop offset="0%" stop-color="#9D00FF" stop-opacity="0.16"/>
+    <stop offset="100%" stop-color="#9D00FF" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<g data-layer="bg"><ellipse class="abgm-glow" cx="720" cy="225" rx="660" ry="240" fill="url(#abgm-bg)"/></g>
+<g data-layer="mid" transform="translate(30,-5)" opacity="0.1" stroke="#9D00FF" stroke-width="2" fill="none">
+  <path d="M0,505 L0,220 Q0,40 120,40 Q240,40 240,220 L240,505"/>
+  <path d="M30,505 L30,224 Q30,70 120,70 Q210,70 210,224 L210,505"/>
+  <circle cx="120" cy="110" r="65"/><circle cx="120" cy="110" r="44"/><circle cx="120" cy="110" r="22"/>
+  <line x1="55" y1="110" x2="185" y2="110"/><line x1="120" y1="45" x2="120" y2="175"/>
+  <line x1="74" y1="64" x2="166" y2="156"/><line x1="166" y1="64" x2="74" y2="156"/>
+</g>
+<g data-layer="bg" class="abgm-moon" transform="translate(1285,18)" opacity="0.32">
+  <circle cx="62" cy="62" r="60" fill="#14001e"/>
+  <circle cx="80" cy="46" r="55" fill="#060608"/>
+</g>
+<g data-layer="fg" fill="#9D00FF">
+  <g class="abgm-bat1" transform="translate(1110,105) rotate(-12) scale(1.3)" opacity="0.22">
+    <path d="M18,8 Q0,-2 -32,4 Q-14,16 -2,18 Q-8,28 -20,32 Q-4,30 8,20 Q12,16 18,8"/>
+    <path d="M18,8 Q36,-2 68,4 Q50,16 38,18 Q44,28 56,32 Q40,30 28,20 Q24,16 18,8"/>
+    <ellipse cx="18" cy="8" rx="7" ry="9"/>
+  </g>
+  <g class="abgm-bat2" transform="translate(1200,55) rotate(8) scale(0.9)" opacity="0.22">
+    <path d="M18,8 Q0,-2 -32,4 Q-14,16 -2,18 Q-8,28 -20,32 Q-4,30 8,20 Q12,16 18,8"/>
+    <path d="M18,8 Q36,-2 68,4 Q50,16 38,18 Q44,28 56,32 Q40,30 28,20 Q24,16 18,8"/>
+    <ellipse cx="18" cy="8" rx="7" ry="9"/>
+  </g>
+  <g class="abgm-bat3" transform="translate(1058,178) rotate(-5) scale(0.7)" opacity="0.22">
+    <path d="M18,8 Q0,-2 -32,4 Q-14,16 -2,18 Q-8,28 -20,32 Q-4,30 8,20 Q12,16 18,8"/>
+    <path d="M18,8 Q36,-2 68,4 Q50,16 38,18 Q44,28 56,32 Q40,30 28,20 Q24,16 18,8"/>
+    <ellipse cx="18" cy="8" rx="7" ry="9"/>
+  </g>
+</g>
+<g data-layer="bg" stroke="#9D00FF" stroke-opacity="0.12" fill="none" stroke-width="1.2">
+  <path d="M0,470 Q180,450 360,470 Q540,490 720,470 Q900,450 1080,470 Q1260,490 1440,470"/>
+  <path d="M0,488 Q180,468 360,488 Q540,508 720,488 Q900,468 1080,488 Q1260,508 1440,488"/>
+</g>
+<g data-layer="fg" stroke="#9D00FF" stroke-opacity="0.22" fill="none" stroke-width="1.5">
+  <circle cx="30" cy="465" r="28"/><circle cx="30" cy="465" r="18"/>
+  <line x1="30" y1="437" x2="30" y2="493"/><line x1="2" y1="465" x2="58" y2="465"/>
+  <circle cx="1410" cy="465" r="28"/><circle cx="1410" cy="465" r="18"/>
+  <line x1="1410" y1="437" x2="1410" y2="493"/><line x1="1382" y1="465" x2="1438" y2="465"/>
+</g>
+</svg>`,
+
+'punk-rock': `<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 1440 500" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes abpr-fl{0%,82%,100%{opacity:.28}88%{opacity:.55}95%{opacity:.32}}
+@keyframes abpr-fr{0%,78%,100%{opacity:.28}86%{opacity:.52}93%{opacity:.3}}
+@keyframes abpr-tw{0%,100%{opacity:.45}50%{opacity:.9}}
+@keyframes abpr-a{0%,100%{opacity:.08}50%{opacity:.15}}
+.abpr-bolt-l{animation:abpr-fl 2.8s ease-in-out infinite}
+.abpr-bolt-r{animation:abpr-fr 3.2s ease-in-out infinite .4s}
+.abpr-star1{animation:abpr-tw 1.7s ease-in-out infinite}
+.abpr-star2{animation:abpr-tw 2.2s ease-in-out infinite .5s}
+.abpr-star3{animation:abpr-tw 1.9s ease-in-out infinite 1s}
+.abpr-anarchy{animation:abpr-a 5s ease-in-out infinite}
+[data-layer]{transition:transform .18s ease-out}
+</style>
+<g data-layer="bg" stroke="#FF1493" stroke-opacity="0.04" stroke-width="1" fill="none">
+  <line x1="0" y1="0" x2="0" y2="500"/><line x1="144" y1="0" x2="144" y2="500"/>
+  <line x1="288" y1="0" x2="288" y2="500"/><line x1="432" y1="0" x2="432" y2="500"/>
+  <line x1="576" y1="0" x2="576" y2="500"/><line x1="720" y1="0" x2="720" y2="500"/>
+  <line x1="864" y1="0" x2="864" y2="500"/><line x1="1008" y1="0" x2="1008" y2="500"/>
+  <line x1="1152" y1="0" x2="1152" y2="500"/><line x1="1296" y1="0" x2="1296" y2="500"/>
+  <line x1="0" y1="125" x2="1440" y2="125"/><line x1="0" y1="250" x2="1440" y2="250"/>
+  <line x1="0" y1="375" x2="1440" y2="375"/>
+</g>
+<polygon class="abpr-bolt-l" data-layer="mid" points="0,500 0,430 72,10 118,10 46,500" fill="#FF1493" opacity="0.28"/>
+<polygon class="abpr-bolt-r" data-layer="mid" points="1440,500 1440,430 1368,10 1322,10 1394,500" fill="#00FFFF" opacity="0.28"/>
+<g data-layer="fg" class="abpr-anarchy" transform="translate(148,178)" opacity="0.08" stroke="#FF1493" stroke-width="5" fill="none">
+  <path d="M60,0 L0,120 L120,120 Z"/><line x1="16" y1="78" x2="104" y2="78"/>
+</g>
+<g data-layer="fg" fill="#FFFF00">
+  <polygon class="abpr-star1" points="188,418 192,430 204,430 195,438 198,450 188,442 178,450 181,438 172,430 184,430" opacity="0.45"/>
+  <polygon class="abpr-star2" points="1262,52 1265,61 1274,61 1267,67 1270,76 1262,70 1254,76 1257,67 1250,61 1259,61" opacity="0.45"/>
+  <polygon class="abpr-star3" points="240,68 242,75 250,75 244,80 246,87 240,83 234,87 236,80 230,75 238,75" opacity="0.45"/>
+</g>
+<polygon data-layer="bg" points="0,0 0,22 60,8 120,22 180,6 240,22 300,8 360,22 420,6 480,22 540,8 600,22 660,6 720,22 780,6 840,22 900,8 960,22 1020,6 1080,22 1140,8 1200,22 1260,6 1320,22 1380,8 1440,22 1440,0" fill="#FF1493" opacity="0.16"/>
+<polygon data-layer="bg" points="0,500 0,478 60,492 120,478 180,494 240,478 300,492 360,478 420,494 480,478 540,492 600,478 660,494 720,478 780,494 840,478 900,492 960,478 1020,494 1080,478 1140,492 1200,478 1260,494 1320,478 1380,492 1440,478 1440,500" fill="#00FFFF" opacity="0.12"/>
+<g data-layer="fg" opacity="0.2" stroke="#00FFFF" stroke-width="1.5" fill="none">
+  <g transform="translate(52,428)"><path d="M18,0 L0,36 L36,36 Z"/><line x1="5" y1="24" x2="31" y2="24"/><circle cx="18" cy="18" r="22"/></g>
+  <g transform="translate(1350,42)"><path d="M18,0 L0,36 L36,36 Z"/><line x1="5" y1="24" x2="31" y2="24"/><circle cx="18" cy="18" r="22"/></g>
+</g>
+</svg>`,
+
+'heavy-metal': `<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 1440 500" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes abhm-fl{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.07) translateY(-7px)}}
+@keyframes abhm-sp{0%,100%{opacity:.42}50%{opacity:.76}}
+@keyframes abhm-g{0%,100%{opacity:1}50%{opacity:.58}}
+.abhm-fl{animation:abhm-fl 2.6s ease-in-out infinite;transform-box:fill-box;transform-origin:bottom center}
+.abhm-fr{animation:abhm-fl 2.6s ease-in-out infinite .5s;transform-box:fill-box;transform-origin:bottom center}
+.abhm-fc{animation:abhm-fl 2s ease-in-out infinite .2s;transform-box:fill-box;transform-origin:bottom center}
+.abhm-sp{animation:abhm-sp 1.4s ease-in-out infinite}
+.abhm-glow{animation:abhm-g 4s ease-in-out infinite}
+[data-layer]{transition:transform .18s ease-out}
+</style>
+<defs>
+  <radialGradient id="abhm-bg" cx="50%" cy="100%" r="65%">
+    <stop offset="0%" stop-color="#FF4500" stop-opacity="0.22"/>
+    <stop offset="55%" stop-color="#CC0000" stop-opacity="0.08"/>
+    <stop offset="100%" stop-color="transparent"/>
+  </radialGradient>
+</defs>
+<g data-layer="bg"><ellipse class="abhm-glow" cx="720" cy="520" rx="720" ry="300" fill="url(#abhm-bg)"/></g>
+<g data-layer="mid" opacity="0.36" fill="#FF4500">
+  <path class="abhm-fl" d="M80,500 Q68,440 100,410 Q82,372 118,338 Q108,388 135,402 Q152,368 142,320 Q168,385 158,418 Q185,390 175,355 Q200,412 188,450 Q212,422 200,378 Q222,435 210,500 Z"/>
+  <path class="abhm-fc" d="M40,500 Q30,462 55,440 Q40,406 68,384 Q60,424 80,432 Q92,404 85,375 Q104,418 96,448 Q110,432 106,405 Q118,445 109,500 Z" fill="#CC0000" opacity="0.5"/>
+</g>
+<g data-layer="mid" opacity="0.36" fill="#FF4500" transform="translate(1440,0) scale(-1,1)">
+  <path class="abhm-fr" d="M80,500 Q68,440 100,410 Q82,372 118,338 Q108,388 135,402 Q152,368 142,320 Q168,385 158,418 Q185,390 175,355 Q200,412 188,450 Q212,422 200,378 Q222,435 210,500 Z"/>
+  <path class="abhm-fc" d="M40,500 Q30,462 55,440 Q40,406 68,384 Q60,424 80,432 Q92,404 85,375 Q104,418 96,448 Q110,432 106,405 Q118,445 109,500 Z" fill="#CC0000" opacity="0.5"/>
+</g>
+<g data-layer="fg" class="abhm-sp" fill="#FFA500" opacity="0.42">
+  <circle cx="205" cy="360" r="2.5"/><circle cx="165" cy="325" r="2"/><circle cx="130" cy="348" r="2.5"/>
+  <circle cx="1235" cy="360" r="2.5"/><circle cx="1275" cy="325" r="2"/><circle cx="1310" cy="348" r="2.5"/>
+  <circle cx="250" cy="308" r="1.8"/><circle cx="1190" cy="308" r="1.8"/>
+</g>
+<g data-layer="fg" stroke="#CC0000" stroke-opacity="0.25" fill="none">
+  <path d="M15,15 L95,15 M15,15 L15,95" stroke-width="2.5"/>
+  <path d="M30,30 L75,30 M30,30 L30,75" stroke-width="1.5"/>
+  <path d="M1425,15 L1345,15 M1425,15 L1425,95" stroke-width="2.5"/>
+  <path d="M1410,30 L1365,30 M1410,30 L1410,75" stroke-width="1.5"/>
+</g>
+</svg>`,
+
+'symphonic-metal': `<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 1440 500" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes absm-glow{0%,100%{opacity:1}50%{opacity:.52}}
+@keyframes absm-tw{0%,100%{opacity:.42}50%{opacity:.9}}
+@keyframes absm-frame{0%,100%{opacity:1}50%{opacity:.55}}
+.absm-glow{animation:absm-glow 9s ease-in-out infinite}
+.absm-clef{animation:absm-glow 9s ease-in-out infinite}
+.absm-notes{animation:absm-glow 7s ease-in-out infinite 2s}
+.absm-star1{animation:absm-tw 2s ease-in-out infinite}
+.absm-star2{animation:absm-tw 2.8s ease-in-out infinite .5s}
+.absm-star3{animation:absm-tw 2.3s ease-in-out infinite 1s}
+.absm-star4{animation:absm-tw 3.1s ease-in-out infinite 1.5s}
+.absm-frame{animation:absm-frame 12s ease-in-out infinite}
+[data-layer]{transition:transform .18s ease-out}
+</style>
+<defs>
+  <radialGradient id="absm-bg" cx="50%" cy="40%" r="52%">
+    <stop offset="0%" stop-color="#4169E1" stop-opacity="0.18"/>
+    <stop offset="100%" stop-color="#4169E1" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<g data-layer="bg"><ellipse class="absm-glow" cx="720" cy="200" rx="660" ry="240" fill="url(#absm-bg)"/></g>
+<g data-layer="bg" class="absm-frame" stroke="#4169E1" stroke-opacity="0.2" fill="none" stroke-width="1.5">
+  <path d="M80,45 Q240,24 400,45 Q480,56 540,42 Q600,28 660,42 Q720,56 780,42 Q840,28 900,42 Q960,56 1040,45 Q1200,24 1360,45"/>
+  <path d="M80,58 Q240,37 400,58 Q480,69 540,55 Q600,41 660,55 Q720,69 780,55 Q840,41 900,55 Q960,69 1040,58 Q1200,37 1360,58"/>
+  <path d="M80,455 Q240,434 400,455 Q480,466 540,452 Q600,438 660,452 Q720,466 780,452 Q840,438 900,452 Q960,466 1040,455 Q1200,434 1360,455"/>
+  <path d="M80,468 Q240,447 400,468 Q480,479 540,465 Q600,451 660,465 Q720,479 780,465 Q840,451 900,465 Q960,479 1040,468 Q1200,447 1360,468"/>
+  <path d="M80,45 Q52,78 64,118 Q50,155 64,185"/>
+  <path d="M1360,45 Q1388,78 1376,118 Q1390,155 1376,185"/>
+  <path d="M80,455 Q52,422 64,382 Q50,345 64,315"/>
+  <path d="M1360,455 Q1388,422 1376,382 Q1390,345 1376,315"/>
+</g>
+<g data-layer="mid" class="absm-clef" transform="translate(40,80)" opacity="0.22" stroke="#4169E1" stroke-width="2.5" fill="none">
+  <path d="M38,10 Q68,8 68,38 Q68,72 38,90 Q8,108 8,148 Q8,188 36,205 Q64,222 64,260 Q64,318 28,340"/>
+  <circle cx="24" cy="350" r="22" fill="#4169E1" fill-opacity="0.1"/>
+  <line x1="24" y1="372" x2="24" y2="395"/>
+  <line x1="24" y1="328" x2="24" y2="180"/>
+</g>
+<g data-layer="mid" class="absm-notes" transform="translate(950,165)" opacity="0.18" stroke="#4169E1" fill="none">
+  <line x1="0" y1="0" x2="360" y2="0" stroke-width="1.2"/>
+  <line x1="0" y1="16" x2="360" y2="16" stroke-width="1.2"/>
+  <line x1="0" y1="32" x2="360" y2="32" stroke-width="1.2"/>
+  <line x1="0" y1="48" x2="360" y2="48" stroke-width="1.2"/>
+  <line x1="0" y1="64" x2="360" y2="64" stroke-width="1.2"/>
+  <ellipse cx="50" cy="8" rx="10" ry="7" fill="#4169E1" fill-opacity="0.5" stroke="none"/>
+  <line x1="60" y1="8" x2="60" y2="-48" stroke-width="1.2"/>
+  <ellipse cx="110" cy="24" rx="10" ry="7" fill="#4169E1" fill-opacity="0.5" stroke="none"/>
+  <line x1="120" y1="24" x2="120" y2="-32" stroke-width="1.2"/>
+  <path d="M120,-32 Q142,-20 136,-5" stroke-width="1.2"/>
+  <ellipse cx="170" cy="8" rx="10" ry="7" fill="#4169E1" fill-opacity="0.5" stroke="none"/>
+  <line x1="180" y1="8" x2="180" y2="-48" stroke-width="1.2"/>
+  <path d="M180,-48 Q202,-38 197,-22" stroke-width="1.2"/>
+</g>
+<g data-layer="fg" fill="#C0C0C0" opacity="0.42">
+  <path class="absm-star1" d="M140,115 L142,122 L150,122 L144,127 L146,134 L140,129 L134,134 L136,127 L130,122 L138,122 Z"/>
+  <path class="absm-star2" d="M1310,195 L1312,202 L1320,202 L1314,207 L1316,214 L1310,209 L1304,214 L1306,207 L1300,202 L1308,202 Z"/>
+  <path class="absm-star3" d="M168,398 L170,405 L178,405 L172,410 L174,417 L168,412 L162,417 L164,410 L158,405 L166,405 Z"/>
+  <path class="absm-star4" d="M1275,398 L1277,405 L1285,405 L1279,410 L1281,417 L1275,412 L1269,417 L1271,410 L1265,405 L1273,405 Z"/>
+  <circle cx="420" cy="88" r="2.2"/><circle cx="700" cy="72" r="2.2"/><circle cx="820" cy="112" r="2.2"/>
+</g>
+</svg>`,
+
+'dark-ambient': `<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 1440 500" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes abda-tw{0%,100%{opacity:.38}50%{opacity:.82}}
+@keyframes abda-moon{0%,100%{opacity:.32}50%{opacity:.14}}
+@keyframes abda-q{0%,100%{opacity:.26}50%{opacity:.44}}
+@keyframes abda-b{0%,100%{opacity:.065}50%{opacity:.13}}
+.abda-star1{animation:abda-tw 2.2s ease-in-out infinite}
+.abda-star2{animation:abda-tw 3s ease-in-out infinite .6s}
+.abda-star3{animation:abda-tw 1.9s ease-in-out infinite 1.2s}
+.abda-star4{animation:abda-tw 2.7s ease-in-out infinite .3s}
+.abda-star5{animation:abda-tw 3.4s ease-in-out infinite .9s}
+.abda-moon{animation:abda-moon 7s ease-in-out infinite}
+.abda-quill{animation:abda-q 8s ease-in-out infinite}
+.abda-book{animation:abda-b 9s ease-in-out infinite}
+[data-layer]{transition:transform .18s ease-out}
+</style>
+<defs>
+  <radialGradient id="abda-bg" cx="50%" cy="40%" r="52%">
+    <stop offset="0%" stop-color="#8B0000" stop-opacity="0.14"/>
+    <stop offset="100%" stop-color="#8B0000" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<g data-layer="bg"><ellipse cx="720" cy="200" rx="660" ry="240" fill="url(#abda-bg)"/></g>
+<g data-layer="bg" class="abda-moon" transform="translate(1288,18)" opacity="0.32">
+  <circle cx="62" cy="62" r="60" fill="#12000a"/>
+  <circle cx="80" cy="46" r="55" fill="#060608"/>
+</g>
+<g data-layer="mid" fill="#8B0000" opacity="0.38">
+  <circle class="abda-star1" cx="240" cy="72" r="2.5"/>
+  <circle class="abda-star2" cx="308" cy="48" r="2"/>
+  <circle class="abda-star3" cx="378" cy="80" r="2.5"/>
+  <circle class="abda-star4" cx="448" cy="44" r="2"/>
+  <circle class="abda-star5" cx="512" cy="68" r="2"/>
+  <circle cx="580" cy="36" r="2.5"/>
+  <line x1="240" y1="72" x2="308" y2="48" stroke="#8B0000" stroke-width="0.6" opacity="0.5"/>
+  <line x1="308" y1="48" x2="378" y2="80" stroke="#8B0000" stroke-width="0.6" opacity="0.5"/>
+  <line x1="378" y1="80" x2="448" y2="44" stroke="#8B0000" stroke-width="0.6" opacity="0.5"/>
+  <line x1="448" y1="44" x2="512" y2="68" stroke="#8B0000" stroke-width="0.6" opacity="0.5"/>
+  <line x1="512" y1="68" x2="580" y2="36" stroke="#8B0000" stroke-width="0.6" opacity="0.5"/>
+</g>
+<g data-layer="mid" fill="#8B0000" opacity="0.38">
+  <circle class="abda-star1" cx="870" cy="58" r="2"/>
+  <circle class="abda-star3" cx="940" cy="82" r="2.5"/>
+  <circle class="abda-star2" cx="1010" cy="46" r="2"/>
+  <circle class="abda-star4" cx="1078" cy="72" r="2.5"/>
+  <circle class="abda-star5" cx="1145" cy="38" r="2"/>
+  <line x1="870" y1="58" x2="940" y2="82" stroke="#8B0000" stroke-width="0.6" opacity="0.5"/>
+  <line x1="940" y1="82" x2="1010" y2="46" stroke="#8B0000" stroke-width="0.6" opacity="0.5"/>
+  <line x1="1010" y1="46" x2="1078" y2="72" stroke="#8B0000" stroke-width="0.6" opacity="0.5"/>
+  <line x1="1078" y1="72" x2="1145" y2="38" stroke="#8B0000" stroke-width="0.6" opacity="0.5"/>
+</g>
+<g data-layer="fg" class="abda-quill" transform="translate(38,60)" opacity="0.26">
+  <path d="M35,0 Q68,32 44,90 Q20,148 10,250 Q0,312 6,400" stroke="#8B0000" stroke-width="2.2" fill="none"/>
+  <path d="M35,0 Q10,32 8,68 M33,22 Q8,54 6,92 M31,45 Q6,77 4,115 M29,68 Q4,100 2,138" stroke="#6B4513" stroke-width="0.8" fill="none" opacity="0.6"/>
+  <path d="M35,0 Q58,32 62,68 M37,22 Q60,54 66,92 M39,45 Q62,77 68,115 M41,68 Q64,100 70,138" stroke="#6B4513" stroke-width="0.8" fill="none" opacity="0.6"/>
+  <path d="M6,400 L0,422 L12,416 L4,438 L14,432 L8,402" fill="#444" stroke="none" opacity="0.45"/>
+</g>
+<g data-layer="mid" class="abda-book" transform="translate(1025,360)" opacity="0.07" stroke="#8B0000" stroke-width="1.5" fill="none">
+  <path d="M185,-42 Q185,-60 140,-66 Q95,-72 50,-60 Q5,-48 -20,-38 Q5,-28 50,-16 Q95,-4 140,-10 Q185,-16 185,-42"/>
+  <path d="M185,-42 Q185,-60 230,-66 Q275,-72 320,-60 Q365,-48 390,-38 Q365,-28 320,-16 Q275,-4 230,-10 Q185,-16 185,-42"/>
+  <line x1="18" y1="-54" x2="168" y2="-44"/><line x1="18" y1="-44" x2="168" y2="-34"/>
+  <line x1="202" y1="-54" x2="352" y2="-44"/><line x1="202" y1="-44" x2="352" y2="-34"/>
+</g>
+<g data-layer="fg" opacity="0.2" fill="#8B0000">
+  <path d="M0,22 Q22,0 56,6 Q90,12 100,35 Q110,58 88,70 Q66,82 44,75 Q32,90 20,84 Q8,96 3,80 Q-4,64 8,52 Q3,38 0,22" transform="translate(30,390)"/>
+  <circle cx="112" cy="410" r="3.5"/>
 </g>
 </svg>`
 
