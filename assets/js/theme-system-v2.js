@@ -516,9 +516,8 @@ class AdvancedThemeSystem {
         
         // Применяем текущую тему
         this.applyTheme(this.currentTheme);
-        
-        // Следим за изменениями DOM
-        this.observeDOM();
+
+        // observeDOM() отключён — MutationObserver на body subtree слишком дорогой
         
         // Синхронизация между вкладками
         window.addEventListener('storage', (e) => {
@@ -604,24 +603,30 @@ class AdvancedThemeSystem {
     // ═══════════════════════════════════════════════════════════════
     
     loadAllFonts() {
-        const fontsToLoad = [
-            'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;700;800;900&family=Cinzel+Decorative:wght@700;900&display=swap',
-            'https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Cinzel:wght@700;900&display=swap',
-            'https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto+Condensed:wght@400;700&family=Bebas+Neue&display=swap',
-            'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap',
-            'https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Bungee&family=Rajdhani:wght@400;600;700&family=Exo+2:wght@400;700&display=swap',
-            'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&display=swap',
-            'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Lato:wght@300;400;700&display=swap'
-        ];
-        
-        fontsToLoad.forEach(url => {
-            if (!document.querySelector(`link[href="${url}"]`)) {
-                const link = document.createElement('link');
-                link.rel = 'stylesheet';
-                link.href = url;
-                document.head.appendChild(link);
-            }
-        });
+        // Загружаем только шрифты текущей темы (не все 7 семейств сразу)
+        const theme = this.themes[this.currentTheme];
+        if (!theme) return;
+        this._loadThemeFonts(theme.fonts);
+    }
+
+    _loadThemeFonts(fonts) {
+        // Строим один URL из двух шрифтов темы
+        const families = [fonts.heading, fonts.body]
+            .join(',')
+            .match(/'([^']+)'/g)
+            ?.map(f => f.replace(/'/g, '').replace(/ /g, '+'))
+            .filter((v, i, a) => a.indexOf(v) === i) || [];
+
+        if (!families.length) return;
+
+        const url = `https://fonts.googleapis.com/css2?family=${families.map(f => `${f}:wght@400;700`).join('&family=')}&display=swap`;
+        if (!document.querySelector(`link[data-theme-font="${this.currentTheme}"]`)) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = url;
+            link.dataset.themeFont = this.currentTheme;
+            document.head.appendChild(link);
+        }
     }
     
     // ═══════════════════════════════════════════════════════════════
@@ -637,7 +642,8 @@ class AdvancedThemeSystem {
         // Применяем CSS переменные
         this.applyCSS(theme);
         
-        // Применяем шрифты
+        // Подгружаем шрифты только этой темы (если ещё не загружены)
+        this._loadThemeFonts(theme.fonts);
         this.applyFonts(theme.fonts);
         
         // Применяем фон
@@ -683,9 +689,12 @@ class AdvancedThemeSystem {
                 body, p { font-size: clamp(14px, 2.5vw, 16px) !important; }
             }
         `;
-        document.head.appendChild(style);
+        // appendChild только если элемент ещё не в DOM (иначе уже там по id)
+        if (!document.getElementById('theme-fonts')) {
+            document.head.appendChild(style);
+        }
     }
-    
+
     applyBackground(theme) {
         document.body.style.background = theme.css['--bg-gradient'];
         
@@ -736,17 +745,13 @@ class AdvancedThemeSystem {
                 font-weight: bold;
                 text-transform: uppercase;
                 letter-spacing: 1.5px;
-                background: linear-gradient(135deg, var(--primary), var(--secondary));
-                color: #000;
-                border: 2px solid var(--primary);
-                padding: 12px 28px;
                 border-radius: var(--radius);
                 cursor: pointer;
                 transition: transform 0.2s ease,
                             box-shadow 0.2s ease,
                             filter 0.2s ease;
                 transform: translateZ(0);
-                animation: ${theme.animations.buttonPulse};
+                /* animation убрана — она вызывала постоянный GPU repaint на всех кнопках */
             }
 
             button:hover, .btn:hover {
@@ -754,13 +759,11 @@ class AdvancedThemeSystem {
                 box-shadow: var(--glow);
                 filter: brightness(1.2);
             }
-            
-            /* === НАВИГАЦИЯ === */
-            .navbar, .site-nav, header {
-                backdrop-filter: blur(15px);
-                background: var(--bg-card) !important;
-                border-bottom: var(--border-width) solid var(--border);
-            }
+
+            /* === НАВИГАЦИЯ ===
+               Хедер НЕ переопределяем — он управляется header-epic.css.
+               Переопределение border-bottom с переменной шириной (2px/3px)
+               вызывало прыжки layout при смене темы. */
             
             .nav-link {
                 font-family: ${theme.fonts.body};
@@ -1006,17 +1009,23 @@ class AdvancedThemeSystem {
             return;
         }
         
-        const observer = new IntersectionObserver((entries) => {
+        // Переиспользуем один observer вместо создания нового при каждой смене темы
+        if (this._cardObserver) {
+            this._cardObserver.disconnect();
+        }
+
+        const animName = theme.animations.cardAppear;
+        this._cardObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.style.animation = `${theme.animations.cardAppear} forwards`;
-                    observer.unobserve(entry.target);
+                    entry.target.style.animation = `${animName} forwards`;
+                    this._cardObserver.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.1 });
-        
+
         document.querySelectorAll('.card, .panel, .album-showcase-card, .blog-card').forEach(el => {
-            observer.observe(el);
+            this._cardObserver.observe(el);
         });
     }
     
