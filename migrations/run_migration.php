@@ -68,6 +68,33 @@ try {
         echo "✓ Таблица TrackReactions уже существует\n\n";
     }
 
+    // 3. Создаём таблицу SiteSettings (настройки сайта / шапки)
+    $stmt = $pdo->query("SHOW TABLES LIKE 'SiteSettings'");
+    if ($stmt->rowCount() == 0) {
+        echo "Создание таблицы SiteSettings...\n";
+        $pdo->exec("CREATE TABLE `SiteSettings` (
+          `id`         INT AUTO_INCREMENT PRIMARY KEY,
+          `setting_key`   VARCHAR(100) NOT NULL UNIQUE COMMENT 'Ключ настройки',
+          `setting_value` TEXT NULL COMMENT 'Значение настройки',
+          `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        COMMENT='Настройки сайта: шапка, герой-баннер и пр.'");
+
+        // Дефолтные значения для hero-секции
+        $pdo->exec("INSERT INTO `SiteSettings` (`setting_key`, `setting_value`) VALUES
+          ('hero_title',       '🎸 Перекрестки Времен'),
+          ('hero_subtitle',    'Historycal Heavy Metal'),
+          ('hero_description', 'Новый альбом. Окунитесь в перекрестки истории, которые мир не забыл'),
+          ('hero_btn1_text',   '▶️ Слушать альбом'),
+          ('hero_btn1_url',    '#albums'),
+          ('hero_btn2_text',   '📖 О проекте'),
+          ('hero_btn2_url',    '/pages/about.php')
+        ");
+        echo "✓ Таблица SiteSettings создана с дефолтными значениями\n\n";
+    } else {
+        echo "✓ Таблица SiteSettings уже существует\n\n";
+    }
+
     echo "Миграция успешно завершена!\n";
 
 } catch (PDOException $e) {
