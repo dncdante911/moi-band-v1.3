@@ -840,14 +840,15 @@ class EpicPlayer {
     updateProgress() {
         const media = this.getCurrentMedia();
         if (!media) return;
-        
-        const percent = media.duration ? (media.currentTime / media.duration) * 100 : 0;
+
+        const duration = isFinite(media.duration) ? media.duration : 0;
+        const percent = duration ? (media.currentTime / duration) * 100 : 0;
         const fill = this.container?.querySelector('.progress-fill');
         const times = this.container?.querySelectorAll('.time');
-        
+
         if (fill) fill.style.width = percent + '%';
         if (times?.[0]) times[0].textContent = this.formatTime(media.currentTime);
-        if (times?.[1]) times[1].textContent = this.formatTime(media.duration);
+        if (times?.[1]) times[1].textContent = duration ? this.formatTime(duration) : '0:00';
     }
     
     updateDuration() {
@@ -888,7 +889,7 @@ class EpicPlayer {
     }
     
     formatTime(seconds) {
-        if (!seconds || isNaN(seconds)) return '0:00';
+        if (!seconds || isNaN(seconds) || !isFinite(seconds)) return '0:00';
         const mins = Math.floor(seconds / 60);
         const secs = Math.floor(seconds % 60);
         return `${mins}:${secs.toString().padStart(2, '0')}`;
