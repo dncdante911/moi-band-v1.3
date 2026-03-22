@@ -17,8 +17,9 @@
 // Определяем корневую директорию проекта
 define('PROJECT_ROOT', dirname(__DIR__));
 
-header("Cache-Control: public, max-age=31536000"); // Для статики
-header("Cache-Control: no-cache, must-revalidate"); // Для динамики
+// Динамические PHP-страницы не кешируем; статика обслуживается сервером напрямую
+header("Cache-Control: no-cache, must-revalidate");
+header("Pragma: no-cache");
 
 // Функция для загрузки .env файла (если Composer не используется)
 if (!function_exists('load_env')) {

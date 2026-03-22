@@ -27,5 +27,6 @@ cache/
 vendor/
 node_modules/
 
-# User uploads
-uploads/
+# User uploads (игнорируем файлы, но не .htaccess-конфиги в этих папках)
+public/uploads/**
+!public/uploads/**/.htaccess
