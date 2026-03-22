@@ -237,7 +237,7 @@ function calculateAudioDuration($filePath) {
     }
     
     // Попытка 1: ffprobe (самый надёжный способ)
-    if (shell_exec('which ffprobe') !== null) {
+    if (function_exists('shell_exec') && @shell_exec('which ffprobe') !== null) {
         $cmd = "ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 " . escapeshellarg($filePath) . " 2>/dev/null";
         $output = @shell_exec($cmd);
         
@@ -251,7 +251,7 @@ function calculateAudioDuration($filePath) {
     }
     
     // Попытка 2: ffmpeg (если ffprobe не работает)
-    if (shell_exec('which ffmpeg') !== null) {
+    if (function_exists('shell_exec') && @shell_exec('which ffmpeg') !== null) {
         $cmd = "ffmpeg -i " . escapeshellarg($filePath) . " 2>&1 | grep Duration 2>/dev/null";
         $output = @shell_exec($cmd);
         
@@ -560,7 +560,7 @@ function formatTime($seconds) {
                 <div class="form-group">
                     <label for="description">Описание / Краткая информация</label>
                     <textarea id="description" name="description" rows="4">
-<?= htmlspecialchars($track['description']) ?></textarea>
+<?= htmlspecialchars($track['description'] ?? '') ?></textarea>
                 </div>
             </div>
             
@@ -570,7 +570,7 @@ function formatTime($seconds) {
                     <input type="file" id="cover" name="cover" accept="image/jpeg, image/png">
                     <div class="current-file">
                         📷 Текущая обложка: 
-                        <img src="/<?= htmlspecialchars(ltrim($track['coverImagePath'], '/')) ?>" 
+                        <img src="/<?= htmlspecialchars(ltrim($track['coverImagePath'] ?? '', '/')) ?>"
                             alt="Обложка" style="max-width: 100px; margin-top: 5px; border-radius: 4px;">
                     </div>
                 </div>
@@ -579,7 +579,7 @@ function formatTime($seconds) {
                     <label for="fullTrack">Аудиофайл трека (MP3, WAV)</label>
                     <input type="file" id="fullTrack" name="fullTrack" accept=".mp3, .wav">
                     <div class="current-file">
-                        🎵 Текущий файл: <?= htmlspecialchars(basename($track['fullAudioPath'])) ?>
+                        🎵 Текущий файл: <?= htmlspecialchars(basename($track['fullAudioPath'] ?? '')) ?>
                         <?php if ($track['duration'] > 0): ?>
                             <br>⏱️ Длительность: <?= formatTime($track['duration']) ?>
                         <?php endif; ?>
