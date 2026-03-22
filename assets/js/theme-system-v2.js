@@ -754,6 +754,17 @@ class AdvancedThemeSystem {
             // ──────────────────────────────────────────────────────
             'power-metal': `<svg width="100%" height="100%" viewBox="0 0 1440 900"
                 xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes pm-b{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes pm-f{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes pm-c{0%,100%{opacity:.16}50%{opacity:.3}}
+.pm-glow{animation:pm-b 8s ease-in-out infinite}
+.pm-rays{animation:pm-b 10s ease-in-out infinite 2s}
+.pm-sl{animation:pm-f 7s ease-in-out infinite;transform-box:fill-box}
+.pm-sr{animation:pm-f 7s ease-in-out infinite .7s;transform-box:fill-box}
+.pm-crown{animation:pm-c 4s ease-in-out infinite}
+[data-layer]{transition:transform .2s ease-out}
+</style>
                 <defs>
                     <radialGradient id="pm-glow" cx="50%" cy="40%" r="55%">
                         <stop offset="0%" stop-color="#FFD700" stop-opacity="0.12"/>
@@ -803,6 +814,21 @@ class AdvancedThemeSystem {
             // ──────────────────────────────────────────────────────
             'gothic-metal': `<svg width="100%" height="100%" viewBox="0 0 1440 900"
                 xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes gm-b{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes gm-b1{0%,100%{transform:translate(0,0)}50%{transform:translate(18px,-14px)}}
+@keyframes gm-b2{0%,100%{transform:translate(0,0)}50%{transform:translate(-14px,-10px)}}
+@keyframes gm-b3{0%,100%{transform:translate(0,0)}50%{transform:translate(10px,-8px)}}
+@keyframes gm-b4{0%,100%{transform:translate(0,0)}50%{transform:translate(-8px,-12px)}}
+@keyframes gm-m{0%,100%{opacity:.35}50%{opacity:.15}}
+.gm-arch{animation:gm-b 9s ease-in-out infinite}
+.gm-bat1{animation:gm-b1 5.5s ease-in-out infinite;transform-box:fill-box}
+.gm-bat2{animation:gm-b2 6.5s ease-in-out infinite 1s;transform-box:fill-box}
+.gm-bat3{animation:gm-b3 5s ease-in-out infinite .5s;transform-box:fill-box}
+.gm-bat4{animation:gm-b4 7s ease-in-out infinite 1.5s;transform-box:fill-box}
+.gm-moon{animation:gm-m 6s ease-in-out infinite}
+[data-layer]{transition:transform .2s ease-out}
+</style>
                 <defs>
                     <radialGradient id="gm-glow" cx="50%" cy="30%" r="60%">
                         <stop offset="0%" stop-color="#9D00FF" stop-opacity="0.15"/>
@@ -857,6 +883,20 @@ class AdvancedThemeSystem {
             // ──────────────────────────────────────────────────────
             'punk-rock': `<svg width="100%" height="100%" viewBox="0 0 1440 900"
                 xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes pr-fl{0%,85%,100%{opacity:.28}90%{opacity:.52}95%{opacity:.35}}
+@keyframes pr-fr{0%,80%,100%{opacity:.28}87%{opacity:.5}93%{opacity:.32}}
+@keyframes pr-tw{0%,100%{opacity:.45}50%{opacity:.9}}
+@keyframes pr-a{0%,100%{opacity:.07}50%{opacity:.12}}
+.pr-bolt-l{animation:pr-fl 2.8s ease-in-out infinite}
+.pr-bolt-r{animation:pr-fr 3.2s ease-in-out infinite .4s}
+.pr-star1{animation:pr-tw 1.6s ease-in-out infinite}
+.pr-star2{animation:pr-tw 2.1s ease-in-out infinite .4s}
+.pr-star3{animation:pr-tw 1.9s ease-in-out infinite .8s}
+.pr-star4{animation:pr-tw 2.4s ease-in-out infinite 1.2s}
+.pr-anarchy{animation:pr-a 5s ease-in-out infinite}
+[data-layer]{transition:transform .2s ease-out}
+</style>
                 <defs>
                     <linearGradient id="pr-diag" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stop-color="#FF0080" stop-opacity="0.06"/>
@@ -902,6 +942,18 @@ class AdvancedThemeSystem {
             // ──────────────────────────────────────────────────────
             'heavy-metal': `<svg width="100%" height="100%" viewBox="0 0 1440 900"
                 xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes hm-f1{0%,100%{transform:scaleY(1) translateY(0)}50%{transform:scaleY(1.07) translateY(-9px)}}
+@keyframes hm-f2{0%,100%{transform:scaleY(1) translateY(0)}50%{transform:scaleY(1.05) translateY(-6px)}}
+@keyframes hm-sp{0%,100%{opacity:.45}50%{opacity:.75}}
+@keyframes hm-g{0%,100%{opacity:1}50%{opacity:.6}}
+.hm-flame-l{animation:hm-f1 2.6s ease-in-out infinite;transform-box:fill-box;transform-origin:bottom}
+.hm-flame-r{animation:hm-f1 2.6s ease-in-out infinite .5s;transform-box:fill-box;transform-origin:bottom}
+.hm-flame-c{animation:hm-f2 2s ease-in-out infinite .2s;transform-box:fill-box;transform-origin:bottom}
+.hm-spark{animation:hm-sp 1.4s ease-in-out infinite}
+.hm-glow{animation:hm-g 4s ease-in-out infinite}
+[data-layer]{transition:transform .2s ease-out}
+</style>
                 <defs>
                     <radialGradient id="hm-fire" cx="50%" cy="100%" r="70%">
                         <stop offset="0%" stop-color="#FF4500" stop-opacity="0.25"/>
@@ -956,6 +1008,21 @@ class AdvancedThemeSystem {
             // ──────────────────────────────────────────────────────
             'symphonic-metal': `<svg width="100%" height="100%" viewBox="0 0 1440 900"
                 xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes sm-sw{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(2.5deg)}}
+@keyframes sm-fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes sm-tw{0%,100%{opacity:.42}50%{opacity:.9}}
+@keyframes sm-b{0%,100%{opacity:1}50%{opacity:.55}}
+.sm-clef{animation:sm-sw 9s ease-in-out infinite;transform-box:fill-box;transform-origin:bottom center}
+.sm-notes{animation:sm-fl 7s ease-in-out infinite;transform-box:fill-box}
+.sm-star1{animation:sm-tw 2s ease-in-out infinite}
+.sm-star2{animation:sm-tw 2.8s ease-in-out infinite .5s}
+.sm-star3{animation:sm-tw 2.3s ease-in-out infinite 1s}
+.sm-star4{animation:sm-tw 3.1s ease-in-out infinite 1.5s}
+.sm-star5{animation:sm-tw 1.8s ease-in-out infinite .3s}
+.sm-frame{animation:sm-b 8s ease-in-out infinite}
+[data-layer]{transition:transform .2s ease-out}
+</style>
                 <defs>
                     <radialGradient id="sm-glow" cx="30%" cy="50%" r="70%">
                         <stop offset="0%" stop-color="#4169E1" stop-opacity="0.15"/>
@@ -1028,6 +1095,20 @@ class AdvancedThemeSystem {
             // ──────────────────────────────────────────────────────
             'literary-dark': `<svg width="100%" height="100%" viewBox="0 0 1440 900"
                 xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes ld-tw{0%,100%{opacity:.38}50%{opacity:.8}}
+@keyframes ld-m{0%,100%{opacity:.32}50%{opacity:.15}}
+@keyframes ld-q{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+@keyframes ld-b{0%,100%{opacity:1}50%{opacity:.55}}
+.ld-star1{animation:ld-tw 2.2s ease-in-out infinite}
+.ld-star2{animation:ld-tw 3s ease-in-out infinite .6s}
+.ld-star3{animation:ld-tw 1.9s ease-in-out infinite 1.2s}
+.ld-star4{animation:ld-tw 2.7s ease-in-out infinite .3s}
+.ld-moon{animation:ld-m 7s ease-in-out infinite}
+.ld-quill{animation:ld-q 8s ease-in-out infinite;transform-box:fill-box;transform-origin:35px 395px}
+.ld-book{animation:ld-b 9s ease-in-out infinite}
+[data-layer]{transition:transform .2s ease-out}
+</style>
                 <defs>
                     <radialGradient id="la-glow" cx="50%" cy="50%" r="50%">
                         <stop offset="0%" stop-color="#8B0000" stop-opacity="0.08"/>
@@ -1084,7 +1165,7 @@ class AdvancedThemeSystem {
         };
     }
 
-    // ── Hero-banner SVG декор (меняется вместе с темой) ────────────────
+    // ── Hero-banner SVG декор с параллаксом и анимациями ──────────────
     _applyHeroSVGDecor(themeName) {
         const hero = document.querySelector('.hero-banner');
         if (!hero) return;
@@ -1102,27 +1183,67 @@ class AdvancedThemeSystem {
         el.style.opacity = '0';
         el.innerHTML = svg;
         requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; }));
+
+        // Параллакс при движении мыши — добавляем только один раз
+        if (!hero.dataset.parallaxInit) {
+            hero.dataset.parallaxInit = '1';
+            let raf = null;
+            hero.addEventListener('mousemove', (e) => {
+                if (raf) return;
+                raf = requestAnimationFrame(() => {
+                    raf = null;
+                    const decor = document.getElementById('hero-theme-decor');
+                    if (!decor) return;
+                    const r  = hero.getBoundingClientRect();
+                    const dx = (e.clientX - r.left  - r.width  / 2) / r.width;   // -0.5…0.5
+                    const dy = (e.clientY - r.top   - r.height / 2) / r.height;
+                    // Три слоя с разной скоростью — даёт иллюзию глубины
+                    decor.querySelectorAll('[data-layer="bg"]').forEach(g  => { g.style.transform = `translate(${dx*8}px,${dy*6}px)`;   });
+                    decor.querySelectorAll('[data-layer="mid"]').forEach(g => { g.style.transform = `translate(${dx*18}px,${dy*13}px)`; });
+                    decor.querySelectorAll('[data-layer="fg"]').forEach(g  => { g.style.transform = `translate(${dx*30}px,${dy*22}px)`; });
+                });
+            }, { passive: true });
+            hero.addEventListener('mouseleave', () => {
+                const decor = document.getElementById('hero-theme-decor');
+                if (!decor) return;
+                decor.querySelectorAll('[data-layer]').forEach(g => { g.style.transform = ''; });
+            });
+        }
     }
 
     get _heroThemeSVGs() {
         return {
 
 'power-metal': `<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+<style>
+@keyframes pm-breath{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes pm-rays  {0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes pm-float {0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
+@keyframes pm-crown {0%,100%{opacity:.16}50%{opacity:.28}}
+@keyframes pm-shield{0%,100%{opacity:.07}50%{opacity:.13}}
+.pm-glow{animation:pm-breath 8s ease-in-out infinite}
+.pm-rays{animation:pm-rays 10s ease-in-out infinite 1s}
+.pm-sl  {animation:pm-float 7s ease-in-out infinite;transform-box:fill-box}
+.pm-sr  {animation:pm-float 7s ease-in-out infinite .6s;transform-box:fill-box}
+.pm-crown{animation:pm-crown 4s ease-in-out infinite;transform-box:fill-box}
+.pm-shield{animation:pm-shield 6s ease-in-out infinite}
+[data-layer]{transition:transform .18s ease-out}
+</style>
 <defs>
   <radialGradient id="hpm" cx="50%" cy="35%" r="55%">
     <stop offset="0%" stop-color="#FFD700" stop-opacity="0.18"/>
     <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
   </radialGradient>
 </defs>
-<ellipse cx="600" cy="280" rx="600" ry="350" fill="url(#hpm)"/>
-<g stroke="#FFD700" stroke-opacity="0.07" stroke-width="1.2" fill="none">
+<ellipse class="pm-glow" cx="600" cy="280" rx="600" ry="350" fill="url(#hpm)"/>
+<g class="pm-rays" stroke="#FFD700" stroke-opacity="0.07" stroke-width="1.2" fill="none">
   <line x1="600" y1="-10" x2="-60" y2="850"/><line x1="600" y1="-10" x2="80" y2="850"/>
   <line x1="600" y1="-10" x2="220" y2="850"/><line x1="600" y1="-10" x2="380" y2="850"/>
   <line x1="600" y1="-10" x2="540" y2="850"/><line x1="600" y1="-10" x2="660" y2="850"/>
   <line x1="600" y1="-10" x2="820" y2="850"/><line x1="600" y1="-10" x2="980" y2="850"/>
   <line x1="600" y1="-10" x2="1130" y2="850"/><line x1="600" y1="-10" x2="1270" y2="850"/>
 </g>
-<g transform="translate(55,30)" opacity="0.28" fill="#FFD700">
+<g class="pm-sl" transform="translate(55,30)" opacity="0.28" fill="#FFD700">
   <polygon points="12,0 18,450 12,485 6,450"/>
   <rect x="-22" y="138" width="68" height="11" rx="3"/>
   <rect x="8" y="149" width="8" height="80" fill="#8B6914"/>
@@ -1130,7 +1251,7 @@ class AdvancedThemeSystem {
   <line x1="12" y1="4" x2="12" y2="138" stroke="#B8860B" stroke-width="2" opacity="0.5"/>
   <circle cx="12" cy="4" r="4" fill="#FFF8DC"/>
 </g>
-<g transform="translate(1145,30) scale(-1,1)" opacity="0.28" fill="#FFD700">
+<g class="pm-sr" transform="translate(1145,30) scale(-1,1)" opacity="0.28" fill="#FFD700">
   <polygon points="12,0 18,450 12,485 6,450"/>
   <rect x="-22" y="138" width="68" height="11" rx="3"/>
   <rect x="8" y="149" width="8" height="80" fill="#8B6914"/>
@@ -1138,7 +1259,7 @@ class AdvancedThemeSystem {
   <line x1="12" y1="4" x2="12" y2="138" stroke="#B8860B" stroke-width="2" opacity="0.5"/>
   <circle cx="12" cy="4" r="4" fill="#FFF8DC"/>
 </g>
-<g transform="translate(498,18)" opacity="0.16" fill="#FFD700">
+<g class="pm-crown" transform="translate(498,18)" opacity="0.16" fill="#FFD700">
   <polygon points="102,0 204,0 184,55 160,30 132,60 102,25 72,60 44,30 20,55 0,0"/>
   <rect x="20" y="55" width="164" height="22" rx="4"/>
   <circle cx="44" cy="28" r="5" fill="#FF6600"/>
@@ -1166,7 +1287,7 @@ class AdvancedThemeSystem {
   </radialGradient>
 </defs>
 <ellipse cx="600" cy="320" rx="560" ry="340" fill="url(#hgm)"/>
-<g transform="translate(200,-10)" opacity="0.1" stroke="#9D00FF" stroke-width="2" fill="none">
+<g class="gm-arch" transform="translate(200,-10)" opacity="0.1" stroke="#9D00FF" stroke-width="2" fill="none">
   <path d="M400,820 L400,300 Q400,0 200,0 Q0,0 0,300 L0,820"/>
   <path d="M365,820 L365,305 Q365,40 200,40 Q35,40 35,305 L35,820"/>
   <path d="M200,40 Q200,0 200,0"/><circle cx="200" cy="80" r="80"/>
@@ -1174,27 +1295,27 @@ class AdvancedThemeSystem {
   <path d="M80,305 L80,195 Q80,115 160,115 Q240,115 240,195 L240,305"/>
   <path d="M320,305 L320,195 Q320,115 240,115 Q320,115 320,195 L320,305"/>
 </g>
-<g transform="translate(970,45)" opacity="0.35">
+<g class="gm-moon" transform="translate(970,45)" opacity="0.35">
   <circle cx="62" cy="62" r="60" fill="#1a0030"/>
   <circle cx="82" cy="48" r="56" fill="#060608"/>
 </g>
 <g fill="#9D00FF" opacity="0.22">
-  <g transform="translate(140,110) rotate(-15)">
+  <g class="gm-bat1" transform="translate(140,110) rotate(-15)">
     <path d="M18,8 Q0,-2 -32,4 Q-14,16 -2,18 Q-8,28 -20,32 Q-4,30 8,20 Q12,16 18,8"/>
     <path d="M18,8 Q36,-2 68,4 Q50,16 38,18 Q44,28 56,32 Q40,30 28,20 Q24,16 18,8"/>
     <ellipse cx="18" cy="8" rx="7" ry="9"/>
   </g>
-  <g transform="translate(960,155) rotate(10) scale(0.75)">
+  <g class="gm-bat2" transform="translate(960,155) rotate(10) scale(0.75)">
     <path d="M18,8 Q0,-2 -32,4 Q-14,16 -2,18 Q-8,28 -20,32 Q-4,30 8,20 Q12,16 18,8"/>
     <path d="M18,8 Q36,-2 68,4 Q50,16 38,18 Q44,28 56,32 Q40,30 28,20 Q24,16 18,8"/>
     <ellipse cx="18" cy="8" rx="7" ry="9"/>
   </g>
-  <g transform="translate(350,65) rotate(5) scale(0.55)">
+  <g class="gm-bat3" transform="translate(350,65) rotate(5) scale(0.55)">
     <path d="M18,8 Q0,-2 -32,4 Q-14,16 -2,18 Q-8,28 -20,32 Q-4,30 8,20 Q12,16 18,8"/>
     <path d="M18,8 Q36,-2 68,4 Q50,16 38,18 Q44,28 56,32 Q40,30 28,20 Q24,16 18,8"/>
     <ellipse cx="18" cy="8" rx="7" ry="9"/>
   </g>
-  <g transform="translate(750,90) rotate(-8) scale(0.6)">
+  <g class="gm-bat4" transform="translate(750,90) rotate(-8) scale(0.6)">
     <path d="M18,8 Q0,-2 -32,4 Q-14,16 -2,18 Q-8,28 -20,32 Q-4,30 8,20 Q12,16 18,8"/>
     <path d="M18,8 Q36,-2 68,4 Q50,16 38,18 Q44,28 56,32 Q40,30 28,20 Q24,16 18,8"/>
     <ellipse cx="18" cy="8" rx="7" ry="9"/>
@@ -1227,19 +1348,19 @@ class AdvancedThemeSystem {
   <line x1="0" y1="200" x2="1200" y2="200"/><line x1="0" y1="400" x2="1200" y2="400"/>
   <line x1="0" y1="600" x2="1200" y2="600"/>
 </g>
-<polygon points="0,800 0,745 55,15 95,15 40,800" fill="#FF1493" opacity="0.28"/>
-<polygon points="1200,800 1200,745 1145,15 1105,15 1160,800" fill="#00FFFF" opacity="0.28"/>
-<g transform="translate(450,230)" opacity="0.07" stroke="#FF1493" stroke-width="5" fill="none">
+<polygon class="pr-bolt-l" points="0,800 0,745 55,15 95,15 40,800" fill="#FF1493" opacity="0.28"/>
+<polygon class="pr-bolt-r" points="1200,800 1200,745 1145,15 1105,15 1160,800" fill="#00FFFF" opacity="0.28"/>
+<g class="pr-anarchy" transform="translate(450,230)" opacity="0.07" stroke="#FF1493" stroke-width="5" fill="none">
   <path d="M150,0 L0,300 L300,300 Z"/>
   <line x1="42" y1="195" x2="258" y2="195"/>
 </g>
 <polygon points="0,0 0,38 60,14 120,38 180,10 240,38 300,14 360,38 420,10 480,38 540,14 600,38 660,14 720,38 780,10 840,38 900,14 960,38 1020,10 1080,38 1140,14 1200,38 1200,0" fill="#FF1493" opacity="0.18"/>
 <polygon points="0,800 0,762 60,786 120,762 180,790 240,762 300,786 360,762 420,790 480,762 540,786 600,762 660,786 720,762 780,790 840,762 900,786 960,762 1020,790 1080,762 1140,786 1200,762 1200,800" fill="#00FFFF" opacity="0.14"/>
 <g fill="#FFFF00" opacity="0.45">
-  <polygon points="160,695 164,710 179,710 167,719 172,734 160,725 148,734 153,719 141,710 156,710"/>
-  <polygon points="1060,90 1063,100 1073,100 1065,107 1068,117 1060,110 1052,117 1055,107 1047,100 1057,100"/>
-  <polygon points="210,145 212,152 219,152 214,157 216,164 210,160 204,164 206,157 201,152 208,152"/>
-  <polygon points="990,710 992,717 999,717 994,722 996,729 990,725 984,729 986,722 981,717 988,717"/>
+  <polygon class="pr-star1" points="160,695 164,710 179,710 167,719 172,734 160,725 148,734 153,719 141,710 156,710"/>
+  <polygon class="pr-star2" points="1060,90 1063,100 1073,100 1065,107 1068,117 1060,110 1052,117 1055,107 1047,100 1057,100"/>
+  <polygon class="pr-star3" points="210,145 212,152 219,152 214,157 216,164 210,160 204,164 206,157 201,152 208,152"/>
+  <polygon class="pr-star4" points="990,710 992,717 999,717 994,722 996,729 990,725 984,729 986,722 981,717 988,717"/>
 </g>
 <g opacity="0.2" stroke="#00FFFF" stroke-width="1.5" fill="none">
   <g transform="translate(88,640)"><path d="M18,0 L0,36 L36,36 Z"/><line x1="5" y1="24" x2="31" y2="24"/><circle cx="18" cy="18" r="22"/></g>
@@ -1256,7 +1377,7 @@ class AdvancedThemeSystem {
     <stop offset="100%" stop-color="transparent"/>
   </radialGradient>
 </defs>
-<ellipse cx="600" cy="820" rx="720" ry="340" fill="url(#hhm)"/>
+<ellipse class="hm-glow" cx="600" cy="820" rx="720" ry="340" fill="url(#hhm)"/>
 <g transform="translate(475,240)" opacity="0.065" stroke="#CC0000" stroke-width="2.5" fill="none">
   <path d="M125,0 Q250,0 250,125 Q250,205 195,225 L195,265 L55,265 L55,225 Q0,205 0,125 Q0,0 125,0"/>
   <ellipse cx="82" cy="110" rx="32" ry="37"/>
@@ -1267,14 +1388,14 @@ class AdvancedThemeSystem {
   <line x1="175" y1="225" x2="175" y2="265"/>
 </g>
 <g opacity="0.38" fill="#FF4500">
-  <path d="M200,800 Q185,720 225,675 Q205,628 248,582 Q238,648 272,668 Q295,625 282,558 Q318,638 305,682 Q338,648 326,605 Q358,678 345,725 Q378,692 365,638 Q392,712 378,762 Q408,730 395,672 Q418,740 405,800 Z"/>
+  <path class="hm-flame-l" d="M200,800 Q185,720 225,675 Q205,628 248,582 Q238,648 272,668 Q295,625 282,558 Q318,638 305,682 Q338,648 326,605 Q358,678 345,725 Q378,692 365,638 Q392,712 378,762 Q408,730 395,672 Q418,740 405,800 Z"/>
   <path d="M390,800 Q405,748 388,695 Q414,752 408,800 Z" opacity="0.6"/>
-  <path d="M580,800 Q565,728 608,682 Q586,636 632,588 Q620,658 658,678 Q682,632 668,562 Q706,645 692,692 Q728,655 714,610 Q748,688 734,736 Q770,700 754,644 Q782,722 766,776 Q796,742 780,680 Q806,755 790,800 Z"/>
+  <path class="hm-flame-r" d="M580,800 Q565,728 608,682 Q586,636 632,588 Q620,658 658,678 Q682,632 668,562 Q706,645 692,692 Q728,655 714,610 Q748,688 734,736 Q770,700 754,644 Q782,722 766,776 Q796,742 780,680 Q806,755 790,800 Z"/>
   <path d="M760,800 Q778,750 762,695 Q790,758 782,800 Z" opacity="0.6"/>
-  <path d="M440,800 Q426,748 462,716 Q444,672 484,640 Q472,706 500,718 Q518,675 505,632 Q532,700 518,742 Q542,716 536,676 Q556,742 540,800 Z" fill="#CC0000" opacity="0.55"/>
+  <path class="hm-flame-c" d="M440,800 Q426,748 462,716 Q444,672 484,640 Q472,706 500,718 Q518,675 505,632 Q532,700 518,742 Q542,716 536,676 Q556,742 540,800 Z" fill="#CC0000" opacity="0.55"/>
   <path d="M688,800 Q672,745 710,710 Q692,665 735,632 Q722,700 752,714 Q772,670 758,625 Q788,696 773,740 Q800,712 793,668 Q815,738 797,800 Z" fill="#CC0000" opacity="0.55"/>
 </g>
-<g fill="#FFA500" opacity="0.45">
+<g class="hm-spark" fill="#FFA500" opacity="0.45">
   <circle cx="310" cy="615" r="2.5"/><circle cx="380" cy="575" r="2"/><circle cx="455" cy="595" r="2.5"/>
   <circle cx="530" cy="552" r="2"/><circle cx="605" cy="568" r="2.5"/><circle cx="678" cy="558" r="2"/>
   <circle cx="748" cy="602" r="2.5"/><circle cx="500" cy="530" r="1.5"/><circle cx="590" cy="512" r="1.5"/>
@@ -1298,7 +1419,7 @@ class AdvancedThemeSystem {
   </radialGradient>
 </defs>
 <ellipse cx="600" cy="300" rx="580" ry="340" fill="url(#hsm)"/>
-<g stroke="#4169E1" stroke-opacity="0.22" fill="none" stroke-width="1.5">
+<g class="sm-frame" stroke="#4169E1" stroke-opacity="0.22" fill="none" stroke-width="1.5">
   <path d="M90,65 Q240,42 390,65 Q480,78 540,62 Q600,48 660,62 Q720,78 810,65 Q960,42 1110,65"/>
   <path d="M90,85 Q240,62 390,85 Q480,98 540,82 Q600,68 660,82 Q720,98 810,85 Q960,62 1110,85"/>
   <path d="M90,725 Q240,702 390,725 Q480,738 540,722 Q600,708 660,722 Q720,738 810,725 Q960,702 1110,725"/>
@@ -1308,14 +1429,14 @@ class AdvancedThemeSystem {
   <path d="M90,725 Q60,690 72,642 Q58,602 72,570"/>
   <path d="M1110,725 Q1140,690 1128,642 Q1142,602 1128,570"/>
 </g>
-<g transform="translate(50,155)" opacity="0.24" stroke="#4169E1" stroke-width="2.5" fill="none">
+<g class="sm-clef" transform="translate(50,155)" opacity="0.24" stroke="#4169E1" stroke-width="2.5" fill="none">
   <path d="M38,10 Q68,8 68,38 Q68,72 38,90 Q8,108 8,148 Q8,188 36,205 Q64,222 64,260 Q64,318 28,340"/>
   <circle cx="24" cy="378" r="26" fill="#4169E1" fill-opacity="0.12"/>
   <circle cx="24" cy="378" r="16" fill="#4169E1" fill-opacity="0.08"/>
   <line x1="24" y1="404" x2="24" y2="470"/>
   <line x1="24" y1="352" x2="24" y2="180"/>
 </g>
-<g transform="translate(895,185)" opacity="0.2" stroke="#4169E1" fill="none">
+<g class="sm-notes" transform="translate(895,185)" opacity="0.2" stroke="#4169E1" fill="none">
   <line x1="0" y1="0" x2="265" y2="0" stroke-width="1.3"/>
   <line x1="0" y1="17" x2="265" y2="17" stroke-width="1.3"/>
   <line x1="0" y1="34" x2="265" y2="34" stroke-width="1.3"/>
@@ -1333,11 +1454,11 @@ class AdvancedThemeSystem {
   <path d="M162,-52 Q185,-42 180,-25" stroke-width="1.3"/>
 </g>
 <g fill="#C0C0C0" opacity="0.42">
-  <path d="M125,118 L128,129 L140,129 L131,136 L134,147 L125,140 L116,147 L119,136 L110,129 L122,129 Z"/>
-  <path d="M1085,195 L1087,203 L1095,203 L1089,208 L1091,216 L1085,211 L1079,216 L1081,208 L1075,203 L1083,203 Z"/>
-  <path d="M195,660 L198,671 L210,671 L201,678 L204,689 L195,682 L186,689 L189,678 L180,671 L192,671 Z"/>
-  <path d="M985,675 L988,686 L1000,686 L991,693 L994,704 L985,697 L976,704 L979,693 L970,686 L982,686 Z"/>
-  <path d="M600,108 L602,115 L609,115 L604,120 L606,127 L600,122 L594,127 L596,120 L591,115 L598,115 Z" fill="#FFD700" opacity="0.7"/>
+  <path class="sm-star1" d="M125,118 L128,129 L140,129 L131,136 L134,147 L125,140 L116,147 L119,136 L110,129 L122,129 Z"/>
+  <path class="sm-star2" d="M1085,195 L1087,203 L1095,203 L1089,208 L1091,216 L1085,211 L1079,216 L1081,208 L1075,203 L1083,203 Z"/>
+  <path class="sm-star3" d="M195,660 L198,671 L210,671 L201,678 L204,689 L195,682 L186,689 L189,678 L180,671 L192,671 Z"/>
+  <path class="sm-star4" d="M985,675 L988,686 L1000,686 L991,693 L994,704 L985,697 L976,704 L979,693 L970,686 L982,686 Z"/>
+  <path class="sm-star5" d="M600,108 L602,115 L609,115 L604,120 L606,127 L600,122 L594,127 L596,120 L591,115 L598,115 Z" fill="#FFD700" opacity="0.7"/>
   <circle cx="390" cy="95" r="2.2"/><circle cx="700" cy="85" r="2.2"/><circle cx="855" cy="135" r="2.2"/>
   <circle cx="330" cy="695" r="2.2"/><circle cx="1040" cy="660" r="2.2"/>
 </g>
@@ -1351,15 +1472,15 @@ class AdvancedThemeSystem {
   </radialGradient>
 </defs>
 <ellipse cx="600" cy="300" rx="580" ry="340" fill="url(#hld)"/>
-<g transform="translate(1005,35)" opacity="0.32">
+<g class="ld-moon" transform="translate(1005,35)" opacity="0.32">
   <circle cx="65" cy="65" r="62" fill="#1a0008"/>
   <circle cx="84" cy="50" r="57" fill="#060608"/>
 </g>
 <g fill="#8B0000" opacity="0.38">
-  <circle cx="290" cy="78" r="2.5"/><circle cx="355" cy="55" r="2"/><circle cx="418" cy="85" r="2.5"/>
-  <circle cx="475" cy="48" r="2"/><circle cx="538" cy="72" r="2"/><circle cx="595" cy="42" r="2.5"/>
-  <circle cx="658" cy="68" r="2"/><circle cx="718" cy="38" r="2"/><circle cx="778" cy="62" r="2.5"/>
-  <circle cx="842" cy="50" r="2"/><circle cx="905" cy="80" r="2"/>
+  <circle class="ld-star1" cx="290" cy="78" r="2.5"/><circle cx="355" cy="55" r="2"/><circle cx="418" cy="85" r="2.5"/>
+  <circle class="ld-star2" cx="475" cy="48" r="2"/><circle cx="538" cy="72" r="2"/><circle cx="595" cy="42" r="2.5"/>
+  <circle class="ld-star3" cx="658" cy="68" r="2"/><circle cx="718" cy="38" r="2"/><circle cx="778" cy="62" r="2.5"/>
+  <circle class="ld-star4" cx="842" cy="50" r="2"/><circle cx="905" cy="80" r="2"/>
   <line x1="290" y1="78" x2="355" y2="55" stroke="#8B0000" stroke-width="0.6" opacity="0.6"/>
   <line x1="355" y1="55" x2="418" y2="85" stroke="#8B0000" stroke-width="0.6" opacity="0.6"/>
   <line x1="418" y1="85" x2="475" y2="48" stroke="#8B0000" stroke-width="0.6" opacity="0.6"/>
@@ -1370,7 +1491,7 @@ class AdvancedThemeSystem {
   <line x1="778" y1="62" x2="842" y2="50" stroke="#8B0000" stroke-width="0.6" opacity="0.6"/>
   <line x1="842" y1="50" x2="905" y2="80" stroke="#8B0000" stroke-width="0.6" opacity="0.6"/>
 </g>
-<g transform="translate(330,430)" opacity="0.065" stroke="#8B0000" stroke-width="1.5" fill="none">
+<g class="ld-book" transform="translate(330,430)" opacity="0.065" stroke="#8B0000" stroke-width="1.5" fill="none">
   <path d="M270,-50 Q270,-72 215,-78 Q160,-84 105,-70 Q50,-56 -10,-44 Q50,-32 105,-18 Q160,-4 215,-10 Q270,-16 270,-50"/>
   <path d="M270,-50 Q270,-72 325,-78 Q380,-84 435,-70 Q490,-56 550,-44 Q490,-32 435,-18 Q380,-4 325,-10 Q270,-16 270,-50"/>
   <line x1="48" y1="-62" x2="258" y2="-52"/>
@@ -1380,7 +1501,7 @@ class AdvancedThemeSystem {
   <line x1="282" y1="-50" x2="492" y2="-40"/>
   <line x1="282" y1="-38" x2="492" y2="-28"/>
 </g>
-<g transform="translate(28,190)" opacity="0.26">
+<g class="ld-quill" transform="translate(28,190)" opacity="0.26">
   <path d="M35,0 Q68,32 44,90 Q20,148 10,230 Q0,312 6,395" stroke="#8B0000" stroke-width="2.2" fill="none"/>
   <path d="M35,0 Q10,32 8,68 M33,22 Q8,54 6,92 M31,45 Q6,77 4,115 M29,68 Q4,100 2,138 M27,92 Q2,124 0,162 M25,116 Q0,148 -2,186" stroke="#6B4513" stroke-width="1" fill="none" opacity="0.65"/>
   <path d="M35,0 Q58,32 62,68 M37,22 Q60,54 66,92 M39,45 Q62,77 68,115 M41,68 Q64,100 70,138 M43,92 Q66,124 72,162 M45,116 Q68,148 74,186" stroke="#6B4513" stroke-width="1" fill="none" opacity="0.65"/>
