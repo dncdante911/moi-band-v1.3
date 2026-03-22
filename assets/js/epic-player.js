@@ -921,9 +921,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     fullAudioPath: trackUrl,
                     title: trackTitle,
                     coverImagePath: trackCover,
-                    albumTitle: 'Текущий альбом' 
+                    albumTitle: item.dataset.trackAlbum || 'Master of Illusion',
+                    views: parseInt(item.dataset.trackViews || '0', 10)
                 };
-                
+
                 window.epicPlayer.setTrackAndPlay(trackData);
             }
         });

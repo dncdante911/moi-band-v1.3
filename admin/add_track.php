@@ -13,10 +13,11 @@ $stmt_albums = $pdo->query("SELECT id, title FROM Albums ORDER BY title ASC");
 $albums = $stmt_albums->fetchAll();
 
 $errors = [];
-$title = '';
+$title   = '';
 $description = '';
-$albumId = '';
-$lyrics = '';
+// Предзаполняем albumId из URL если пришли со страницы альбома
+$albumId = filter_var($_GET['album_id'] ?? '', FILTER_VALIDATE_INT) ?: '';
+$lyrics  = '';
 
 // === ОБРАБОТКА POST ЗАПРОСА ===
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

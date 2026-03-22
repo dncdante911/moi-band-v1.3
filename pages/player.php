@@ -110,5 +110,4 @@
 
 <link rel="stylesheet" href="/assets/css/epic-player.css">
 <script src="/assets/js/epic-player.js"></script>
-<script src="/assets/js/visualizer.js"></script>
-<script src="/assets/js/track-stats.js"></script>
+<!-- track-stats.js загружен глобально в header.php -->
