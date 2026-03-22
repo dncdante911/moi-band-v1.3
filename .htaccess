@@ -2,8 +2,8 @@
 # Master of Illusion — Корневой .htaccess
 # ═══════════════════════════════════════════════════════════════
 
-Options -Indexes          # Запрещаем листинг директорий
-ServerSignature Off       # Скрываем версию сервера
+Options -Indexes
+ServerSignature Off
 
 # ── HTTPS принудительный редирект ────────────────────────────────
 <IfModule mod_rewrite.c>
