@@ -11,7 +11,28 @@
 
 require_once __DIR__ . '/auth_check.php';
 require_once '../include_config/config.php';
-require_once '../include_config/db_connect.php';;
+require_once '../include_config/db_connect.php';
+
+// Функция для сохранения загруженного файла
+function saveFile($file, $subfolder) {
+    if (empty($file['name']) || $file['error'] !== UPLOAD_ERR_OK) {
+        return null;
+    }
+
+    $uploadDir = '../public/uploads/' . $subfolder . '/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0755, true);
+    }
+
+    $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $fileName = uniqid() . '.' . $fileExtension;
+    $uploadPath = $uploadDir . $fileName;
+
+    if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+        return '/public/uploads/' . $subfolder . '/' . $fileName;
+    }
+    return false;
+}
 
 // Получаем список альбомов
 $stmt_albums = $pdo->query("SELECT id, title FROM Albums ORDER BY title ASC");
@@ -51,42 +72,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$currentTrack) {
                 $errors[] = 'Трек не найден';
             } else {
-                // Функция для сохранения файла
-                function saveFile($file, $subfolder) {
-                    if (empty($file['name']) || $file['error'] !== UPLOAD_ERR_OK) {
-                        return null;
-                    }
-                    
-                    $uploadDir = '../public/uploads/' . $subfolder . '/';
-                    if (!is_dir($uploadDir)) {
-                        mkdir($uploadDir, 0755, true);
-                    }
-                    
-                    $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
-                    $fileName = uniqid() . '.' . $fileExtension;
-                    $uploadPath = $uploadDir . $fileName;
-                    
-                    if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
-                        return '/public/uploads/' . $subfolder . '/' . $fileName;
-                    }
-                    return false;
-                }
-                
                 // Обновляем файлы если загружены
                 $coverPath = $currentTrack['coverImagePath'];
                 if (!empty($_FILES['cover']['name'])) {
                     $newCoverPath = saveFile($_FILES['cover'], 'covers');
                     if ($newCoverPath) {
-                        @unlink('..' . $coverPath);
+                        if ($coverPath) @unlink('..' . $coverPath);
                         $coverPath = $newCoverPath;
                     }
                 }
-                
+
                 $fullTrackPath = $currentTrack['fullAudioPath'];
                 if (!empty($_FILES['fullTrack']['name'])) {
                     $newFullTrackPath = saveFile($_FILES['fullTrack'], 'full');
                     if ($newFullTrackPath) {
-                        @unlink('..' . $fullTrackPath);
+                        if ($fullTrackPath) @unlink('..' . $fullTrackPath);
                         $fullTrackPath = $newFullTrackPath;
                     }
                 }
@@ -178,7 +178,7 @@ $result = $stmt->execute([
                         error_log("✅ Видео сохранено в VideoClips: длительность = $videoDuration сек");
                     } // Конец if (!empty($videoPath))
     
-                    // Сохраняем текст песни отдельно
+                    // Сохраняем текст песни отдельно (или удаляем если очищен)
                     if (!empty($lyrics)) {
                         $stmt = $pdo->prepare("
                             INSERT INTO SongLyrics (track_id, lyrics)
@@ -189,6 +189,9 @@ $result = $stmt->execute([
                             ':track_id' => $trackId,
                             ':lyrics' => $lyrics
                         ]);
+                    } else {
+                        $stmt = $pdo->prepare("DELETE FROM SongLyrics WHERE track_id = ?");
+                        $stmt->execute([$trackId]);
                     }
     
                     // Успешное обновление
@@ -254,8 +257,8 @@ function calculateAudioDuration($filePath) {
     if (function_exists('shell_exec') && @shell_exec('which ffmpeg') !== null) {
         $cmd = "ffmpeg -i " . escapeshellarg($filePath) . " 2>&1 | grep Duration 2>/dev/null";
         $output = @shell_exec($cmd);
-        
-        if (preg_match('/Duration: (\d+):(\d+):(\d+)/', $output, $matches)) {
+
+        if ($output && preg_match('/Duration: (\d+):(\d+):(\d+)/', $output, $matches)) {
             $hours = (int)$matches[1];
             $minutes = (int)$matches[2];
             $seconds = (int)$matches[3];
@@ -529,10 +532,10 @@ function formatTime($seconds) {
         <?php endif; ?>
         
         <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('basic')">📝 Основное</button>
-            <button class="tab-btn" onclick="showTab('files')">📁 Файлы</button>
-            <button class="tab-btn" onclick="showTab('lyrics')">📄 Текст</button>
-            <button class="tab-btn" onclick="showTab('video')">🎬 Видео</button>
+            <button class="tab-btn active" onclick="showTab('basic', this)">📝 Основное</button>
+            <button class="tab-btn" onclick="showTab('files', this)">📁 Файлы</button>
+            <button class="tab-btn" onclick="showTab('lyrics', this)">📄 Текст</button>
+            <button class="tab-btn" onclick="showTab('video', this)">🎬 Видео</button>
         </div>
         
         <form action="edit_track.php?id=<?= $trackId ?>" method="POST" enctype="multipart/form-data">
@@ -569,9 +572,13 @@ function formatTime($seconds) {
                     <label for="cover">Обложка трека (JPG, PNG)</label>
                     <input type="file" id="cover" name="cover" accept="image/jpeg, image/png">
                     <div class="current-file">
-                        📷 Текущая обложка: 
-                        <img src="/<?= htmlspecialchars(ltrim($track['coverImagePath'] ?? '', '/')) ?>"
-                            alt="Обложка" style="max-width: 100px; margin-top: 5px; border-radius: 4px;">
+                        📷 Текущая обложка:
+                        <?php if (!empty($track['coverImagePath'])): ?>
+                            <br><img src="/<?= htmlspecialchars(ltrim($track['coverImagePath'], '/')) ?>"
+                                alt="Обложка" style="max-width: 100px; margin-top: 5px; border-radius: 4px;">
+                        <?php else: ?>
+                            <span style="color:#e53e3e;">❌ Не загружена</span>
+                        <?php endif; ?>
                     </div>
                 </div>
                 
@@ -579,7 +586,7 @@ function formatTime($seconds) {
                     <label for="fullTrack">Аудиофайл трека (MP3, WAV)</label>
                     <input type="file" id="fullTrack" name="fullTrack" accept=".mp3, .wav">
                     <div class="current-file">
-                        🎵 Текущий файл: <?= htmlspecialchars(basename($track['fullAudioPath'] ?? '')) ?>
+                        🎵 Текущий файл: <?= !empty($track['fullAudioPath']) ? htmlspecialchars(basename($track['fullAudioPath'])) : '<span style="color:#e53e3e;">❌ Не загружен</span>' ?>
                         <?php if ($track['duration'] > 0): ?>
                             <br>⏱️ Длительность: <?= formatTime($track['duration']) ?>
                         <?php endif; ?>
@@ -628,18 +635,11 @@ function formatTime($seconds) {
     </div>
     
     <script>
-    function showTab(tabName) {
-        // Скрыть все табы
-        const contents = document.querySelectorAll('.tab-content');
-        contents.forEach(c => c.classList.remove('active'));
-        
-        // Убрать активность с кнопок
-        const buttons = document.querySelectorAll('.tab-btn');
-        buttons.forEach(b => b.classList.remove('active'));
-        
-        // Показать нужный таб
+    function showTab(tabName, btn) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabName).classList.add('active');
-        event.target.classList.add('active');
+        btn.classList.add('active');
     }
     </script>
 </body>
