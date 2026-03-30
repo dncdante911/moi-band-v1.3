@@ -301,12 +301,6 @@
 
 .overlay-arrow {
     font-size: 1.8rem;
-    animation: arrow-bounce 0.6s ease-in-out infinite;
-}
-
-@keyframes arrow-bounce {
-    0%, 100% { transform: translateX(0); }
-    50% { transform: translateX(8px); }
 }
 
 /* ============================================
