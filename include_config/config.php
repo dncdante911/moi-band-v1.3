@@ -45,11 +45,29 @@ if (!function_exists('load_env')) {
                 $value = preg_replace('/^["\']+|["\']+$/', '', $value);
                 
                 // Устанавливаем переменную окружения
-                putenv("$key=$value");
+                if (function_exists('putenv')) {
+                    putenv("$key=$value");
+                }
                 $_ENV[$key] = $value;
             }
         }
         return true;
+    }
+}
+
+// Читает переменную из $_ENV (надёжно работает даже когда getenv/putenv отключены)
+if (!function_exists('get_env')) {
+    function get_env($key, $default = null) {
+        if (isset($_ENV[$key])) {
+            return $_ENV[$key];
+        }
+        if (function_exists('getenv')) {
+            $val = get_env($key);
+            if ($val !== false) {
+                return $val;
+            }
+        }
+        return $default;
     }
 }
 
@@ -71,8 +89,8 @@ load_env($env_file);
 // ОПРЕДЕЛЕНИЕ РЕЖИМА РАБОТЫ
 // ============================================
 
-$app_env = getenv('APP_ENV') ?: 'production';
-$app_debug = getenv('APP_DEBUG') ?: 'false';
+$app_env = get_env('APP_ENV') ?: 'production';
+$app_debug = get_env('APP_DEBUG') ?: 'false';
 
 define('APP_ENV', $app_env);
 define('DEBUG_MODE', in_array($app_debug, ['true', '1', 'yes', 'on'], true));
@@ -81,7 +99,7 @@ define('DEBUG_MODE', in_array($app_debug, ['true', '1', 'yes', 'on'], true));
 if (APP_ENV === 'production') {
     ini_set('display_errors', 0);
     ini_set('log_errors', 1);
-    ini_set('error_log', getenv('LOG_PATH') . 'php_errors.log');
+    ini_set('error_log', get_env('LOG_PATH') . 'php_errors.log');
 } else {
     ini_set('display_errors', DEBUG_MODE ? 1 : 0);
     ini_set('log_errors', 1);
@@ -93,24 +111,24 @@ error_reporting(E_ALL);
 // КОНСТАНТЫ САЙТА
 // ============================================
 
-define('SITE_NAME', getenv('SITE_NAME') ?: 'Master of illusion');
-define('SITE_URL', getenv('SITE_URL') ?: 'https://lovix.top');
-define('SITE_EMAIL', getenv('SITE_EMAIL') ?: 'contact@lovix.top');
+define('SITE_NAME', get_env('SITE_NAME') ?: 'Master of illusion');
+define('SITE_URL', get_env('SITE_URL') ?: 'https://lovix.top');
+define('SITE_EMAIL', get_env('SITE_EMAIL') ?: 'contact@lovix.top');
 
 // ============================================
 // API КЛЮЧИ
 // ============================================
 
-define('FOSSBILLING_API_URL', getenv('FOSSBILLING_API_URL') ?: '');
-define('FOSSBILLING_API_TOKEN', getenv('FOSSBILLING_API_TOKEN') ?: '');
+define('FOSSBILLING_API_URL', get_env('FOSSBILLING_API_URL') ?: '');
+define('FOSSBILLING_API_TOKEN', get_env('FOSSBILLING_API_TOKEN') ?: '');
 
 // ============================================
 // БЕЗОПАСНОСТЬ - СЕССИИ
 // ============================================
 
-define('SESSION_LIFETIME', (int)(getenv('SESSION_LIFETIME') ?: 3600));
-define('SESSION_NAME', getenv('SESSION_NAME') ?: 'moi_session');
-define('MAX_UPLOAD_SIZE', (int)(getenv('MAX_UPLOAD_SIZE') ?: 104857600)); // 100MB
+define('SESSION_LIFETIME', (int)(get_env('SESSION_LIFETIME') ?: 3600));
+define('SESSION_NAME', get_env('SESSION_NAME') ?: 'moi_session');
+define('MAX_UPLOAD_SIZE', (int)(get_env('MAX_UPLOAD_SIZE') ?: 104857600)); // 100MB
 
 // ============================================
 // ПУТИ К ФАЙЛАМ
@@ -118,7 +136,7 @@ define('MAX_UPLOAD_SIZE', (int)(getenv('MAX_UPLOAD_SIZE') ?: 104857600)); // 100
 
 define('BASE_PATH', PROJECT_ROOT);
 define('UPLOAD_PATH', BASE_PATH . '/public/uploads');
-define('LOGS_PATH', getenv('LOG_PATH') ?: BASE_PATH . '/logs');
+define('LOGS_PATH', get_env('LOG_PATH') ?: BASE_PATH . '/logs');
 
 // Проверяем и создаем директории логов если их нет
 if (!is_dir(LOGS_PATH)) {
@@ -161,7 +179,7 @@ if (!defined('SKIP_SESSION_START')) {
 // ============================================
 
 function write_log($message, $level = 'info') {
-    $log_level = getenv('LOG_LEVEL') ?: 'error';
+    $log_level = get_env('LOG_LEVEL') ?: 'error';
     
     $levels = ['debug' => 0, 'info' => 1, 'warning' => 2, 'error' => 3];
     
