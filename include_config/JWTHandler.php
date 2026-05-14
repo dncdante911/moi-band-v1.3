@@ -11,7 +11,7 @@ class JWTHandler {
     private $token_lifetime = 86400; // 24 часа
     
     public function __construct() {
-        $key = getenv('JWT_SECRET');
+        $key = get_env('JWT_SECRET');
         if (empty($key)) {
             throw new \RuntimeException('JWT_SECRET не задан в .env');
         }
