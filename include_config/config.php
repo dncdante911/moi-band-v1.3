@@ -62,7 +62,7 @@ if (!function_exists('get_env')) {
             return $_ENV[$key];
         }
         if (function_exists('getenv')) {
-            $val = get_env($key);
+            $val = getenv($key);
             if ($val !== false) {
                 return $val;
             }
