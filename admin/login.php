@@ -43,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $username = trim($_POST['username'] ?? '');
         $password = $_POST['password'] ?? '';
         
-        $admin_username = getenv('ADMIN_USERNAME') ?: 'admin';
-        $admin_password_hash = getenv('ADMIN_PASSWORD_HASH') ?: '';
+        $admin_username = get_env('ADMIN_USERNAME') ?: 'admin';
+        $admin_password_hash = get_env('ADMIN_PASSWORD_HASH') ?: '';
         
         if ($username === $admin_username && password_verify($password, $admin_password_hash)) {
             // Успешная авторизация

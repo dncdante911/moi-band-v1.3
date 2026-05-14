@@ -18,12 +18,12 @@ require_once __DIR__ . '/APIResponse.php';
 // ============================================
 
 $db_config = [
-    'host' => getenv('DB_HOST') ?: '127.0.0.1',
-    'port' => getenv('DB_PORT') ?: 3306,
-    'name' => getenv('DB_NAME') ?: 'moi-band',
-    'user' => getenv('DB_USER') ?: 'moi-band',
-    'pass' => getenv('DB_PASS') ?: '',
-    'charset' => getenv('DB_CHARSET') ?: 'utf8mb4',
+    'host' => get_env('DB_HOST') ?: '127.0.0.1',
+    'port' => get_env('DB_PORT') ?: 3306,
+    'name' => get_env('DB_NAME') ?: 'moi-band',
+    'user' => get_env('DB_USER') ?: 'moi-band',
+    'pass' => get_env('DB_PASS') ?: '',
+    'charset' => get_env('DB_CHARSET') ?: 'utf8mb4',
 ];
 
 // Проверяем, что пароль не содержит значение по умолчанию из примера
