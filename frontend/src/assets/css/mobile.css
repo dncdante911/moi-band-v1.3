@@ -1,0 +1,480 @@
+/**
+ * MASTER OF ILLUSION — Mobile CSS
+ * Адаптивность для смартфонов и планшетов
+ */
+
+/* ============================================================
+   ОБЩИЕ ПРАВИЛА ДЛЯ МОБИЛЬНЫХ
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    /* Убираем лишний margin на мобилках */
+    body {
+        overflow-x: hidden;
+    }
+
+    .main-content {
+        padding: 0 12px;
+    }
+
+    /* ── Плавный скролл ── */
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── Хедер ── */
+    .site-header {
+        min-height: 60px !important;
+        padding: 8px 0 !important;
+    }
+
+    .header-container {
+        padding: 0 12px !important;
+        gap: 10px !important;
+    }
+
+    .logo a {
+        font-size: 1.1rem !important;
+        letter-spacing: 1px !important;
+    }
+
+    /* Гамбургер: большая область касания */
+    .hamburger-menu {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        font-size: 1.6rem;
+        padding: 0;
+        border-radius: 6px;
+        background: rgba(255, 215, 0, 0.1);
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        transition: background 0.2s;
+    }
+
+    .hamburger-menu:active {
+        background: rgba(255, 215, 0, 0.25);
+    }
+
+    /* Выпадающее мобильное меню */
+    .main-nav {
+        position: fixed !important;
+        top: 60px !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: rgba(8, 8, 15, 0.97) !important;
+        border-bottom: 2px solid #FFD700 !important;
+        display: none !important;
+        flex-direction: column !important;
+        padding: 8px 0 !important;
+        z-index: 9999 !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9) !important;
+        backdrop-filter: blur(20px);
+    }
+
+    .main-nav.active {
+        display: flex !important;
+    }
+
+    .main-nav ul {
+        flex-direction: column !important;
+        flex-wrap: nowrap !important;
+        width: 100% !important;
+        overflow: visible !important;
+    }
+
+    .main-nav li {
+        width: 100%;
+        border-bottom: 1px solid rgba(255, 215, 0, 0.08);
+    }
+
+    .main-nav a {
+        display: block !important;
+        padding: 14px 20px !important;
+        font-size: 1rem !important;
+        white-space: nowrap !important;
+        border-bottom: none !important;
+    }
+
+    .main-nav a:active {
+        background: rgba(255, 215, 0, 0.1);
+    }
+}
+
+/* ============================================================
+   ПЛЕЕР — МОБИЛЬНАЯ ВЕРСИЯ
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    .epic-player {
+        margin: 10px 0 !important;
+        padding: 14px !important;
+        border-radius: 8px !important;
+    }
+
+    /* Экран плеера — уменьшаем высоту */
+    .player-display {
+        aspect-ratio: 4/3 !important;
+        margin-bottom: 12px !important;
+        border-radius: 6px !important;
+    }
+
+    /* Название трека */
+    .track-title {
+        font-size: 1.1rem !important;
+        text-align: center;
+        margin-bottom: 4px;
+    }
+
+    .track-artist,
+    .track-album {
+        font-size: 0.85rem !important;
+        text-align: center;
+    }
+
+    /* Прогресс бар */
+    .progress-container {
+        gap: 8px;
+        align-items: center;
+    }
+
+    .progress-bar {
+        height: 8px !important;          /* выше — легче тыкать */
+        border-radius: 4px !important;
+    }
+
+    .progress-handle {
+        width: 18px !important;
+        height: 18px !important;
+        margin-top: -5px !important;
+    }
+
+    .time {
+        font-size: 0.75rem !important;
+        min-width: 36px !important;
+    }
+
+    /* Громкость — скрываем процент на маленьких экранах */
+    .volume-container {
+        gap: 8px;
+    }
+
+    .volume-percentage {
+        display: none;
+    }
+
+    .volume-slider {
+        max-width: 140px;
+    }
+
+    /* Кнопки управления — крупнее для тача */
+    .player-controls {
+        gap: 12px !important;
+        flex-wrap: nowrap;
+        justify-content: center;
+    }
+
+    .control-btn {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 1.3rem !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .control-btn.play-btn {
+        width: 56px !important;
+        height: 56px !important;
+        font-size: 1.5rem !important;
+    }
+
+    /* Режимы (аудио/видео/очередь/текст/eq) — скролл вместо переноса */
+    .player-modes {
+        display: flex !important;
+        overflow-x: auto !important;
+        gap: 6px !important;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .player-modes::-webkit-scrollbar { display: none; }
+
+    .mode-btn {
+        flex-shrink: 0 !important;
+        padding: 8px 12px !important;
+        font-size: 0.75rem !important;
+        white-space: nowrap !important;
+    }
+
+    /* Статистика */
+    .track-stats-compact {
+        gap: 8px !important;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .stat-compact-btn,
+    .stat-compact-item {
+        padding: 6px 12px !important;
+        font-size: 0.85rem !important;
+    }
+
+    /* Очередь */
+    .queue-list {
+        max-height: 250px !important;
+    }
+
+    .queue-item {
+        padding: 10px 8px !important;
+    }
+
+    .queue-track-name {
+        font-size: 0.85rem !important;
+    }
+
+    .queue-track-stats {
+        display: none;    /* скрываем статы в очереди на мобилке */
+    }
+}
+
+@media (max-width: 480px) {
+
+    .epic-player {
+        padding: 10px !important;
+        margin: 6px 0 !important;
+    }
+
+    .control-btn {
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 1.1rem !important;
+    }
+
+    .control-btn.play-btn {
+        width: 50px !important;
+        height: 50px !important;
+    }
+
+    .player-controls {
+        gap: 8px !important;
+    }
+
+    .mode-btn {
+        padding: 7px 9px !important;
+        font-size: 0.7rem !important;
+    }
+
+    /* Эквалайзер пресеты — скролл */
+    .eq-presets {
+        display: flex !important;
+        overflow-x: auto !important;
+        gap: 6px !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 4px;
+    }
+
+    .eq-presets::-webkit-scrollbar { display: none; }
+
+    .eq-preset-btn {
+        flex-shrink: 0 !important;
+        padding: 6px 10px !important;
+        font-size: 0.7rem !important;
+        white-space: nowrap !important;
+    }
+}
+
+/* ============================================================
+   АЛЬБОМЫ — МОБИЛЬНАЯ ВЕРСИЯ
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    .album-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+    }
+
+    .album-showcase-card {
+        padding: 12px !important;
+    }
+
+    .album-cover-wrapper {
+        margin-bottom: 10px;
+    }
+
+    .album-track-list {
+        font-size: 0.82rem !important;
+    }
+
+    .track-playable {
+        padding: 8px 10px !important;
+    }
+
+    /* Страница альбома с плеером */
+    .album-with-player {
+        flex-direction: column !important;
+    }
+
+    .page-content {
+        padding: 14px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .album-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .album-showcase-card {
+        padding: 10px !important;
+    }
+}
+
+/* ============================================================
+   ГЛАВНАЯ СТРАНИЦА — МОБИЛЬНАЯ ВЕРСИЯ
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    .hero-section,
+    .hero-banner {
+        min-height: 50vh !important;
+        padding: 40px 20px !important;
+    }
+
+    .hero-content h1,
+    .album-hero-title {
+        font-size: clamp(1.6rem, 7vw, 2.5rem) !important;
+        letter-spacing: 1px !important;
+        line-height: 1.2 !important;
+    }
+
+    .hero-content p {
+        font-size: 1rem !important;
+    }
+
+    .hero-buttons,
+    .hero-actions {
+        flex-direction: column !important;
+        gap: 10px !important;
+        align-items: center;
+    }
+
+    .hero-button,
+    .btn-primary,
+    .btn-secondary {
+        width: 100% !important;
+        max-width: 280px !important;
+        text-align: center !important;
+        padding: 14px 20px !important;
+    }
+
+    /* Секции */
+    .section-title,
+    .page-title {
+        font-size: clamp(1.3rem, 5vw, 2rem) !important;
+    }
+}
+
+/* ============================================================
+   ПЕРЕКЛЮЧАТЕЛЬ ТЕМ — мобильный (открывается вверх, не вправо)
+   ============================================================ */
+
+@media (max-width: 480px) {
+    #theme-switcher-v3 {
+        bottom: 16px !important;
+        left: 16px !important;
+    }
+
+    .theme-fab {
+        width: 46px !important;
+        height: 46px !important;
+        font-size: 22px !important;
+    }
+
+    .theme-options-v3 {
+        min-width: 180px !important;
+        padding: 10px !important;
+    }
+
+    .theme-option-v3 {
+        padding: 10px 12px !important;
+    }
+}
+
+/* ============================================================
+   НОВОСТИ / ГАЛЕРЕЯ — МОБИЛЬНАЯ ВЕРСИЯ
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    .news-grid,
+    .gallery-grid,
+    .blog-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .gallery-item img {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    .blog-card,
+    .news-item,
+    .news-card {
+        padding: 14px !important;
+    }
+
+    /* Таблицы треков */
+    .track-table {
+        display: block !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .track-table th,
+    .track-table td {
+        padding: 8px 6px !important;
+        font-size: 0.8rem !important;
+    }
+}
+
+/* ============================================================
+   ОБЩИЕ ЭЛЕМЕНТЫ
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    /* Кнопки — большие области касания */
+    .btn,
+    button:not(.hamburger-menu):not(.theme-fab):not(.control-btn):not(.mode-btn) {
+        min-height: 44px;
+        padding: 10px 18px !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* Текст не выходит за экран */
+    h1, h2, h3, p, span, li {
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+
+    /* Формы */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    textarea,
+    select {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important; /* предотвращает zoom на iOS */
+    }
+}
