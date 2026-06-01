@@ -1,22 +1,10 @@
-// Создай /manifest.json
 {
   "name": "Master of Illusion",
   "short_name": "MOI",
-  "description": "AI Metal Music",
+  "description": "AI Metal Music — Power Metal / Hard Rock / Punk Rock",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#FFD700",
-  "icons": [
-    {
-      "src": "/assets/images/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/assets/images/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+  "icons": []
 }
