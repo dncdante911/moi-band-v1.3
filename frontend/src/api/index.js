@@ -15,9 +15,15 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// Обрабатываем 401 (сессия истекла)
+// Проверяем что ответ - JSON, а не HTML страница ошибки PHP
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    const ct = res.headers['content-type'] || ''
+    if (!ct.includes('application/json') && typeof res.data === 'string' && res.data.includes('<!DOCTYPE')) {
+      return Promise.reject(new Error('API вернул HTML вместо JSON. Проверь .env и подключение к БД.'))
+    }
+    return res
+  },
   (err) => {
     if (err.response?.status === 401) {
       localStorage.removeItem('jwt_token')
