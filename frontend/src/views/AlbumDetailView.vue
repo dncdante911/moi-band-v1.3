@@ -91,16 +91,20 @@ async function addToQueue(track) {
 onMounted(async () => {
   const id = route.params.id
   try {
-    const [albumRes, tracksRes] = await Promise.all([
-      albumsApi.getById(id),
-      albumsApi.getTracks(id),
-    ])
+    const albumRes = await albumsApi.getById(id)
     album.value = albumRes.data?.data || albumRes.data
-    tracks.value = tracksRes.data?.data || tracksRes.data || []
   } catch {
-    toast.error('Ошибка загрузки альбома')
+    toast.error('Альбом не найден')
   } finally {
     loading.value = false
+  }
+
+  try {
+    const tracksRes = await albumsApi.getTracks(id)
+    tracks.value = tracksRes.data?.data || tracksRes.data || []
+  } catch {
+    toast.error('Не удалось загрузить треки')
+  } finally {
     tracksLoading.value = false
   }
 })
