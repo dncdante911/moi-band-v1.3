@@ -17,8 +17,7 @@
 .about-banner {
     position: relative;
     height: 60vh;
-    background: linear-gradient(135deg, #000 0%, #1a1a2e 50%, #000 100%),
-                url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1400&q=80') center/cover;
+    background: linear-gradient(135deg, #000 0%, #1a1a2e 50%, #000 100%);
     display: flex;
     align-items: center;
     justify-content: center;

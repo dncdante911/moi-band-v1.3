@@ -20,14 +20,37 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 // Треки альбома
 if (isset($_GET['album_id']) && isset($_GET['tracks'])) {
     $albumId = (int)$_GET['album_id'];
-    $stmt = $pdo->prepare(
-        "SELECT id, title, description, albumId, coverImagePath, fullAudioPath,
-                lyrics, duration, views, videoPath
-         FROM Track WHERE albumId = ? ORDER BY id ASC"
-    );
-    $stmt->execute([$albumId]);
-    $tracks = $stmt->fetchAll();
-    APIResponse::success($tracks);
+    try {
+        $stmt = $pdo->prepare(
+            "SELECT id, title, description, albumId, coverImagePath, fullAudioPath,
+                    duration, views, videoPath
+             FROM Track WHERE albumId = ? ORDER BY id ASC"
+        );
+        $stmt->execute([$albumId]);
+        $tracks = $stmt->fetchAll();
+
+        // Sanitize strings to valid UTF-8 to prevent json_encode failure
+        foreach ($tracks as &$t) {
+            foreach ($t as $k => $v) {
+                if (is_string($v)) {
+                    $t[$k] = mb_convert_encoding($v, 'UTF-8', 'UTF-8');
+                }
+            }
+        }
+        unset($t);
+
+        $json = json_encode(['success' => true, 'message' => 'Success', 'data' => $tracks],
+                             JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        if ($json === false) {
+            APIResponse::error('Ошибка кодирования данных: ' . json_last_error_msg(), 500);
+        }
+        http_response_code(200);
+        echo $json;
+        exit;
+    } catch (\PDOException $e) {
+        write_log('Tracks query error: ' . $e->getMessage(), 'error');
+        APIResponse::error('Ошибка загрузки треков', 500);
+    }
 }
 
 // Один альбом
