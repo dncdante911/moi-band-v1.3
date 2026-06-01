@@ -1,7 +1,8 @@
 <template>
   <div id="particles-js"></div>
-  <video autoplay muted loop id="background-video">
-    <source src="/assets/videos/background_video.mp4" type="video/mp4" />
+  <!-- Видео подключается только если файл есть на сервере -->
+  <video v-if="hasVideo" autoplay muted loop id="background-video">
+    <source :src="videoSrc" type="video/mp4" />
   </video>
 
   <TheHeader />
@@ -15,7 +16,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useThemeStore } from '@/store/theme.js'
 import TheHeader from '@/components/layout/TheHeader.vue'
 import TheFooter from '@/components/layout/TheFooter.vue'
@@ -23,10 +24,21 @@ import ToastContainer from '@/components/ui/ToastContainer.vue'
 
 const themeStore = useThemeStore()
 
+// Ищем видео в обоих возможных местах
+const videoSrc = ref('/assets/videos/background_video.mp4')
+const hasVideo = ref(false)
+
 onMounted(() => {
   themeStore.init()
+
+  // Проверяем что видео существует прежде чем рендерить тег
+  fetch(videoSrc.value, { method: 'HEAD' })
+    .then((r) => { if (r.ok) hasVideo.value = true })
+    .catch(() => {})
+
   if (window.particlesJS) {
-    window.particlesJS.load('particles-js', '/assets/js/particles-config.json', () => {})
+    window.particlesJS.load('particles-js', '/particles-config.json', () => {})
   }
 })
 </script>
+
