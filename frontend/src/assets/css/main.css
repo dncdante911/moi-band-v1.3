@@ -1,16 +1,23 @@
 /**
  * ФАЙЛ: assets/css/main.css
- * ОСНОВНОЙ CSS — Vite-версия
+ * ОСНОВНОЙ CSS — Vite-версия, все стили из оригинала
  */
 
-/* Сторонние CSS подключаются через index.html (Google Fonts) */
-@import './responsive.css';
+/* === Все CSS файлы оригинала === */
+@import './epic-home.css';
 @import './header-epic.css';
+@import './albums.css';
+@import './albums-epic.css';
+@import './about.css';
+@import './epic-player.css';
 @import './auth.css';
 @import './chat.css';
-@import './albums.css';
+@import './visualizer.css';
+@import './universal-theme.css';
+@import './responsive.css';
+@import './mobile.css';
 
-/* --- ОБЩИЕ СТИЛИ --- */
+/* === БАЗОВЫЕ СТИЛИ === */
 body {
     background-color: #000;
     font-family: 'Roboto', sans-serif;
@@ -21,28 +28,24 @@ body {
     font-size: 16px;
 }
 
-/* --- АНИМАЦИЯ ФОНА --- */
-#particles-js, #background-video {
-    position: fixed; 
-    right: 0; 
-    bottom: 0;
-    min-width: 100%; 
-    min-height: 100%;
-    top: 0; 
-    left: 0; 
+#particles-js {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+#background-video {
+    position: fixed;
+    right: 0; bottom: 0;
+    min-width: 100%; min-height: 100%;
+    top: 0; left: 0;
     z-index: -1;
+    opacity: 0.2;
+    object-fit: cover;
 }
 
-#particles-js { 
-    z-index: 0; 
-}
-
-#background-video { 
-    opacity: 0.2; 
-    object-fit: cover; 
-}
-
-/* --- ОБЩАЯ СТРУКТУРА --- */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -60,99 +63,77 @@ body {
     z-index: 5;
 }
 
-h1, h2, h3 {
-    font-family: 'Cinzel Decorative', serif;
+.main-content {
+    position: relative;
+    z-index: 1;
 }
 
-h1 { 
-    font-size: 2.5rem; 
-}
-
-h2 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #ff5500;
-    padding-bottom: 10px;
-    display: inline-block;
-}
-
-p { 
-    line-height: 1.7; 
-}
-
-/* --- ШАПКА И МЕНЮ --- */
-.site-header {
-    background-color: rgba(10, 10, 10, 0.8);
-    backdrop-filter: blur(10px);
-    padding: 10px 0;
-    position: sticky;
-    top: 0;
-    width: 100%;
-    z-index: 100;
-    border-bottom: 1px solid #444;
-}
-
-.header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo a {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 1.5rem;
-    color: #fff;
-    text-decoration: none;
-}
-
-.main-nav ul { 
-    margin: 0; 
-    padding: 0; 
-    list-style: none; 
-    display: flex; 
-}
-
-.main-nav li { 
-    margin-left: 20px; 
-}
-
-.main-nav a {
-    color: #ccc;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 0.9rem;
-    transition: color 0.3s, text-shadow 0.3s;
-}
-
-.main-nav a:hover { 
-    color: #ff5500; 
-    text-shadow: 0 0 5px #ff5500; 
-}
-
-/* --- ПОДВАЛ --- */
-.site-footer {
-    text-align: center;
-    padding: 20px;
-    background-color: #111;
-    border-top: 1px solid #333;
-    margin-top: 40px;
-}
-
-/* --- КНОПКИ --- */
-button, .btn {
-    padding: 10px 20px;
+/* Кнопки в навигации (выглядят как ссылки) */
+.nav-btn {
+    background: none;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    padding: 12px 16px;
+    font-size: 0.9rem;
     font-weight: bold;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    color: #ddd;
+    display: inline-block;
     transition: all 0.3s;
+    font-family: inherit;
 }
 
-button:hover, .btn:hover {
+.nav-btn:hover {
+    color: var(--gold, #FFD700);
+    text-shadow: 0 0 10px var(--gold, #FFD700);
     transform: translateY(-2px);
 }
 
-/* --- ИНПУТЫ --- */
+.theme-btn {
+    font-size: 1.2rem;
+    padding: 8px 12px;
+}
+
+/* === КНОПКИ === */
+.btn {
+    padding: 10px 20px;
+    border: 2px solid var(--gold, #FFD700);
+    background: linear-gradient(135deg, var(--gold, #FFD700) 0%, #DAA520 100%);
+    color: #000;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--gold, #FFD700) 0%, #DAA520 100%);
+    color: #000;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--gold, #FFD700);
+}
+
+.btn-ghost:hover {
+    background: rgba(255, 215, 0, 0.1);
+}
+
+.btn-sm {
+    padding: 6px 14px;
+    font-size: 0.85rem;
+}
+
+/* === ИНПУТЫ === */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -165,104 +146,410 @@ select {
     color: #e0e0e0;
     font-family: 'Roboto', sans-serif;
     transition: all 0.3s;
-}
-
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-textarea:focus,
-select:focus {
-    outline: none;
-    border-color: #ff5500;
-}
-
-/* --- КАРТОЧКИ --- */
-.card,
-.genre-card,
-.album-card,
-.influence-card {
-    background-color: rgba(20, 20, 20, 0.9);
-    border: 1px solid #666;
-    border-radius: 8px;
-    padding: 20px;
-    transition: all 0.3s;
-}
-
-.card:hover,
-.genre-card:hover,
-.album-card:hover,
-.influence-card:hover {
-    transform: translateY(-5px);
-    border-color: #ff5500;
-}
-
-/* --- ТАБЛИЦЫ --- */
-table {
     width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+    box-sizing: border-box;
 }
 
-th {
-    background-color: #ff5500;
-    color: #000;
-    padding: 10px;
-    text-align: left;
-    font-weight: bold;
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--gold, #FFD700);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
 }
 
-td {
-    padding: 10px;
-    border-bottom: 1px solid #333;
-    color: #e0e0e0;
-}
-
-tr:hover {
-    background-color: rgba(255, 85, 0, 0.1);
-}
-
-/* --- ССЫЛКИ --- */
+/* === ССЫЛКИ === */
 a {
-    color: #ff5500;
+    color: var(--gold, #FFD700);
     text-decoration: none;
+    transition: color 0.3s;
 }
 
 a:hover {
-    text-decoration: underline;
+    text-decoration: none;
+    color: #FFE135;
 }
 
-/* --- УТИЛИТЫ --- */
-.text-center {
+/* === FOOTER === */
+.site-footer {
     text-align: center;
+    padding: 30px 20px;
+    background: linear-gradient(135deg, rgba(10,10,15,0.98) 0%, rgba(20,15,35,0.98) 100%);
+    border-top: 2px solid var(--gold, #FFD700);
+    margin-top: 60px;
+    color: #aaa;
 }
 
-.text-right {
-    text-align: right;
+.site-footer a {
+    color: var(--gold, #FFD700);
+    margin: 0 10px;
 }
 
-/* --- МОБИЛЬНАЯ АДАПТИВНОСТЬ --- */
+.footer-nav {
+    margin-top: 10px;
+}
+
+/* === УТИЛИТЫ === */
+.text-center { text-align: center; }
+.text-right  { text-align: right; }
+.back-link   { display: inline-block; margin-bottom: 20px; color: #aaa; }
+.back-link:hover { color: var(--gold, #FFD700); }
+
+/* === ФОРМА AUTH === */
+.auth-form-wrapper {
+    max-width: 480px;
+    margin: 60px auto;
+    background: rgba(15,15,25,0.95);
+    border: 2px solid var(--gold, #FFD700);
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 0 40px rgba(255,215,0,0.2);
+}
+
+.auth-form-wrapper h2 {
+    color: var(--gold, #FFD700);
+    text-align: center;
+    margin-bottom: 30px;
+    font-family: 'Cinzel Decorative', serif;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #ccc;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.form-error   { color: #ff4444; margin-bottom: 15px; font-size: 0.9rem; }
+.form-success { color: #44ff88; margin-bottom: 15px; font-size: 0.9rem; }
+
+.auth-switch { text-align: center; margin-top: 20px; color: #aaa; }
+.auth-switch a { color: var(--gold, #FFD700); }
+
+/* === ПРОФИЛЬ === */
+.profile-wrapper {
+    max-width: 600px;
+    margin: 40px auto;
+}
+.profile-wrapper h2 {
+    color: var(--gold, #FFD700);
+    margin-bottom: 30px;
+}
+.profile-info p { margin: 12px 0; color: #ccc; }
+.profile-info strong { color: var(--gold, #FFD700); }
+.profile-form { margin-top: 30px; }
+
+/* === ЛОАДЕР === */
+.empty-state {
+    text-align: center;
+    color: #888;
+    font-size: 1.2rem;
+    padding: 50px 20px;
+}
+
+/* === ГАЛЕРЕЯ === */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+    margin-top: 30px;
+}
+
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 2px solid rgba(255,215,0,0.2);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.gallery-item img {
+    width: 100%; height: 200px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s;
+}
+
+.gallery-item:hover {
+    border-color: var(--gold, #FFD700);
+    box-shadow: 0 0 20px rgba(255,215,0,0.3);
+}
+
+.gallery-item:hover img { transform: scale(1.05); }
+
+.gallery-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+    color: var(--gold, #FFD700);
+    font-weight: bold;
+}
+
+.gallery-item:hover .gallery-overlay { opacity: 1; }
+
+/* === НОВОСТИ ДЕТАЛИ === */
+.news-full h1 {
+    color: var(--gold, #FFD700);
+    font-family: 'Cinzel Decorative', serif;
+    margin-bottom: 10px;
+}
+.news-meta {
+    color: #888;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+}
+.news-content {
+    color: #ccc;
+    line-height: 1.8;
+    font-size: 1.05rem;
+}
+.load-more {
+    text-align: center;
+    margin: 40px 0;
+}
+
+/* === ПЛЕЕР СТРАНИЦА === */
+.player-sidebar {
+    background: rgba(10,10,20,0.9);
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 8px;
+    padding: 20px;
+    max-height: 500px;
+    overflow-y: auto;
+    margin-bottom: 30px;
+}
+
+.sidebar-title {
+    color: var(--gold, #FFD700);
+    font-family: 'Cinzel Decorative', serif;
+    margin: 0 0 15px;
+    font-size: 1.1rem;
+}
+
+.queue-list { list-style: none; padding: 0; margin: 0; }
+
+.queue-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid rgba(255,215,0,0.1);
+}
+
+.queue-item:hover, .queue-item.active {
+    background: rgba(255,215,0,0.1);
+}
+
+.queue-item.active { border-left: 3px solid var(--gold, #FFD700); }
+
+.queue-num  { color: #888; font-size: 0.8rem; min-width: 24px; }
+.queue-info { flex: 1; overflow: hidden; }
+.queue-title { display: block; color: #eee; font-weight: bold; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.queue-artist { display: block; color: #888; font-size: 0.8rem; }
+.queue-dur  { color: #888; font-size: 0.8rem; }
+.queue-empty { color: #666; text-align: center; padding: 20px; }
+
+.player-main { max-width: 600px; margin: 0 auto; }
+
+.player-artwork-area { text-align: center; margin-bottom: 20px; }
+.player-artwork-frame {
+    width: 220px; height: 220px;
+    margin: 0 auto;
+    border: 3px solid var(--gold, #FFD700);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(255,215,0,0.3);
+}
+.player-artwork { width: 100%; height: 100%; object-fit: cover; }
+.player-artwork-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 4rem;
+    background: rgba(255,215,0,0.05);
+}
+
+.player-track-info { text-align: center; margin-bottom: 20px; }
+.track-title  { color: var(--gold, #FFD700); font-family: 'Cinzel Decorative', serif; font-size: 1.4rem; margin: 0 0 8px; }
+.track-artist { color: #aaa; margin: 0 0 4px; }
+.track-album  { color: #777; font-size: 0.9rem; margin: 0; }
+
+.player-reactions { display: flex; gap: 12px; justify-content: center; margin-bottom: 20px; }
+.reaction-btn {
+    background: rgba(255,215,0,0.1);
+    border: 1px solid rgba(255,215,0,0.3);
+    color: #ddd;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+.reaction-btn:hover, .reaction-btn.active {
+    background: rgba(255,215,0,0.2);
+    border-color: var(--gold, #FFD700);
+    color: var(--gold, #FFD700);
+}
+
+.player-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.time-current, .time-duration { color: #888; font-size: 0.85rem; min-width: 38px; }
+.progress-bar {
+    flex: 1; height: 6px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 3px; cursor: pointer;
+    position: relative;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold, #FFD700), #DAA520);
+    border-radius: 3px;
+    transition: width 0.1s;
+}
+
+.player-controls { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 20px; }
+.ctrl-btn {
+    background: none; border: none;
+    color: #ccc; font-size: 1.4rem; cursor: pointer;
+    padding: 8px; border-radius: 50%;
+    transition: all 0.3s;
+}
+.ctrl-btn:hover, .ctrl-btn.active { color: var(--gold, #FFD700); transform: scale(1.15); }
+.ctrl-play { font-size: 2rem; }
+.ctrl-prev, .ctrl-next { font-size: 1.6rem; }
+
+.player-volume { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.volume-slider { flex: 1; accent-color: var(--gold, #FFD700); cursor: pointer; }
+
+.player-eq { margin-top: 20px; padding: 16px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid rgba(255,215,0,0.2); }
+.player-eq h4 { color: var(--gold, #FFD700); margin: 0 0 12px; font-size: 0.95rem; }
+.eq-presets { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.eq-preset-btn {
+    padding: 4px 12px; font-size: 0.8rem; cursor: pointer;
+    background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3);
+    color: #ccc; border-radius: 12px; transition: all 0.2s;
+}
+.eq-preset-btn:hover, .eq-preset-btn.active { background: rgba(255,215,0,0.2); color: var(--gold, #FFD700); border-color: var(--gold, #FFD700); }
+.eq-bands { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; }
+.eq-band { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 40px; }
+.eq-band label { font-size: 0.7rem; color: #888; }
+.eq-slider { writing-mode: vertical-lr; direction: rtl; height: 80px; accent-color: var(--gold, #FFD700); }
+.eq-band span { font-size: 0.7rem; color: #aaa; }
+
+.player-lyrics { margin-top: 30px; padding: 20px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,215,0,0.2); border-radius: 8px; }
+.player-lyrics h3 { color: var(--gold, #FFD700); margin: 0 0 16px; }
+.lyrics-text { white-space: pre-wrap; color: #ccc; line-height: 1.8; font-size: 0.95rem; font-family: inherit; }
+.lyrics-enter-active, .lyrics-leave-active { transition: all 0.4s; }
+.lyrics-enter-from, .lyrics-leave-to { opacity: 0; transform: translateY(-10px); }
+
+/* === АЛЬБОМ ДЕТАЛИ === */
+.album-detail-header {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+}
+.album-detail-cover img {
+    width: 280px; height: 280px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 3px solid var(--gold, #FFD700);
+    box-shadow: 0 0 40px rgba(255,215,0,0.3);
+}
+.album-detail-meta { flex: 1; min-width: 200px; }
+.album-detail-meta h1 { color: var(--gold, #FFD700); margin: 0 0 12px; }
+.album-year { color: #888; margin: 0 0 16px; }
+.album-description { color: #ccc; line-height: 1.7; margin-bottom: 24px; }
+
+.tracklist-section h2 { color: var(--gold, #FFD700); margin-bottom: 20px; }
+.tracklist { list-style: none; padding: 0; margin: 0; }
+.track-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255,215,0,0.1);
+    transition: background 0.2s;
+    border-radius: 6px;
+}
+.track-item:hover, .track-item.playing { background: rgba(255,215,0,0.08); }
+.track-item.playing .track-title { color: var(--gold, #FFD700); }
+.track-num  { color: #888; font-size: 0.85rem; min-width: 28px; }
+.track-info { flex: 1; }
+.track-title  { display: block; font-weight: bold; color: #eee; }
+.track-artist { display: block; font-size: 0.85rem; color: #888; }
+.track-dur    { color: #888; font-size: 0.85rem; }
+.track-actions { display: flex; gap: 6px; }
+.track-play-btn, .track-queue-btn {
+    background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3);
+    color: #ddd; padding: 6px 12px; border-radius: 4px; cursor: pointer;
+    font-size: 0.9rem; transition: all 0.2s;
+}
+.track-play-btn:hover, .track-queue-btn:hover {
+    background: rgba(255,215,0,0.2); color: var(--gold, #FFD700);
+}
+
+/* === ЧАТ === */
+.chat-layout { display: flex; gap: 24px; min-height: 600px; }
+.chat-rooms { width: 240px; flex-shrink: 0; }
+.chat-rooms h3 { color: var(--gold, #FFD700); margin: 0 0 16px; }
+.room-list { list-style: none; padding: 0; margin: 0 0 16px; }
+.room-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px; border-radius: 6px; cursor: pointer;
+    border: 1px solid rgba(255,215,0,0.1); margin-bottom: 6px;
+    transition: all 0.2s; color: #ccc;
+}
+.room-item:hover, .room-item.active { background: rgba(255,215,0,0.1); border-color: var(--gold, #FFD700); color: var(--gold, #FFD700); }
+.room-count { background: var(--gold, #FFD700); color: #000; border-radius: 10px; padding: 2px 8px; font-size: 0.75rem; }
+
+.chat-messages-area { flex: 1; display: flex; flex-direction: column; }
+.chat-header { padding: 0 0 12px; border-bottom: 1px solid rgba(255,215,0,0.2); margin-bottom: 16px; }
+.chat-header h3 { color: var(--gold, #FFD700); margin: 0; }
+.chat-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: #666; font-size: 1.1rem; }
+
+.messages-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; max-height: 500px; }
+.message { max-width: 75%; }
+.message.own { align-self: flex-end; }
+.message-meta { font-size: 0.78rem; color: #888; margin-bottom: 4px; display: flex; gap: 8px; }
+.message.own .message-meta { flex-direction: row-reverse; }
+.message-author { color: var(--gold, #FFD700); }
+.message-body {
+    background: rgba(255,255,255,0.07); padding: 10px 14px;
+    border-radius: 8px; color: #eee; font-size: 0.95rem; line-height: 1.5;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.message.own .message-body { background: rgba(255,215,0,0.1); border-color: rgba(255,215,0,0.3); }
+.typing-indicator { color: #888; font-style: italic; font-size: 0.85rem; }
+
+.chat-input-form { display: flex; gap: 10px; }
+.chat-input-form input { flex: 1; }
+.chat-input-form button { flex-shrink: 0; white-space: nowrap; }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+.modal { background: #1a1a2e; border: 2px solid var(--gold, #FFD700); border-radius: 12px; padding: 30px; min-width: 320px; }
+.modal h3 { color: var(--gold, #FFD700); margin: 0 0 20px; }
+.modal input { margin-bottom: 16px; }
+.modal-actions { display: flex; gap: 12px; }
+
+/* === СЕКЦИЯ НОВОСТЕЙ (load more) === */
+.load-more { text-align: center; margin: 40px 0; }
+
+/* === АДАПТИВНОСТЬ === */
 @media (max-width: 768px) {
-    .logo a {
-        font-size: 1.2rem;
-    }
-    
-    .main-nav ul {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .main-nav li {
-        margin-left: 0;
-    }
-    
-    h1 {
-        font-size: 2rem;
-    }
-    
-    h2 {
-        font-size: 1.5rem;
-    }
+    .page-content { padding: 20px 15px; }
+    .album-detail-header { flex-direction: column; }
+    .album-detail-cover img { width: 100%; height: auto; }
+    .chat-layout { flex-direction: column; }
+    .chat-rooms { width: 100%; }
+    .eq-bands { justify-content: center; }
 }
-
-/* ВАЖНО: ТЕМЫ БУДУТ ПЕРЕОПРЕДЕЛЯТЬ ЭНОЭТИ СТИЛИ */
-/* Используй CSS переменные в темах (--primary-color, etc) */
