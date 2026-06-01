@@ -1,8 +1,8 @@
 <?php
 /**
  * API: albums.php
- * GET /api/albums.php         — список всех альбомов
- * GET /api/albums.php?id=N    — один альбом
+ * GET /api/albums.php              — список всех альбомов
+ * GET /api/albums.php?id=N         — один альбом
  * GET /api/albums.php?album_id=N&tracks=1 — треки альбома
  */
 
@@ -13,8 +13,7 @@ header('Access-Control-Allow-Headers: Authorization, Content-Type');
 require_once __DIR__ . '/../include_config/db_connect.php';
 require_once __DIR__ . '/../include_config/APIResponse.php';
 
-$method = $_SERVER['REQUEST_METHOD'];
-if ($method !== 'GET') {
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     APIResponse::error('Method not allowed', 405);
 }
 
@@ -22,8 +21,9 @@ if ($method !== 'GET') {
 if (isset($_GET['album_id']) && isset($_GET['tracks'])) {
     $albumId = (int)$_GET['album_id'];
     $stmt = $pdo->prepare(
-        "SELECT id, title, artist, duration, filePath, coverImagePath, lyrics
-         FROM Track WHERE albumId = ? ORDER BY trackNumber ASC, id ASC"
+        "SELECT id, title, description, albumId, coverImagePath, fullAudioPath,
+                lyrics, duration, views, videoPath
+         FROM Track WHERE albumId = ? ORDER BY id ASC"
     );
     $stmt->execute([$albumId]);
     $tracks = $stmt->fetchAll();
