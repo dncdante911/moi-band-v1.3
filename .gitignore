@@ -27,6 +27,10 @@ cache/
 vendor/
 node_modules/
 
+# Vite build output (генерируется командой: cd frontend && npm run build)
+public_html/
+frontend/dist/
+
 # User uploads (игнорируем файлы, но не .htaccess-конфиги в этих папках)
 public/uploads/**
 !public/uploads/**/.htaccess
