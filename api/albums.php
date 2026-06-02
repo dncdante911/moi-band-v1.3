@@ -27,29 +27,36 @@ if (isset($_GET['album_id']) && isset($_GET['tracks'])) {
              FROM Track WHERE albumId = ? ORDER BY id ASC"
         );
         $stmt->execute([$albumId]);
-        $tracks = $stmt->fetchAll();
+        $tracks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Sanitize strings to valid UTF-8 to prevent json_encode failure
-        foreach ($tracks as &$t) {
-            foreach ($t as $k => $v) {
-                if (is_string($v)) {
-                    $t[$k] = mb_convert_encoding($v, 'UTF-8', 'UTF-8');
-                }
+        // Force valid UTF-8 without mb_ functions
+        array_walk_recursive($tracks, function (&$v) {
+            if (is_string($v)) {
+                $v = iconv('UTF-8', 'UTF-8//IGNORE', $v);
             }
-        }
-        unset($t);
+        });
 
-        $json = json_encode(['success' => true, 'message' => 'Success', 'data' => $tracks],
-                             JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        $json = json_encode(
+            ['success' => true, 'message' => 'Success', 'data' => $tracks],
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        );
         if ($json === false) {
-            APIResponse::error('Ошибка кодирования данных: ' . json_last_error_msg(), 500);
+            // Fallback: strip non-ASCII and retry
+            array_walk_recursive($tracks, function (&$v) {
+                if (is_string($v)) $v = preg_replace('/[^\x09\x0A\x0D\x20-\x7E]/u', '', $v);
+            });
+            $json = json_encode(
+                ['success' => true, 'message' => 'Success', 'data' => $tracks],
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            );
         }
         http_response_code(200);
-        echo $json;
+        header('Content-Type: application/json; charset=utf-8');
+        echo $json ?: '{"success":false,"error":"json encode failed"}';
         exit;
-    } catch (\PDOException $e) {
-        write_log('Tracks query error: ' . $e->getMessage(), 'error');
-        APIResponse::error('Ошибка загрузки треков', 500);
+    } catch (\Throwable $e) {
+        write_log('Tracks error: ' . $e->getMessage(), 'error');
+        APIResponse::error('Ошибка: ' . $e->getMessage(), 500);
     }
 }
 
