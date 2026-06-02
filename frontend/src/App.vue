@@ -36,9 +36,15 @@ onMounted(() => {
     .then((r) => { if (r.ok) hasVideo.value = true })
     .catch(() => {})
 
-  if (window.particlesJS) {
-    window.particlesJS.load('particles-js', '/particles-config.json', () => {})
+  // particles.js loaded with defer — retry until available
+  const tryParticles = (attempts = 0) => {
+    if (window.particlesJS) {
+      window.particlesJS.load('particles-js', '/particles-config.json', () => {})
+    } else if (attempts < 50) {
+      setTimeout(() => tryParticles(attempts + 1), 100)
+    }
   }
+  tryParticles()
 })
 </script>
 
