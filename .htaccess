@@ -5,14 +5,8 @@
 Options -Indexes
 ServerSignature Off
 
-# ── HTTPS принудительный редирект ────────────────────────────────
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-
-    # HTTP → HTTPS (через Nginx reverse proxy — проверяем X-Forwarded-Proto)
-    RewriteCond %{HTTP:X-Forwarded-Proto} ^http$
-    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-</IfModule>
+# HTTPS редирект убран — его делает Nginx (порт 80→443).
+# Если включить здесь, будет петля 302 при Nginx→Apache проксировании.
 
 # ── Запрет доступа к служебным файлам ────────────────────────────
 <FilesMatch "^(\.env|\.env\.example|\.git|composer\.json|composer\.lock|package\.json|package-lock\.json|.*\.sql|.*\.log|.*\.sh)$">
