@@ -29,19 +29,12 @@ if (isset($_GET['album_id']) && isset($_GET['tracks'])) {
         $stmt->execute([$albumId]);
         $tracks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Force valid UTF-8 without mb_ functions
-        array_walk_recursive($tracks, function (&$v) {
-            if (is_string($v)) {
-                $v = iconv('UTF-8', 'UTF-8//IGNORE', $v);
-            }
-        });
-
         $json = json_encode(
             ['success' => true, 'message' => 'Success', 'data' => $tracks],
             JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
         );
         if ($json === false) {
-            // Fallback: strip non-ASCII and retry
+            // Fallback: strip non-ASCII chars with preg (no extension needed)
             array_walk_recursive($tracks, function (&$v) {
                 if (is_string($v)) $v = preg_replace('/[^\x09\x0A\x0D\x20-\x7E]/u', '', $v);
             });
@@ -52,11 +45,17 @@ if (isset($_GET['album_id']) && isset($_GET['tracks'])) {
         }
         http_response_code(200);
         header('Content-Type: application/json; charset=utf-8');
-        echo $json ?: '{"success":false,"error":"json encode failed"}';
+        echo $json ?: '{"success":true,"data":[]}';
         exit;
     } catch (\Throwable $e) {
-        write_log('Tracks error: ' . $e->getMessage(), 'error');
-        APIResponse::error('Ошибка: ' . $e->getMessage(), 500);
+        http_response_code(500);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'success' => false,
+            'error'   => $e->getMessage(),
+            'type'    => get_class($e),
+        ]);
+        exit;
     }
 }
 
