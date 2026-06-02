@@ -1,49 +1,88 @@
 <template>
-  <div class="container page-content">
-    <p v-if="loading" class="empty-state">Загружаем альбом...</p>
+  <div>
+    <p v-if="loading" class="empty-state" style="padding: 80px 20px;">Загружаем альбом...</p>
+
     <template v-else-if="album">
-      <div class="album-detail-header">
-        <div class="album-detail-cover">
-          <img :src="album.coverImagePath" :alt="album.title" />
-        </div>
-        <div class="album-detail-meta">
-          <h1>{{ album.title }}</h1>
-          <p v-if="album.releaseDate" class="album-year">
-            📅 {{ new Date(album.releaseDate).getFullYear() }}
+      <!-- Баннер -->
+      <div class="album-page-banner">
+        <div class="banner-overlay"></div>
+        <div class="banner-glow"></div>
+        <div class="banner-content">
+          <h1 class="banner-title">💿 {{ album.title }}</h1>
+          <p class="banner-subtitle">
+            <template v-if="album.releaseDate">📅 {{ new Date(album.releaseDate).getFullYear() }}</template>
+            <template v-if="tracks.length"> • 🎵 {{ tracks.length }} треков</template>
           </p>
-          <p v-if="album.description" class="album-description">{{ album.description }}</p>
-          <button class="btn btn-primary" @click="playAll">▶️ Слушать всё</button>
         </div>
       </div>
 
-      <section class="tracklist-section">
-        <h2>🎵 Треклист</h2>
-        <p v-if="tracksLoading" class="empty-state">Загружаем треки...</p>
-        <p v-else-if="!tracks.length" class="empty-state">Треки ещё не добавлены</p>
-        <ul v-else class="tracklist">
-          <li
-            v-for="(track, i) in tracks"
-            :key="track.id"
-            class="track-item"
-            :class="{ playing: playerStore.currentTrack?.id === track.id && playerStore.isPlaying }"
-          >
-            <span class="track-num">{{ String(i + 1).padStart(2, '0') }}</span>
-            <div class="track-info">
-              <span class="track-title">{{ track.title }}</span>
-              <span class="track-artist" v-if="track.artist">{{ track.artist }}</span>
+      <div class="container page-content album-page">
+        <!-- Информация об альбоме -->
+        <section class="album-header">
+          <div class="album-cover">
+            <img :src="album.coverImagePath" :alt="album.title" class="album-cover-image" />
+          </div>
+          <div class="album-info-section">
+            <h2 class="album-title-main">{{ album.title }}</h2>
+            <p v-if="album.releaseDate" class="album-release-date">
+              📅 Дата релиза: {{ new Date(album.releaseDate).toLocaleDateString('ru-RU') }}
+            </p>
+            <div class="album-stats">
+              <span class="stat">🎵 {{ tracksLoading ? '...' : tracks.length }} треков</span>
             </div>
-            <span class="track-dur">{{ formatTime(track.duration) }}</span>
-            <div class="track-actions">
-              <button class="track-play-btn" @click="playTrack(track, i)" title="Играть">
-                {{ playerStore.currentTrack?.id === track.id && playerStore.isPlaying ? '⏸' : '▶️' }}
+            <div v-if="album.description" class="album-description">
+              <h3>Описание</h3>
+              <p>{{ album.description }}</p>
+            </div>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">
+              <button class="btn btn-primary" @click="playAll" :disabled="!tracks.length">
+                ▶️ Слушать всё
               </button>
-              <button class="track-queue-btn" @click="addToQueue(track)" title="В очередь">➕</button>
+              <RouterLink to="/albums" class="back-link">← Все альбомы</RouterLink>
             </div>
-          </li>
-        </ul>
-      </section>
+          </div>
+        </section>
+
+        <!-- Треклист -->
+        <section class="album-tracklist">
+          <h2 class="tracklist-title">🎵 Треклист</h2>
+          <p v-if="tracksLoading" class="empty-tracklist">Загружаем треки...</p>
+          <p v-else-if="!tracks.length" class="empty-tracklist">Треки ещё не добавлены</p>
+
+          <div v-else class="tracks-container">
+            <div
+              v-for="(track, i) in tracks"
+              :key="track.id"
+              class="track-item"
+              :class="{ playing: playerStore.currentTrack?.id === track.id && playerStore.isPlaying }"
+            >
+              <div class="track-number">{{ String(i + 1).padStart(2, '0') }}</div>
+
+              <div class="track-cover">
+                <img :src="track.coverImagePath" :alt="track.title" />
+              </div>
+
+              <div class="track-info">
+                <h3 class="track-title">{{ track.title }}</h3>
+                <p v-if="track.description" class="track-description">{{ track.description }}</p>
+                <p v-if="track.duration" class="track-description">
+                  ⏱ {{ formatTime(track.duration) }}
+                </p>
+              </div>
+
+              <div class="track-actions-col">
+                <button class="track-play-btn" @click="playTrack(track, i)">
+                  {{ playerStore.currentTrack?.id === track.id && playerStore.isPlaying ? '⏸ Пауза' : '▶️ Слушать' }}
+                </button>
+                <button class="track-queue-btn" @click="addToQueue(track)">➕ В очередь</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </template>
-    <p v-else class="empty-state">Альбом не найден</p>
+
+    <p v-else class="empty-state" style="padding:80px 20px;">Альбом не найден</p>
   </div>
 </template>
 
