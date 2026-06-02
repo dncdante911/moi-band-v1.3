@@ -1,71 +1,133 @@
 <template>
   <div class="container page-content">
-    <div class="chat-layout">
-      <!-- Список комнат -->
-      <aside class="chat-rooms">
-        <h3>💬 Комнаты</h3>
-        <ul class="room-list">
-          <li
-            v-for="room in rooms"
-            :key="room.id"
-            class="room-item"
-            :class="{ active: currentRoom?.id === room.id }"
-            @click="selectRoom(room)"
-          >
-            <span class="room-name">{{ room.name }}</span>
-            <span class="room-count" v-if="room.user_count">{{ room.user_count }}</span>
-          </li>
-        </ul>
-        <button class="btn btn-sm" @click="showCreateRoom = true">+ Создать комнату</button>
-      </aside>
+    <div class="chat-container">
+      <div class="chat-wrapper">
+        <!-- Rooms sidebar -->
+        <aside class="chat-sidebar">
+          <h3>💬 Комнаты</h3>
+          <ul class="rooms-list">
+            <li v-for="room in rooms" :key="room.id">
+              <a href="#" class="room-link" :class="{ active: currentRoom?.id === room.id }" @click.prevent="selectRoom(room)">
+                <span class="room-icon">{{ room.icon || '💬' }}</span>
+                <span class="room-name">{{ room.name }}</span>
+                <span v-if="room.user_count" class="room-badge">{{ room.user_count }}</span>
+              </a>
+            </li>
+          </ul>
+          <button class="btn btn-sm create-room-btn" @click="showCreateRoom = true">+ Создать</button>
+        </aside>
 
-      <!-- Сообщения -->
-      <section class="chat-messages-area">
-        <div v-if="!currentRoom" class="chat-empty">
-          Выберите комнату для общения
-        </div>
-        <template v-else>
-          <div class="chat-header">
-            <h3>{{ currentRoom.name }}</h3>
+        <!-- Main messages area -->
+        <section class="chat-main">
+          <div v-if="!currentRoom" class="empty-messages">
+            <p>💬</p>
+            <p>Выберите комнату для общения</p>
           </div>
-          <div class="messages-scroll" ref="messagesEl">
-            <div
-              v-for="msg in messages"
-              :key="msg.id"
-              class="message"
-              :class="{ own: msg.user_id === authStore.user?.id }"
-            >
-              <div class="message-meta">
-                <span class="message-author">{{ msg.username }}</span>
-                <span class="message-time">{{ formatTime(msg.created_at) }}</span>
+          <template v-else>
+            <div class="chat-header">
+              <h2>
+                <span class="room-icon">{{ currentRoom.icon || '💬' }}</span>
+                {{ currentRoom.name }}
+              </h2>
+              <p v-if="currentRoom.description" class="room-description">{{ currentRoom.description }}</p>
+            </div>
+
+            <div class="chat-messages" ref="messagesEl">
+              <div v-for="msg in messages" :key="msg.id" class="message">
+                <div class="message-avatar">
+                  <img v-if="msg.avatar_path" :src="msg.avatar_path" :alt="msg.username" />
+                  <div v-else class="avatar-placeholder">{{ (msg.username || '?')[0].toUpperCase() }}</div>
+                </div>
+                <div class="message-content">
+                  <div class="message-header">
+                    <span class="username">
+                      {{ msg.display_name || msg.username }}
+                      <span v-if="msg.is_admin" class="badge-admin">ADM</span>
+                      <span v-if="msg.is_verified" class="badge-verified">✓</span>
+                    </span>
+                    <span v-if="msg.is_edited" class="edited">(ред.)</span>
+                    <span class="timestamp">{{ msg.timestamp }}</span>
+                  </div>
+
+                  <!-- Reply context -->
+                  <div v-if="msg.reply_to" class="reply-context">
+                    <span class="reply-author">{{ msg.reply_to.username }}</span>:
+                    <span class="reply-text">{{ truncate(msg.reply_to.message, 80) }}</span>
+                  </div>
+
+                  <!-- Message text with clickable links -->
+                  <p class="message-text" v-html="formatMessage(msg.message)"></p>
+
+                  <!-- Sticker / image attachment -->
+                  <div v-if="msg.attachment" class="msg-attachment">
+                    <img
+                      v-if="['sticker', 'image'].includes(msg.attachment.type)"
+                      :src="msg.attachment.url"
+                      :class="msg.attachment.type === 'sticker' ? 'msg-sticker' : 'msg-image'"
+                      alt=""
+                      loading="lazy"
+                      @error="$event.target.classList.add('img-error')"
+                    />
+                    <a v-else-if="msg.attachment.type === 'file'" :href="msg.attachment.url" target="_blank" rel="noopener noreferrer" class="msg-file">
+                      📎 {{ fileBaseName(msg.attachment.url) }}
+                    </a>
+                  </div>
+
+                  <!-- Link preview (only if no image attachment) -->
+                  <LinkPreview
+                    v-if="!msg.attachment && extractUrl(msg.message)"
+                    :url="extractUrl(msg.message)"
+                  />
+                </div>
               </div>
-              <div class="message-body">{{ msg.message }}</div>
+
+              <div v-if="typingUsers.length" class="typing-indicator">
+                <span>{{ typingUsers.join(', ') }} печатает...</span>
+              </div>
             </div>
-            <div v-if="typingUsers.length" class="typing-indicator">
-              {{ typingUsers.join(', ') }} печатает...
+
+            <div class="chat-input-area">
+              <!-- Link preview while composing -->
+              <LinkPreview v-if="draftUrl" :url="draftUrl" class="draft-preview" />
+
+              <form class="message-form" @submit.prevent="sendMessage">
+                <textarea
+                  v-model="newMessage"
+                  class="message-input"
+                  placeholder="Ваше сообщение... (Enter — отправить)"
+                  rows="1"
+                  maxlength="5000"
+                  @input="onTyping"
+                  @keydown.enter.exact.prevent="sendMessage"
+                  @keydown.enter.shift.exact.prevent="newMessage += '\n'"
+                ></textarea>
+                <button type="submit" class="send-button" :disabled="!newMessage.trim()">➤</button>
+              </form>
             </div>
+          </template>
+        </section>
+
+        <!-- Online users panel -->
+        <aside class="chat-users">
+          <h3>Онлайн <span class="online-count">{{ onlineUsers.length }}</span></h3>
+          <div class="users-list">
+            <div v-for="user in onlineUsers" :key="user.id" class="user-item" :title="user.last_seen_text">
+              <span class="user-status" :class="user.status"></span>
+              <span class="user-name">{{ user.display_name || user.username }}</span>
+            </div>
+            <div v-if="!onlineUsers.length" class="no-online">Нет пользователей онлайн</div>
           </div>
-          <form class="chat-input-form" @submit.prevent="sendMessage">
-            <input
-              v-model="newMessage"
-              type="text"
-              placeholder="Ваше сообщение..."
-              maxlength="500"
-              @input="onTyping"
-            />
-            <button type="submit" :disabled="!newMessage.trim()">Отправить ➤</button>
-          </form>
-        </template>
-      </section>
+        </aside>
+      </div>
     </div>
 
-    <!-- Модал создания комнаты -->
+    <!-- Create room modal -->
     <div v-if="showCreateRoom" class="modal-overlay" @click.self="showCreateRoom = false">
       <div class="modal">
         <h3>Новая комната</h3>
-        <input v-model="newRoomName" type="text" placeholder="Название комнаты" />
+        <input v-model="newRoomName" type="text" placeholder="Название комнаты" maxlength="50" @keydown.enter="createRoom" />
         <div class="modal-actions">
-          <button class="btn" @click="createRoom">Создать</button>
+          <button class="btn" @click="createRoom" :disabled="!newRoomName.trim()">Создать</button>
           <button class="btn btn-ghost" @click="showCreateRoom = false">Отмена</button>
         </div>
       </div>
@@ -74,10 +136,11 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, onUnmounted } from 'vue'
-import { chatApi } from '@/api/index.js'
+import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue'
+import { chatApi, authApi } from '@/api/index.js'
 import { useAuthStore } from '@/store/auth.js'
 import { useToastStore } from '@/store/toast.js'
+import LinkPreview from '@/components/chat/LinkPreview.vue'
 
 const authStore = useAuthStore()
 const toast = useToastStore()
@@ -90,12 +153,52 @@ const newRoomName = ref('')
 const showCreateRoom = ref(false)
 const messagesEl = ref(null)
 const typingUsers = ref([])
+const onlineUsers = ref([])
 let pollInterval = null
 let typingTimeout = null
 
-function formatTime(str) {
-  if (!str) return ''
-  return new Date(str).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+const URL_RE = /https?:\/\/[^\s<>"]+[^\s<>".,;:!?)/]/
+
+function extractUrl(text) {
+  if (!text) return null
+  const m = text.match(URL_RE)
+  return m ? m[0] : null
+}
+
+const draftUrl = computed(() => extractUrl(newMessage.value))
+
+function formatMessage(text) {
+  if (!text) return ''
+  const escaped = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+  return escaped.replace(
+    /https?:\/\/[^\s<>"]+[^\s<>".,;:!?)/]/g,
+    url => `<a href="${url}" target="_blank" rel="noopener noreferrer" class="chat-link">${url}</a>`
+  )
+}
+
+function truncate(text, max) {
+  if (!text) return ''
+  return text.length > max ? text.slice(0, max) + '…' : text
+}
+
+function fileBaseName(url) {
+  try { return decodeURIComponent(url.split('/').pop().split('?')[0]) } catch { return url }
+}
+
+function isNearBottom() {
+  if (!messagesEl.value) return true
+  const el = messagesEl.value
+  return el.scrollHeight - el.scrollTop - el.clientHeight < 120
+}
+
+async function scrollToBottom(force = false) {
+  await nextTick()
+  if (messagesEl.value && (force || isNearBottom())) {
+    messagesEl.value.scrollTop = messagesEl.value.scrollHeight
+  }
 }
 
 async function loadRooms() {
@@ -110,23 +213,31 @@ async function loadRooms() {
 async function selectRoom(room) {
   currentRoom.value = room
   messages.value = []
-  await loadMessages()
+  await loadMessages(true)
 }
 
-async function loadMessages() {
+async function loadMessages(isInitial = false) {
   if (!currentRoom.value) return
   try {
     const res = await chatApi.getMessages(currentRoom.value.id)
-    messages.value = res.data?.data || []
-    await nextTick()
-    scrollToBottom()
+    const incoming = res.data?.data || []
+
+    const lastId = messages.value.at(-1)?.id
+    const newLastId = incoming.at(-1)?.id
+    const hasNew = incoming.length !== messages.value.length || newLastId !== lastId
+
+    messages.value = incoming
+    if (isInitial || hasNew) {
+      await scrollToBottom(isInitial)
+    }
   } catch {}
 }
 
-function scrollToBottom() {
-  if (messagesEl.value) {
-    messagesEl.value.scrollTop = messagesEl.value.scrollHeight
-  }
+async function loadOnlineUsers() {
+  try {
+    const res = await authApi.getOnlineStatus()
+    onlineUsers.value = res.data?.users || []
+  } catch {}
 }
 
 async function sendMessage() {
@@ -136,6 +247,7 @@ async function sendMessage() {
   try {
     await chatApi.sendMessage({ room_id: currentRoom.value.id, message: text })
     await loadMessages()
+    await scrollToBottom(true)
   } catch {
     toast.error('Ошибка отправки сообщения')
     newMessage.value = text
@@ -164,7 +276,11 @@ async function createRoom() {
 
 onMounted(async () => {
   await loadRooms()
-  pollInterval = setInterval(loadMessages, 3000)
+  await loadOnlineUsers()
+  pollInterval = setInterval(async () => {
+    await loadMessages()
+    await loadOnlineUsers()
+  }, 3000)
 })
 
 onUnmounted(() => {

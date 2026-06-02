@@ -24,6 +24,7 @@
           <li><RouterLink to="/gallery" class="nav-link" @click="closeMenu">🖼️ Галерея</RouterLink></li>
           <template v-if="authStore.isLoggedIn">
             <li><RouterLink to="/chat" class="nav-link" @click="closeMenu">💬 Чат</RouterLink></li>
+            <li><RouterLink to="/nearby" class="nav-link" @click="closeMenu">📍 Люди рядом</RouterLink></li>
             <li><RouterLink to="/profile" class="nav-link" @click="closeMenu">👤 Профиль</RouterLink></li>
             <li>
               <button class="nav-link nav-btn" @click="handleLogout">🚪 Выход</button>
