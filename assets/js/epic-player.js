@@ -535,12 +535,22 @@ class EpicPlayer {
         try {
             const url = `/api/player/queue.php?album_id=${albumId}`;
             const response = await fetch(url);
-            
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            
-            const data = await response.json();
-            
-            if (!data.success) throw new Error(data.error || 'Unknown error');
+
+            // Раньше при !response.ok сразу бросали "HTTP 500" не читая тело
+            // ответа — а именно в теле (JSON) сервер и присылает реальную
+            // причину сбоя. Из-за этого в консоли было видно только код
+            // статуса и совершенно невозможно было понять, что сломалось.
+            const rawText = await response.text();
+            let data;
+            try {
+                data = JSON.parse(rawText);
+            } catch (parseErr) {
+                throw new Error(`HTTP ${response.status}: ${rawText.slice(0, 300) || '(пустой ответ)'}`);
+            }
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.error || `HTTP ${response.status}`);
+            }
             if (!data.tracks || data.tracks.length === 0) {
                 console.warn('⚠️ No tracks found');
                 this.showError('В этом альбоме нет треков');
@@ -556,7 +566,7 @@ class EpicPlayer {
             
         } catch (error) {
             console.error('❌ Error loading playlist:', error);
-            this.showError('Не удалось загрузить плейлист');
+            this.showError('Не удалось загрузить плейлист: ' + error.message);
         }
     }
     
