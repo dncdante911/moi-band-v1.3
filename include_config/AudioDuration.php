@@ -248,3 +248,68 @@ function extractMP3Duration($filePath) {
 }
 
 }
+
+if (!function_exists('getWavHeaderPatches')) {
+
+/**
+ * Некоторые WAV-файлы (например записанные потоково, без финализации
+ * итогового размера) содержат в заголовке некорректный размер RIFF- и/или
+ * data-чанка (0, 0xFFFFFFFF или значение, выходящее за пределы файла).
+ * Из-за этого браузер не может вычислить длительность (audio.duration
+ * становится Infinity), что в свою очередь ломает и отображение времени,
+ * и перемотку.
+ *
+ * Чинить это на клиенте (перемоткой в конец файла, чтобы браузер сам
+ * пересчитал длительность) оказалось ненадёжно — риск словить спонтанный
+ * 'ended' или зависнуть, если сик на паузе не подгружает данные. Надёжнее
+ * поправить сам заголовок на сервере: возвращает список патчей вида
+ * ['offset' => int, 'bytes' => string(4)] — какие 4 байта заменить в
+ * потоке, чтобы заголовок стал корректным. Сами данные трека не трогаются,
+ * длина файла не меняется — патчатся только 2 поля с размерами.
+ */
+function getWavHeaderPatches($filePath, $fileSize) {
+    $patches = [];
+
+    $fp = @fopen($filePath, 'rb');
+    if (!$fp) return $patches;
+
+    $riff = @fread($fp, 12);
+    if (strlen($riff) < 12 || substr($riff, 0, 4) !== 'RIFF' || substr($riff, 8, 4) !== 'WAVE') {
+        fclose($fp);
+        return $patches;
+    }
+
+    $declaredRiffSize = unpack('V', substr($riff, 4, 4))[1];
+    $correctRiffSize  = $fileSize - 8;
+    if ($declaredRiffSize !== $correctRiffSize) {
+        $patches[] = ['offset' => 4, 'bytes' => pack('V', $correctRiffSize)];
+    }
+
+    // Идём по чанкам от байта 12, пока не найдём 'data'.
+    $pos = 12;
+    while ($pos + 8 <= $fileSize) {
+        if (fseek($fp, $pos) !== 0) break;
+        $chunkHeader = fread($fp, 8);
+        if (strlen($chunkHeader) < 8) break;
+
+        $chunkId       = substr($chunkHeader, 0, 4);
+        $declaredSize  = unpack('V', substr($chunkHeader, 4, 4))[1];
+        $contentOffset = $pos + 8;
+
+        if ($chunkId === 'data') {
+            $correctDataSize = $fileSize - $contentOffset;
+            if ($declaredSize === 0 || $declaredSize === 0xFFFFFFFF || $contentOffset + $declaredSize > $fileSize) {
+                $patches[] = ['offset' => $pos + 4, 'bytes' => pack('V', $correctDataSize)];
+            }
+            break; // всё что после data — не влияет на длительность
+        }
+
+        if ($declaredSize <= 0) break; // защита от зацикливания на битом чанке
+        $pos = $contentOffset + $declaredSize + ($declaredSize % 2); // + паддинг до чётной границы
+    }
+
+    fclose($fp);
+    return $patches;
+}
+
+}
