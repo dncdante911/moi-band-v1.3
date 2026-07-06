@@ -145,13 +145,19 @@ try {
     
     console_log("✅ API Response: " . count($processedTracks) . " tracks sent");
     
-} catch (Exception $e) {
+} catch (\Throwable $e) {
+    // \Throwable (не только \Exception) — иначе фатальные ошибки (например
+    // "Call to undefined function" или "Failed opening required" при
+    // отсутствующем на сервере файле) вообще не попадают сюда и уходят
+    // голой 500-кой без тела ответа — именно так и произошло, когда сюда
+    // добавили require StreamToken.php, а сам файл не задеплоился.
     console_log("❌ API Error: " . $e->getMessage());
-    
+    error_log('queue.php: ' . $e->getMessage());
+
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'error' => $e->getMessage()
+        'error' => DEBUG_MODE ? $e->getMessage() : 'Внутренняя ошибка сервера'
     ]);
 }
 
