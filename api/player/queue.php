@@ -30,6 +30,8 @@ try {
                 t.videoPath,
                 t.lyricsPath,
                 t.duration,
+                t.likes,
+                t.views,
                 a.title as albumTitle
             FROM Track t
             LEFT JOIN Albums a ON t.albumId = a.id
@@ -56,6 +58,8 @@ try {
                 t.videoPath,
                 t.lyricsPath,
                 t.duration,
+                t.likes,
+                t.views,
                 a.title as albumTitle
             FROM Track t
             LEFT JOIN Albums a ON t.albumId = a.id
@@ -118,6 +122,8 @@ try {
             'videoPath' => $videoPath, // Только если видео существует
             'lyricsPath' => $track['lyricsPath'],
             'duration' => (int)($track['duration'] ?? 0),
+            'likes' => (int)($track['likes'] ?? 0),
+            'views' => (int)($track['views'] ?? 0),
             // === ОТЛАДКА ===
             '_debug' => [
                 'audioExists' => $audioExists,

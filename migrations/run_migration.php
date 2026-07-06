@@ -3,13 +3,18 @@
  * Скрипт для выполнения миграции БД
  */
 
-// Прямое подключение к БД для миграции (без проверки пароля)
-$db_host = '127.0.0.1';
-$db_port = 3306;
-$db_name = 'moi-band';
-$db_user = 'root';
-$db_pass = '';
-$db_charset = 'utf8mb4';
+// Подключение через те же переменные окружения, что и весь остальной сайт
+// (раньше здесь был захардкоженный root без пароля на 127.0.0.1 — совпадало
+// только со стандартной локальной установкой MySQL, но не с продакшеном).
+define('SKIP_SESSION_START', true); // это CLI-скрипт, сессия тут не нужна
+require_once __DIR__ . '/../include_config/config.php';
+
+$db_host = get_env('DB_HOST') ?: '127.0.0.1';
+$db_port = get_env('DB_PORT') ?: 3306;
+$db_name = get_env('DB_NAME') ?: 'moi-band';
+$db_user = get_env('DB_USER') ?: 'moi-band';
+$db_pass = get_env('DB_PASS') ?: '';
+$db_charset = get_env('DB_CHARSET') ?: 'utf8mb4';
 
 $dsn = "mysql:host={$db_host};port={$db_port};dbname={$db_name};charset={$db_charset}";
 
@@ -37,6 +42,22 @@ try {
         echo "✓ Поля добавлены\n\n";
     } else {
         echo "✓ Поля likes и dislikes уже существуют\n\n";
+    }
+
+    // 1.1. Проверяем поле views — эта колонка нигде фактически не создавалась
+    // (в database_migration.sql на неё создаётся индекс, но ADD COLUMN для
+    // неё отсутствует), из-за чего api/player/track-view.php и
+    // track-stats.php падали с "Unknown column 'views'" на каждом запросе,
+    // и счётчик прослушиваний не рос вообще.
+    $stmt = $pdo->query("SHOW COLUMNS FROM Track LIKE 'views'");
+    if ($stmt->rowCount() == 0) {
+        echo "Добавление поля views в таблицу Track...\n";
+        $pdo->exec("ALTER TABLE `Track`
+                    ADD COLUMN `views` INT NOT NULL DEFAULT 0 COMMENT 'Количество прослушиваний'");
+        $pdo->exec("CREATE INDEX `idx_track_views` ON `Track` (`views` DESC)");
+        echo "✓ Поле views добавлено\n\n";
+    } else {
+        echo "✓ Поле views уже существует\n\n";
     }
 
     // 2. Проверяем, существует ли таблица TrackReactions
