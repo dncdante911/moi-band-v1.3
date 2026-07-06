@@ -707,34 +707,6 @@
 }
 
 /* ============================================
-   СИНХРОНИЗИРОВАННЫЙ ТЕКСТ (караоке-стиль)
-   Строки с тайм-кодами [мм:сс.цц] подсвечиваются по ходу воспроизведения
-   ============================================ */
-
-.lyrics-text.synced {
-    font-family: inherit;
-    line-height: 1.9;
-}
-
-.lyric-line {
-    padding: 4px 8px;
-    border-radius: 4px;
-    color: #888;
-    transition: color 0.25s ease, background 0.25s ease, transform 0.25s ease;
-}
-
-.lyric-line.active {
-    color: var(--gold, #FFD700);
-    background: rgba(255, 215, 0, 0.08);
-    transform: translateX(4px);
-    font-weight: bold;
-}
-
-.lyric-line.past {
-    color: #bbb;
-}
-
-/* ============================================
    УВЕДОМЛЕНИЯ ОБ ОШИБКАХ - НОВОЕ!
    ============================================ */
 

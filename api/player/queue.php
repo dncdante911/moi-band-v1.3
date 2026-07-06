@@ -8,7 +8,6 @@ header('Content-Type: application/json; charset=utf-8');
 
 require_once '../../include_config/config.php';
 require_once '../../include_config/db_connect.php';
-require_once '../../include_config/StreamToken.php';
 
 $albumId = intval($_GET['album_id'] ?? 0);
 $playlistId = intval($_GET['playlist_id'] ?? 0);
@@ -119,9 +118,7 @@ try {
             'description' => htmlspecialchars($track['description'] ?? ''),
             'albumTitle' => htmlspecialchars($track['albumTitle'] ?? 'Album'),
             'coverImagePath' => $track['coverImagePath'],
-            // Подписанная, ограниченная по времени ссылка вместо сырого пути
-            // к файлу — см. include_config/StreamToken.php.
-            'fullAudioPath' => $audioExists ? build_stream_url($track['id']) : null,
+            'fullAudioPath' => $track['fullAudioPath'],
             'videoPath' => $videoPath, // Только если видео существует
             'lyricsPath' => $track['lyricsPath'],
             'duration' => (int)($track['duration'] ?? 0),
@@ -145,21 +142,12 @@ try {
     
     console_log("✅ API Response: " . count($processedTracks) . " tracks sent");
     
-} catch (\Throwable $e) {
-    // \Throwable (не только \Exception) — иначе фатальные ошибки (например
-    // "Call to undefined function" или "Failed opening required" при
-    // отсутствующем на сервере файле) вообще не попадают сюда и уходят
-    // голой 500-кой без тела ответа — именно так и произошло, когда сюда
-    // добавили require StreamToken.php, а сам файл не задеплоился.
+} catch (Exception $e) {
     console_log("❌ API Error: " . $e->getMessage());
-    error_log('queue.php: ' . $e->getMessage());
-
+    
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        // Временно всегда показываем реальный текст (не только при
-        // DEBUG_MODE) — чтобы сразу увидеть причину 500-ки в консоли
-        // браузера без похода в серверные логи. Не секрет уровня БД/паролей.
         'error' => $e->getMessage()
     ]);
 }
