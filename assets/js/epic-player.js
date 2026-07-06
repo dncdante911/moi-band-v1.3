@@ -256,7 +256,14 @@ class EpicPlayer {
         
         const audio = this.container?.querySelector('audio');
         if (audio) {
-            audio.addEventListener('timeupdate', () => this.updateProgress());
+            audio.addEventListener('timeupdate', () => {
+                this.updateProgress();
+                // Реальный прогресс воспроизведения — на нём считается порог
+                // "просмотра" в TrackStatsManager (устойчивее таймера от Date.now()).
+                if (!audio.paused && !audio._fixingInfiniteDuration) {
+                    window.trackStatsManager?.onTimeUpdate(audio.currentTime);
+                }
+            });
             audio.addEventListener('ended', () => this.onTrackEnded());
             audio.addEventListener('loadedmetadata', () => this.updateDuration());
             // durationchange срабатывает когда браузер обновляет duration
@@ -318,7 +325,12 @@ class EpicPlayer {
         
         const video = this.container?.querySelector('video');
         if (video) {
-            video.addEventListener('timeupdate', () => this.updateProgress());
+            video.addEventListener('timeupdate', () => {
+                this.updateProgress();
+                if (!video.paused) {
+                    window.trackStatsManager?.onTimeUpdate(video.currentTime);
+                }
+            });
             video.addEventListener('ended', () => this.onTrackEnded());
             video.addEventListener('loadedmetadata', () => this.updateDuration());
             video.addEventListener('play', () => {
@@ -879,6 +891,12 @@ class EpicPlayer {
         const wasPlaying = !media.paused;
         const resumeAt = media.currentTime;
 
+        // Пауза здесь обязательна. Если сикать за пределы длительности у
+        // ИГРАЮЩЕГО элемента, браузер трактует это как "дошли до конца" и
+        // стреляет настоящим 'ended' — плеер тут же переключался на
+        // следующий трек, обнуляя счётчик прослушивания на каждом WAV-файле
+        // ещё до того, как накопится порог в 10 секунд.
+        media.pause();
         media.currentTime = 1e101;
 
         const onTimeUpdate = () => {
