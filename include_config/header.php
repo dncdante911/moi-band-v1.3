@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * ФАЙЛ: include_config/header.php
  * АВАРИЙНАЯ ВЕРСИЯ - восстанавливаем ОСНОВные стили
@@ -7,6 +7,24 @@
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db_connect.php';  // ← ДОБАВЛЕНО: подключение БД
+
+// Автоплей-видео фона показываем только на главной — на остальных
+// страницах это просто лишний вес видео без визуальной надобности.
+$requestPath  = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$requestQuery = [];
+parse_str(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_QUERY) ?? '', $requestQuery);
+$isHomePage = in_array($requestPath, ['/', '/index.php'], true) && (($requestQuery['p'] ?? 'home') === 'home');
+
+// Open Graph / Twitter Card — раньше отсутствовали вообще, поэтому ссылка
+// на альбом/трек, кинутая в Discord/Telegram/соцсети, показывала пустое
+// превью без обложки и описания. Страница может переопределить любое из
+// этих значений (см. pages/albums.php), выставив переменные ДО того как
+// требует этот файл — иначе используются дефолты сайта.
+$og_title       = $og_title       ?? SITE_NAME . ' — AI Metal музыка';
+$og_description = $og_description ?? 'Master of Illusion — AI Metal музыка с SUNO. Слушайте альбомы, смотрите галерею.';
+$og_image       = $og_image       ?? (rtrim(SITE_URL, '/') . '/assets/images/icon-512.png');
+$og_type        = $og_type        ?? 'website';
+$og_url         = rtrim(SITE_URL, '/') . ($_SERVER['REQUEST_URI'] ?? '/');
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -17,114 +35,80 @@ require_once __DIR__ . '/db_connect.php';  // ← ДОБАВЛЕНО: подкл
     <meta name="author" content="Master of Illusion">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?= htmlspecialchars(SITE_NAME) ?></title>
+
+    <!-- === OPEN GRAPH / TWITTER CARD === -->
+    <meta property="og:site_name" content="<?= htmlspecialchars(SITE_NAME) ?>">
+    <meta property="og:type" content="<?= htmlspecialchars($og_type) ?>">
+    <meta property="og:title" content="<?= htmlspecialchars($og_title) ?>">
+    <meta property="og:description" content="<?= htmlspecialchars($og_description) ?>">
+    <meta property="og:image" content="<?= htmlspecialchars($og_image) ?>">
+    <meta property="og:url" content="<?= htmlspecialchars($og_url) ?>">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= htmlspecialchars($og_title) ?>">
+    <meta name="twitter:description" content="<?= htmlspecialchars($og_description) ?>">
+    <meta name="twitter:image" content="<?= htmlspecialchars($og_image) ?>">
    
 
     
-    <!-- ✅ ОСНОВНЫЕ Сблиотеки(базис) -->
+    <!-- ✅ ОСНОВНЫЕ СТИЛИ — блокирующие, чтобы не было вспышки нестилизованной
+         страницы (layout, шапка, базовая адаптивность) -->
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="/assets/css/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="/assets/css/responsive.css">
-    <link rel="preload" href="/assets/js/theme-system-v2.js" as="script">
-    <!-- <link rel="stylesheet" href="/assets/css/mobile-universal.css"> -->
-    
-    <!-- ✅ ОСТАЛЬНЫЕ СПЕЦИФИЧНЫЕ СТИЛИ -->
-    <link rel="stylesheet" href="/assets/css/auth.css">
-    <link rel="stylesheet" href="/assets/css/chat.css">
-    <link rel="stylesheet" href="/assets/css/about.css">
-    <link rel="stylesheet" href="/assets/css/post.css">
     <link rel="stylesheet" href="/assets/css/header-epic.css">
-    <link rel="stylesheet" href="/assets/css/albums.css">
-    <link rel="stylesheet" href="/assets/css/albums-epic.css">
-    <link rel="stylesheet" href="/assets/css/epic-home.css"> 
-    <link rel="stylesheet" href="/assets/css/visualizer.css">
     <link rel="stylesheet" href="/assets/css/universal-theme.css">
     <link rel="stylesheet" href="/assets/css/mobile.css">
-    
+    <!-- <link rel="stylesheet" href="/assets/css/mobile-universal.css"> -->
+
+    <!-- ✅ ОСТАЛЬНЫЕ СТИЛИ — специфичны для отдельных разделов сайта,
+         грузятся не блокируя рендер (preload+swap): страница не ждёт их,
+         чтобы показать первый кадр. -->
+    <?php foreach ([
+        '/assets/css/auth.css',
+        '/assets/css/chat.css',
+        '/assets/css/about.css',
+        '/assets/css/post.css',
+        '/assets/css/albums.css',
+        '/assets/css/albums-epic.css',
+        '/assets/css/epic-home.css',
+        '/assets/css/visualizer.css',
+    ] as $asyncCss): ?>
+    <link rel="preload" href="<?= $asyncCss ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="<?= $asyncCss ?>"></noscript>
+    <?php endforeach; ?>
+
     <!-- === ШРИФТЫ === -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- === БИБЛИОТЕКИ === -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
-    <script src="/assets/js/theme-system-v2.js"></script>
 
-<link rel="manifest" href="/manifest.json">
+    <!-- === БИБЛИОТЕКИ ===
+         particles.js убран: грузился с CDN на каждой странице, но
+         particlesJS(...) нигде не вызывался — эффекта не было вообще,
+         чистый мёртвый вес. Скрипты — с defer, чтобы не блокировать
+         разбор HTML. -->
+    <script src="/assets/js/theme-system-v2.js" defer></script>
+
 <meta name="theme-color" content="#FFD700">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-
-    <!-- === ДИАГНОСТИКА ТЕМ === -->
-    <script>
-        console.log('='.repeat(50));
-        console.log('🎨 ДИАГНОСТИКА ТЕМ MASTER OF ILLUSION');
-        console.log('='.repeat(50));
-        
-        // 1. Проверяем localStorage
-        const savedTheme = localStorage.getItem('site_bg_theme');
-        console.log(`📁 Сохраненная тема: ${savedTheme || 'default'}`);
-        
-        // 2. Проверяем загруженные CSS
-        const stylesheets = document.styleSheets;
-        console.log(`\n📚 Всего загруженных CSS: ${stylesheets.length}`);
-        
-        let themeCSS = false;
-        for (let i = 0; i < stylesheets.length; i++) {
-            const href = stylesheets[i].href;
-            if (href && href.includes('/assets/css/themes/')) {
-                console.log(`✅ Найден CSS тема: ${href}`);
-                themeCSS = true;
-            }
-        }
-        
-        if (!themeCSS && savedTheme !== 'default') {
-            console.warn('⚠️ ОШИБКА: CSS тема НЕ загружена! Проверь пути!');
-        }
-        
-        // 3. Проверяем CSS переменные
-        console.log(`\n🎨 CSS переменные:`);
-        const root = document.documentElement;
-        const primaryColor = getComputedStyle(root).getPropertyValue('--primary-color');
-        const secondaryColor = getComputedStyle(root).getPropertyValue('--secondary-color');
-        
-        console.log(`--primary-color: ${primaryColor.trim() || 'НЕ НАЙДЕНА'}`);
-        console.log(`--secondary-color: ${secondaryColor.trim() || 'НЕ НАЙДЕНА'}`);
-        
-        // 4. Проверяем data-theme атрибут
-        console.log(`\n🔍 data-theme на body: ${document.body.getAttribute('data-theme') || 'не установлен'}`);
-        
-        // 5. Проверяем ThemeManager
-        if (window.ThemeManager) {
-            console.log(`\n✅ ThemeManager загружен`);
-            console.log(`Доступные темы:`, Object.keys(window.ThemeManager.getAvailableThemes()));
-        } else {
-            console.warn('⚠️ ThemeManager НЕ загружен!');
-        }
-        
-        // 6. Проверяем кнопку переключения
-        setTimeout(() => {
-            const btn = document.querySelector('.bg-theme-btn');
-            if (btn) {
-                console.log(`\n✅ Кнопка переключения найдена`);
-            } else {
-                console.warn('⚠️ Кнопка переключения НЕ найдена!');
-            }
-        }, 500);
-        
-        console.log('='.repeat(50));
-    </script>
-    <script src="/assets/js/visualizer.js"></script>
-    <script src="/assets/js/track-stats.js"></script>
-    <script src="/assets/js/chat-v2.js"></script>
+    <script src="/assets/js/visualizer.js" defer></script>
+    <script src="/assets/js/track-stats.js" defer></script>
+    <script src="/assets/js/chat-v2.js" defer></script>
 </head>
 <body>
-    <!-- === ФОНОВЫЕ ЭЛЕМЕНТЫ === -->
-    <div id="particles-js"></div>
-    <video autoplay muted loop id="background-video">
+    <!-- === ФОНОВЫЕ ЭЛЕМЕНТЫ ===
+         Видео-фон — только на главной. На остальных страницах декодирование
+         зацикленного видео весь визит — это чистый расход CPU/GPU/батареи
+         без визуальной пользы (страница новости/контактов не выигрывает
+         от фонового ролика, а платит за него так же, как главная). -->
+    <?php if ($isHomePage): ?>
+    <video autoplay muted loop playsinline id="background-video">
         <source src="/assets/videos/background_video.mp4" type="video/mp4">
     </video>
+    <?php endif; ?>
 
     <!-- === ШАПКА САЙТА === -->
     <header class="site-header">
@@ -160,7 +144,7 @@ require_once __DIR__ . '/db_connect.php';  // ← ДОБАВЛЕНО: подкл
                 </ul>
             </nav>
         </div>
-        <script src="/assets/js/protection.js"></script>
+        <script src="/assets/js/protection.js" defer></script>
         <script>
         (function(){
             const btn = document.getElementById('hamburger');

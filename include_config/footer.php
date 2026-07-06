@@ -411,30 +411,37 @@
 
     <!-- === ОСТАЛЬНЫЕ СКРИПТЫ === -->
     <script>
-    // Обработка бургер-меню
+    // Закрытие меню при клике на пункт навигации. Сам toggle клика по
+    // гамбургеру уже обрабатывается в header.php — раньше он дублировался
+    // и здесь тоже, из-за чего два обработчика переключали класс 'active'
+    // в один клик и гасили друг друга (меню как будто не открывалось).
     document.addEventListener('DOMContentLoaded', function() {
         const hamburger = document.getElementById('hamburger');
         const mainNav = document.getElementById('mainNav');
-        
+
         if (hamburger && mainNav) {
-            hamburger.addEventListener('click', function() {
-                mainNav.classList.toggle('active');
-                this.setAttribute('aria-expanded', mainNav.classList.contains('active'));
-            });
-            
-            // Закрыть меню при клике на ссылку
             const navLinks = mainNav.querySelectorAll('a');
             navLinks.forEach(link => {
                 link.addEventListener('click', function() {
                     mainNav.classList.remove('active');
                     hamburger.setAttribute('aria-expanded', 'false');
+                    hamburger.textContent = '☰';
                 });
             });
         }
     });
     </script>
-  <!--  <script src="/assets/js/theme-system-v2.js"></script> -->
-<script src="/assets/js/scroll-to-top.js"></script>
-<script src="/assets/js/toast.js"></script>
+<script src="/assets/js/scroll-to-top.js" defer></script>
+<script src="/assets/js/toast.js" defer></script>
+<script>
+// PWA offline-кеш — файл существовал, но нигде не регистрировался.
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js').catch(() => {
+            // Офлайн-кеш — не критичная фича, тихо пропускаем ошибку регистрации
+        });
+    });
+}
+</script>
 </body>
 </html>
