@@ -42,29 +42,36 @@
     
     document.body.appendChild(button);
     
-    // Показываем/скрываем при скролле
+    // Показываем/скрываем при скролле — через rAF-guard вместо голого
+    // слушателя scroll, который иначе дёргает стили на каждый пиксель
+    // прокрутки (scroll может стрелять десятками раз в секунду).
     let scrollTimeout;
+    let scrollRaf = null;
     window.addEventListener('scroll', () => {
-        clearTimeout(scrollTimeout);
-        
-        if (window.pageYOffset > 300) {
-            button.style.opacity = '1';
-            button.style.visibility = 'visible';
-            button.style.transform = 'scale(1)';
-        } else {
-            button.style.opacity = '0';
-            button.style.visibility = 'hidden';
-            button.style.transform = 'scale(0.8)';
-        }
-        
-        // Анимация при скролле
-        button.style.transform = button.style.opacity === '1' ? 'scale(0.9)' : 'scale(0.8)';
-        scrollTimeout = setTimeout(() => {
-            if (button.style.opacity === '1') {
+        if (scrollRaf) return;
+        scrollRaf = requestAnimationFrame(() => {
+            scrollRaf = null;
+            clearTimeout(scrollTimeout);
+
+            if (window.pageYOffset > 300) {
+                button.style.opacity = '1';
+                button.style.visibility = 'visible';
                 button.style.transform = 'scale(1)';
+            } else {
+                button.style.opacity = '0';
+                button.style.visibility = 'hidden';
+                button.style.transform = 'scale(0.8)';
             }
-        }, 100);
-    });
+
+            // Анимация при скролле
+            button.style.transform = button.style.opacity === '1' ? 'scale(0.9)' : 'scale(0.8)';
+            scrollTimeout = setTimeout(() => {
+                if (button.style.opacity === '1') {
+                    button.style.transform = 'scale(1)';
+                }
+            }, 100);
+        });
+    }, { passive: true });
     
     // Hover эффект
     button.addEventListener('mouseenter', () => {

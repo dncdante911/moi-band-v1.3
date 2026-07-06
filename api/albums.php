@@ -12,6 +12,7 @@ header('Access-Control-Allow-Headers: Authorization, Content-Type');
 
 require_once __DIR__ . '/../include_config/db_connect.php';
 require_once __DIR__ . '/../include_config/APIResponse.php';
+require_once __DIR__ . '/../include_config/StreamToken.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     APIResponse::error('Method not allowed', 405);
@@ -28,6 +29,14 @@ if (isset($_GET['album_id']) && isset($_GET['tracks'])) {
         );
         $stmt->execute([$albumId]);
         $tracks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Подписанная, ограниченная по времени ссылка вместо сырого пути к файлу.
+        foreach ($tracks as &$t) {
+            if (!empty($t['fullAudioPath'])) {
+                $t['fullAudioPath'] = build_stream_url($t['id']);
+            }
+        }
+        unset($t);
 
         $json = json_encode(
             ['success' => true, 'message' => 'Success', 'data' => $tracks],

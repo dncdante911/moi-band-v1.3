@@ -8,6 +8,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 require_once '../../include_config/config.php';
 require_once '../../include_config/db_connect.php';
+require_once '../../include_config/StreamToken.php';
 
 $albumId = intval($_GET['album_id'] ?? 0);
 $playlistId = intval($_GET['playlist_id'] ?? 0);
@@ -118,7 +119,9 @@ try {
             'description' => htmlspecialchars($track['description'] ?? ''),
             'albumTitle' => htmlspecialchars($track['albumTitle'] ?? 'Album'),
             'coverImagePath' => $track['coverImagePath'],
-            'fullAudioPath' => $track['fullAudioPath'],
+            // Подписанная, ограниченная по времени ссылка вместо сырого пути
+            // к файлу — см. include_config/StreamToken.php.
+            'fullAudioPath' => $audioExists ? build_stream_url($track['id']) : null,
             'videoPath' => $videoPath, // Только если видео существует
             'lyricsPath' => $track['lyricsPath'],
             'duration' => (int)($track['duration'] ?? 0),
