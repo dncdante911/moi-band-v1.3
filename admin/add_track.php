@@ -7,6 +7,8 @@
 require_once __DIR__ . '/auth_check.php';
 require_once '../include_config/config.php';
 require_once '../include_config/db_connect.php';
+require_once '../include_config/file_validator.php';
+require_once '../include_config/AudioDuration.php';
 
 // Получаем список альбомов
 $stmt_albums = $pdo->query("SELECT id, title FROM Albums ORDER BY title ASC");
@@ -34,11 +36,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($_FILES['cover']['name']) || $_FILES['cover']['error'] !== UPLOAD_ERR_OK) {
         $errors[] = 'Ошибка загрузки обложки';
     }
-    
+
     if (empty($_FILES['fullTrack']['name']) || $_FILES['fullTrack']['error'] !== UPLOAD_ERR_OK) {
         $errors[] = 'Ошибка загрузки аудио';
     }
-    
+
+    // Серверная проверка реального типа файла (расширение в accept="" на клиенте
+    // ничего не гарантирует — его легко обойти прямым запросом).
+    $validator = new FileValidator(MAX_UPLOAD_SIZE);
+
+    if (empty($errors) && !empty($_FILES['cover']['name'])) {
+        $check = $validator->validate($_FILES['cover'], 'image');
+        if (!$check['valid']) {
+            $errors[] = 'Обложка: ' . $check['error'];
+        }
+    }
+
+    if (empty($errors) && !empty($_FILES['fullTrack']['name'])) {
+        $check = $validator->validate($_FILES['fullTrack'], 'audio');
+        if (!$check['valid']) {
+            $errors[] = 'Аудиофайл: ' . $check['error'];
+        }
+    }
+
+    if (empty($errors) && !empty($_FILES['video']['name']) && $_FILES['video']['error'] === UPLOAD_ERR_OK) {
+        $check = $validator->validate($_FILES['video'], 'video');
+        if (!$check['valid']) {
+            $errors[] = 'Видео: ' . $check['error'];
+        }
+    }
+
     if (empty($errors)) {
         // Функция для сохранения файла
         function saveFile($file, $subfolder) {
@@ -71,10 +98,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             try {
+                // Вычисляем длительность аудио сразу при загрузке, а не только
+                // при последующем редактировании трека.
+                $duration = calculateAudioDuration('../' . ltrim($fullTrackPath, '/'));
+
                 // Вставляем трек в БД
-                $sql = "INSERT INTO Track (title, description, albumId, coverImagePath, fullAudioPath, videoPath)
-                        VALUES (:title, :description, :albumId, :coverImagePath, :fullAudioPath, :videoPath)";
-                
+                $sql = "INSERT INTO Track (title, description, albumId, coverImagePath, fullAudioPath, videoPath, duration)
+                        VALUES (:title, :description, :albumId, :coverImagePath, :fullAudioPath, :videoPath, :duration)";
+
                 $stmt = $pdo->prepare($sql);
                 $result = $stmt->execute([
                     ':title' => $title,
@@ -82,7 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ':albumId' => $albumId ?: null,
                     ':coverImagePath' => $coverPath,
                     ':fullAudioPath' => $fullTrackPath,
-                    ':videoPath' => $videoPath
+                    ':videoPath' => $videoPath,
+                    ':duration' => $duration
                 ]);
                 
                 if ($result) {

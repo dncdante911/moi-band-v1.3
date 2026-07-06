@@ -82,6 +82,7 @@ try {
     ]);
 
 } catch (Exception $e) {
+    error_log('track-stats.php: ' . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['error' => 'Ошибка при получении статистики: ' . $e->getMessage()]);
+    echo json_encode(['error' => 'Ошибка при получении статистики']);
 }

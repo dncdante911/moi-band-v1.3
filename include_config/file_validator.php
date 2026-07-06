@@ -6,7 +6,9 @@ class FileValidator {
         'audio/x-wav' => ['wav'],
         'image/jpeg' => ['jpg', 'jpeg'],
         'image/png' => ['png'],
-        'image/gif' => ['gif']
+        'image/gif' => ['gif'],
+        'video/mp4' => ['mp4'],
+        'video/webm' => ['webm']
     ];
     
     private $max_size;
