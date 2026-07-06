@@ -3,10 +3,15 @@
 -- Дата: 2025-11-11
 -- ============================================
 
--- Добавляем поля likes и dislikes в таблицу Track
+-- Добавляем поля likes, dislikes и views в таблицу Track.
+-- views раньше отсутствовала здесь вообще, хотя ниже на неё создаётся
+-- индекс (idx_track_views) — из-за этого сама эта миграция падала на
+-- CREATE INDEX с ошибкой "Unknown column 'views'", а api/player/
+-- track-view.php никогда не мог ни прочитать, ни увеличить счётчик.
 ALTER TABLE `Track`
 ADD COLUMN `likes` INT NOT NULL DEFAULT 0 COMMENT 'Количество лайков',
-ADD COLUMN `dislikes` INT NOT NULL DEFAULT 0 COMMENT 'Количество дизлайков';
+ADD COLUMN `dislikes` INT NOT NULL DEFAULT 0 COMMENT 'Количество дизлайков',
+ADD COLUMN `views` INT NOT NULL DEFAULT 0 COMMENT 'Количество прослушиваний';
 
 -- Создаем таблицу для плейлистов
 CREATE TABLE IF NOT EXISTS `Playlists` (
@@ -57,8 +62,10 @@ CREATE TABLE IF NOT EXISTS `TrackReactions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Создаем индексы для оптимизации запросов
+-- (idx_playlist_public раньше ссылался на несуществующую isPublic —
+-- колонка в таблице Playlists выше называется is_public)
 CREATE INDEX `idx_track_likes` ON `Track` (`likes` DESC);
 CREATE INDEX `idx_track_views` ON `Track` (`views` DESC);
-CREATE INDEX `idx_playlist_public` ON `Playlists` (`isPublic`, `created_at` DESC);
+CREATE INDEX `idx_playlist_public` ON `Playlists` (`is_public`, `created_at` DESC);
 
 -- Все готово!
