@@ -4,13 +4,8 @@
  * Защищённый стриминг аудиофайлов.
  *
  * Два режима вызова:
- *   1. Прямой:   /api/player/stream.php?id=TRACK_ID&expires=...&token=...
- *      Ссылка подписана и ограничена по времени — см. StreamToken.php.
+ *   1. Прямой:   /api/player/stream.php?id=TRACK_ID
  *   2. Через .htaccess rewrite: параметр _file=имя_файла.mp3 (добавляет Apache)
- *      Срабатывает только при прямом обращении к старому статическому
- *      пути в public/uploads/full — приложение больше нигде такие пути
- *      не отдаёт, это просто дополнительный барьер на случай прямого
- *      угадывания имени файла.
  *
  * Проверяет наличие активной PHP-сессии или Referer от домена сайта.
  * Поддерживает byte-range для корректной перемотки в браузере.
@@ -20,7 +15,6 @@ define('SKIP_SESSION_START', true);
 require_once __DIR__ . '/../../include_config/config.php';
 require_once __DIR__ . '/../../include_config/db_connect.php';
 require_once __DIR__ . '/../../include_config/AudioDuration.php';
-require_once __DIR__ . '/../../include_config/StreamToken.php';
 
 // ── Проверка доступа: сессия ИЛИ правильный Referer ───────────────
 session_start();
@@ -39,20 +33,8 @@ if (!$hasSession && !$hasValidReferer) {
     exit('Доступ запрещён');
 }
 
-// ── Простой rate-limit на сессию: не даём одним махом перебрать все ID ──
-// (например скриптом, перебирающим id=1,2,3...). Обычному прослушиванию
-// альбома этого лимита с большим запасом хватает.
-$_SESSION['stream_hits'] = $_SESSION['stream_hits'] ?? [];
-$now = time();
-$_SESSION['stream_hits'] = array_filter($_SESSION['stream_hits'], fn($ts) => $now - $ts < 60);
-if (count($_SESSION['stream_hits']) >= 120) {
-    http_response_code(429);
-    exit('Слишком много запросов, попробуйте позже');
-}
-$_SESSION['stream_hits'][] = $now;
-
 // ── Определяем путь к файлу ────────────────────────────────────────
-//   Режим 1: ?id=TRACK_ID — ищем в БД, требует валидный подписанный токен
+//   Режим 1: ?id=TRACK_ID — ищем в БД
 //   Режим 2: ?_file=имя_файла.mp3 — используем имя файла из rewrite
 $filePath = null;
 
@@ -63,14 +45,6 @@ if (!empty($_GET['id'])) {
         http_response_code(400);
         exit('Неверный ID трека');
     }
-
-    // Ссылка должна быть подписана сервером и ещё не истёкшей — иначе
-    // скопированный когда-то URL работал бы вечно.
-    if (!verify_stream_token($trackId, $_GET['expires'] ?? null, $_GET['token'] ?? null)) {
-        http_response_code(403);
-        exit('Ссылка недействительна или истекла, обновите страницу');
-    }
-
     try {
         $stmt = $pdo->prepare("SELECT fullAudioPath FROM Track WHERE id = ? LIMIT 1");
         $stmt->execute([$trackId]);

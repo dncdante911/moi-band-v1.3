@@ -31,11 +31,7 @@ class EpicPlayer {
         // Эквалайзер
         this.eqBands = [];
         this.currentPreset = 'flat';
-
-        // Синхронизированный текст песни (караоке-стиль)
-        this.syncedLyrics = null;
-        this._lastActiveLyricIndex = -1;
-
+        
         console.log('🎸 Epic Player v4.4 - High Quality Audio Edition');
         this.init();
     }
@@ -167,49 +163,30 @@ class EpicPlayer {
         }
         
         this.currentPreset = presetName;
-
-        // Пресеты эквалайзера (dB, полосы = this.eqBands / frequencies:
-        // 32 · 64 · 125 · 250 · 500 · 1k · 2k · 4k · 8k · 16k Hz).
-        // Раньше все пресеты были вариациями одной и той же "улыбки" —
-        // подъём баса и верхов, вырез середины — с разной силой. Из-за
-        // этого разные жанры звучали почти одинаково, только громче/тише.
-        // Переработано под реальную тональную характеристику каждого
-        // стиля, а не просто "громче/агрессивнее":
+        
+        // Пресеты эквалайзера (значения в dB) - БОЛЕЕ КОНТРАСТНЫЕ
         const presets = {
             'flat': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-
-            // Power Metal — быстрые двойные бочки требуют контролируемого,
-            // не гудящего низа (иначе бласт-биты превращаются в кашу).
-            // Акцент — на верхнюю середину и высокие: там живёт "эпичность"
-            // соло-гитар, клавиш и скорость восприятия атаки.
-            'power-metal': [2, 3, 1, -1, -2, 1, 3, 5, 6, 4],
-
-            // Heavy Metal — классический "scooped" метал-тон: жирный низ
-            // и контролируемые (не резкие) верха, но вырезанная середина
-            // 250–1000 Hz, чтобы палм-мьюты и риффы не звучали "квакающе".
-            'heavy-metal': [5, 6, 3, -3, -4, -2, 2, 4, 3, 1],
-
-            // Rock — почти не трогаем середину: классический "большой"
-            // гитарный рок держится на ней, а не на выразе. Мягкая
-            // симметричная кривая без экстремумов.
-            'rock': [3, 4, 2, 1, 1, 0, 1, 2, 2, 1],
-
-            // Punk Rock — сознательно НЕ metal-scoop, а наоборот: подъём
-            // именно середины и верхней середины (тот самый "гаражный",
-            // сырой напор), низ — плотный и быстрый, а не бухающий сабвуфер.
-            'punk-rock': [1, 2, 1, 2, 3, 3, 4, 3, 2, 1],
-
-            // Gothic (Gothic/Doom Metal) — тёмный и глубокий: усиленный
-            // низ, но верхняя середина и высокие сознательно приглушены —
-            // никакого "хрустального" блеска, атмосфера важнее сверкания.
-            'gothic': [5, 5, 2, -1, -3, -3, -1, 0, -2, -3],
-
-            // Symphonic Metal — середину почти не трогаем (нужна для
-            // вокала и оркестровки на фоне гитар), плавный подъём к
-            // высоким — воздух и детали струнных/хора, а не резкость.
-            'symphonic': [2, 3, 1, -1, 0, 1, 2, 3, 4, 5]
+            
+            // Power Metal - энергичный, мощный, яркий
+            'power-metal': [6, 4, 2, -2, -3, 0, 3, 5, 7, 5],
+            
+            // Heavy Metal - максимальная агрессия, глубокие басы
+            'heavy-metal': [8, 6, 4, 1, -3, -2, 3, 6, 7, 6],
+            
+            // Rock - классика, сбалансированный драйв
+            'rock': [5, 3, 1, 0, -2, 0, 2, 4, 5, 3],
+            
+            // Punk Rock - резкие средние, атака
+            'punk-rock': [6, 4, 3, 2, -1, 1, 4, 6, 5, 2],
+            
+            // Gothic - глубина, тьма, атмосфера
+            'gothic': [7, 5, 2, -3, -5, -3, 0, 2, 4, 6],
+            
+            // Symphonic - оркестровая широта
+            'symphonic': [4, 2, 0, -2, -3, 1, 3, 5, 6, 5]
         };
-
+        
         const gains = presets[presetName] || presets['flat'];
         
         this.eqBands.forEach((band, index) => {
@@ -535,22 +512,12 @@ class EpicPlayer {
         try {
             const url = `/api/player/queue.php?album_id=${albumId}`;
             const response = await fetch(url);
-
-            // Раньше при !response.ok сразу бросали "HTTP 500" не читая тело
-            // ответа — а именно в теле (JSON) сервер и присылает реальную
-            // причину сбоя. Из-за этого в консоли было видно только код
-            // статуса и совершенно невозможно было понять, что сломалось.
-            const rawText = await response.text();
-            let data;
-            try {
-                data = JSON.parse(rawText);
-            } catch (parseErr) {
-                throw new Error(`HTTP ${response.status}: ${rawText.slice(0, 300) || '(пустой ответ)'}`);
-            }
-
-            if (!response.ok || !data.success) {
-                throw new Error(data.error || `HTTP ${response.status}`);
-            }
+            
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const data = await response.json();
+            
+            if (!data.success) throw new Error(data.error || 'Unknown error');
             if (!data.tracks || data.tracks.length === 0) {
                 console.warn('⚠️ No tracks found');
                 this.showError('В этом альбоме нет треков');
@@ -566,7 +533,7 @@ class EpicPlayer {
             
         } catch (error) {
             console.error('❌ Error loading playlist:', error);
-            this.showError('Не удалось загрузить плейлист: ' + error.message);
+            this.showError('Не удалось загрузить плейлист');
         }
     }
     
@@ -635,33 +602,15 @@ class EpicPlayer {
     }
     
     async loadLyrics(trackId) {
-        this.syncedLyrics = null;
-        this._lastActiveLyricIndex = -1;
-
         try {
             const response = await fetch(`/api/player/lyrics.php?track_id=${trackId}`);
             const data = await response.json();
-
+            
             const lyricsText = this.container?.querySelector('.lyrics-text');
             if (!lyricsText) return;
-
-            lyricsText.classList.remove('synced');
-
+            
             if (data.lyrics && data.lyrics.trim()) {
-                // Формат с тайм-кодами: [мм:сс.цц]текст (см. admin/add_track.php).
-                // Если он есть — подсвечиваем текущую строку караоке-стилем,
-                // если нет — просто выводим как обычный текст, как раньше.
-                const synced = this.parseSyncedLyrics(data.lyrics);
-
-                if (synced.length > 0) {
-                    this.syncedLyrics = synced;
-                    lyricsText.classList.add('synced');
-                    lyricsText.innerHTML = synced
-                        .map((line, i) => `<div class="lyric-line" data-index="${i}">${this.escapeHtml(line.text)}</div>`)
-                        .join('');
-                } else {
-                    lyricsText.textContent = data.lyrics;
-                }
+                lyricsText.textContent = data.lyrics;
             } else {
                 lyricsText.innerHTML = '<div class="no-lyrics">🎵 Текст не добавлен</div>';
             }
@@ -669,65 +618,7 @@ class EpicPlayer {
             console.warn('⚠️ Could not load lyrics');
         }
     }
-
-    // Парсит строки вида "[00:12.00]Текст строки" в массив {time, text}.
-    // Строки без тайм-кода игнорируются — если ни одной не нашлось,
-    // считаем что синхронизации нет вообще (обычный текст без разметки).
-    parseSyncedLyrics(raw) {
-        const timeTagRegex = /\[(\d{1,2}):(\d{2})(?:\.(\d{1,2}))?\]/g;
-        const result = [];
-
-        raw.split('\n').forEach(line => {
-            const matches = [...line.matchAll(timeTagRegex)];
-            if (matches.length === 0) return;
-
-            const text = line.replace(timeTagRegex, '').trim();
-            if (!text) return;
-
-            matches.forEach(m => {
-                const minutes = parseInt(m[1], 10);
-                const seconds = parseInt(m[2], 10);
-                const centiseconds = m[3] ? parseInt(m[3].padEnd(2, '0'), 10) : 0;
-                result.push({ time: minutes * 60 + seconds + centiseconds / 100, text });
-            });
-        });
-
-        result.sort((a, b) => a.time - b.time);
-        return result;
-    }
-
-    // Подсвечивает строку текста, соответствующую текущему моменту трека.
-    // Вызывается из timeupdate — но реально трогает DOM только когда
-    // активная строка меняется, а не на каждый тик.
-    updateLyricsHighlight(currentTime) {
-        if (!this.syncedLyrics || this.syncedLyrics.length === 0) return;
-
-        let activeIndex = -1;
-        for (let i = 0; i < this.syncedLyrics.length; i++) {
-            if (this.syncedLyrics[i].time <= currentTime) {
-                activeIndex = i;
-            } else {
-                break;
-            }
-        }
-
-        if (activeIndex === this._lastActiveLyricIndex) return;
-        this._lastActiveLyricIndex = activeIndex;
-
-        const lyricsText = this.container?.querySelector('.lyrics-text');
-        const lines = lyricsText?.querySelectorAll('.lyric-line');
-        if (!lines) return;
-
-        lines.forEach((el, i) => {
-            el.classList.toggle('active', i === activeIndex);
-            el.classList.toggle('past', i < activeIndex);
-        });
-
-        if (activeIndex >= 0 && lines[activeIndex]) {
-            lines[activeIndex].scrollIntoView({ block: 'center', behavior: 'smooth' });
-        }
-    }
-
+    
     updateTrackInfo(track) {
         const title = this.container?.querySelector('.track-title');
         const artist = this.container?.querySelector('.track-artist');
@@ -1003,10 +894,8 @@ class EpicPlayer {
         if (fill) fill.style.width = percent + '%';
         if (times?.[0]) times[0].textContent = this.formatTime(media.currentTime);
         if (times?.[1]) times[1].textContent = duration ? this.formatTime(duration) : '0:00';
-
-        this.updateLyricsHighlight(media.currentTime);
     }
-
+    
     updateDuration() {
         const media = this.getCurrentMedia();
         if (!media || !media.duration) return;

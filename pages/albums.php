@@ -6,14 +6,11 @@
 
 $page_css = '/assets/css/albums.css';
 require_once __DIR__ . '/../include_config/db_connect.php';
-require_once __DIR__ . '/../include_config/StreamToken.php';
 
 
 // Проверяем, что ID альбома передан и является числом
 if (!isset($_GET['id']) || !filter_var($_GET['id'], FILTER_VALIDATE_INT)) {
     // Если ID не передан, показываем список всех альбомов
-    $og_title       = SITE_NAME . ' — Все альбомы';
-    $og_description = 'Слушайте все альбомы Master of Illusion: Power Metal, Heavy Metal, Gothic, Symphonic и другие.';
     require_once __DIR__ . '/../include_config/header.php';
     
     // Получаем все альбомы
@@ -86,17 +83,6 @@ $stmt = $pdo->prepare("SELECT * FROM Track WHERE albumId = ? ORDER BY id ASC");
 $stmt->execute([$albumId]);
 $tracks = $stmt->fetchAll();
 
-// OG/Twitter превью для расшаренной ссылки на альбом — обложка + описание,
-// а не дефолтная заглушка сайта.
-$og_title       = $album['title'] . ' — ' . SITE_NAME;
-$og_description = !empty($album['description'])
-    ? mb_substr(trim(preg_replace('/\s+/u', ' ', $album['description'])), 0, 200)
-    : 'Слушайте альбом «' . $album['title'] . '» — ' . SITE_NAME . '.';
-if (!empty($album['coverImagePath'])) {
-    $og_image = rtrim(SITE_URL, '/') . '/' . ltrim($album['coverImagePath'], '/');
-}
-$og_type = 'music.album';
-
 require_once __DIR__ . '/../include_config/header.php';
 ?>
 
@@ -168,7 +154,7 @@ require_once __DIR__ . '/../pages/player.php';
                     <div class="track-item track-playable"
                          data-track-id="<?= (int)$track['id'] ?>"
                          data-track-title="<?= htmlspecialchars($track['title']) ?>"
-                         data-track-url="<?= htmlspecialchars(build_stream_url($track['id'])) ?>"
+                         data-track-url="/<?= htmlspecialchars(ltrim($track['fullAudioPath'], '/')) ?>"
                          data-track-cover="/<?= htmlspecialchars(ltrim($track['coverImagePath'], '/')) ?>"
                          data-track-views="<?= (int)($track['views'] ?? 0) ?>"
                          data-track-album="<?= htmlspecialchars($album['title']) ?>"
