@@ -1,0 +1,13 @@
+# Загруженные пользователями/админкой файлы никогда не должны исполняться
+# как код, даже если кто-то умудрится залить .php под видом обложки/аудио.
+<FilesMatch "\.(php|php[3-8]?|phtml|phar|pl|cgi|sh)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>

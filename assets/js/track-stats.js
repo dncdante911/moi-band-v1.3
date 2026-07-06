@@ -179,8 +179,26 @@ class TrackStatsManager {
                 this.viewTracked = true;
                 const el = document.getElementById('views-count');
                 if (el) el.textContent = this.formatNumber(data.views);
+
+                // Раньше счётчик обновлялся только в виджете плеера (#views-count),
+                // а бейджи "👁️ N" в списке треков альбома (.track-views-num)
+                // оставались нетронутыми до перезагрузки страницы.
+                this._updateTrackViewBadges(this.currentTrackId, data.views);
+
+                window.dispatchEvent(new CustomEvent('trackViewCounted', {
+                    detail: { trackId: this.currentTrackId, views: data.views }
+                }));
             }
         } catch (e) { /* сеть */ }
+    }
+
+    // ── Обновляет все бейджи просмотров этого трека на странице ──────
+    _updateTrackViewBadges(trackId, views) {
+        document.querySelectorAll(`.track-playable[data-track-id="${trackId}"]`).forEach(item => {
+            item.dataset.trackViews = views;
+            const badge = item.querySelector('.track-views-num');
+            if (badge) badge.textContent = this.formatNumber(views);
+        });
     }
 
     // ── Сброс при смене страницы ─────────────────────────────────────

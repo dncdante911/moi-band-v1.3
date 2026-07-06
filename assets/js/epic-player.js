@@ -262,7 +262,16 @@ class EpicPlayer {
             // durationchange срабатывает когда браузер обновляет duration
             // (например переходит из Infinity в реальное значение при буферизации)
             audio.addEventListener('durationchange', () => {
-                if (isFinite(audio.duration) && audio.duration > 0) {
+                if (audio.duration === Infinity) {
+                    // Некоторые WAV-файлы (например записанные потоково, без
+                    // финализированного размера data-чанка в заголовке) браузер
+                    // не может продолжительность сразу — Chrome/Firefox репортят
+                    // Infinity. Это ломает и отображение времени, и перемотку.
+                    // Стандартный обход: попросить браузер перемотать в "конец"
+                    // (за пределы файла) — это заставляет его дозапросить хвост
+                    // файла по Range и вычислить реальную длительность.
+                    this.fixInfiniteDuration(audio);
+                } else if (isFinite(audio.duration) && audio.duration > 0) {
                     this.updateDuration();
                     this.updateProgress();
                 }
@@ -863,6 +872,33 @@ class EpicPlayer {
         }
     }
     
+    fixInfiniteDuration(media) {
+        if (media._fixingInfiniteDuration) return;
+        media._fixingInfiniteDuration = true;
+
+        const wasPlaying = !media.paused;
+        const resumeAt = media.currentTime;
+
+        media.currentTime = 1e101;
+
+        const onTimeUpdate = () => {
+            media.removeEventListener('timeupdate', onTimeUpdate);
+            media.currentTime = resumeAt;
+            media._fixingInfiniteDuration = false;
+
+            if (isFinite(media.duration) && media.duration > 0) {
+                this.updateDuration();
+                this.updateProgress();
+            }
+
+            if (wasPlaying) {
+                media.play().catch(() => {});
+            }
+        };
+
+        media.addEventListener('timeupdate', onTimeUpdate);
+    }
+
     updateProgress() {
         const media = this.getCurrentMedia();
         if (!media) return;
@@ -926,6 +962,21 @@ class EpicPlayer {
         return String(text || '').replace(/[&<>"']/g, m => map[m]);
     }
 }
+
+// Счётчик "👁️" в очереди плеера тоже не обновлялся сам по себе — правим
+// его вместе с бейджами в списке альбома по тому же событию.
+window.addEventListener('trackViewCounted', (event) => {
+    const { trackId, views } = event.detail || {};
+    const player = window.epicPlayer;
+    if (!player || trackId == null) return;
+
+    const track = player.queue.find(t => String(t.id) === String(trackId));
+    if (track) track.views = views;
+
+    const item = player.container?.querySelector(`.queue-item[data-track-id="${trackId}"]`);
+    const statEl = item?.querySelector('.queue-stat[title="Просмотры"]');
+    if (statEl) statEl.textContent = `👁️ ${player.formatStatNumber(views)}`;
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('epic-player')) {
