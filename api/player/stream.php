@@ -14,6 +14,7 @@
 define('SKIP_SESSION_START', true);
 require_once __DIR__ . '/../../include_config/config.php';
 require_once __DIR__ . '/../../include_config/db_connect.php';
+require_once __DIR__ . '/../../include_config/AudioDuration.php';
 
 // ── Проверка доступа: сессия ИЛИ правильный Referer ───────────────
 session_start();
@@ -101,6 +102,13 @@ $mime = $mimeMap[$ext] ?? 'audio/mpeg';
 
 $fileSize = filesize($filePath);
 
+// ── Патчи заголовка для битых WAV (см. include_config/AudioDuration.php) ──
+// Некоторые файлы содержат некорректный размер data-чанка (0/0xFFFFFFFF),
+// из-за чего браузер репортит audio.duration = Infinity и ломается и
+// отображение времени, и перемотка. Правим это здесь, на лету, не трогая
+// сами аудиоданные и не меняя длину файла.
+$wavPatches = ($ext === 'wav') ? getWavHeaderPatches($filePath, $fileSize) : [];
+
 // ── Byte-range support (нужен для перемотки в браузере) ───────────
 $start  = 0;
 $end    = $fileSize - 1;
@@ -149,19 +157,41 @@ if (!$fp) {
     exit('Ошибка чтения файла');
 }
 
-// Для полного файла (не Range) используем readfile — быстрее и надёжнее
-if ($start === 0 && $length === $fileSize) {
+// Для полного файла без патчей заголовка используем readfile — быстрее и надёжнее.
+if (empty($wavPatches) && $start === 0 && $length === $fileSize) {
     fclose($fp);
     readfile($filePath);
 } else {
     fseek($fp, $start);
     $remaining = $length;
+    $pos       = $start;
     $chunkSize = 65536; // 64 KB — крупные чанки снижают накладные расходы
 
     while ($remaining > 0 && !feof($fp) && !connection_aborted()) {
-        $read = min($chunkSize, $remaining);
-        echo fread($fp, $read);
-        $remaining -= $read;
+        $read   = min($chunkSize, $remaining);
+        $buffer = fread($fp, $read);
+        $bufLen = strlen($buffer);
+        if ($bufLen === 0) break;
+
+        foreach ($wavPatches as $patch) {
+            $patchStart = $patch['offset'];
+            $patchLen   = strlen($patch['bytes']);
+            $patchEnd   = $patchStart + $patchLen - 1;
+
+            $overlapStart = max($pos, $patchStart);
+            $overlapEnd   = min($pos + $bufLen - 1, $patchEnd);
+
+            if ($overlapStart <= $overlapEnd) {
+                $bufOffset   = $overlapStart - $pos;
+                $patchOffset = $overlapStart - $patchStart;
+                $len         = $overlapEnd - $overlapStart + 1;
+                $buffer = substr_replace($buffer, substr($patch['bytes'], $patchOffset, $len), $bufOffset, $len);
+            }
+        }
+
+        echo $buffer;
+        $pos       += $bufLen;
+        $remaining -= $bufLen;
     }
     fclose($fp);
 }

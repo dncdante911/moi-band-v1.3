@@ -260,24 +260,21 @@ class EpicPlayer {
                 this.updateProgress();
                 // Реальный прогресс воспроизведения — на нём считается порог
                 // "просмотра" в TrackStatsManager (устойчивее таймера от Date.now()).
-                if (!audio.paused && !audio._fixingInfiniteDuration) {
+                if (!audio.paused) {
                     window.trackStatsManager?.onTimeUpdate(audio.currentTime);
                 }
             });
             audio.addEventListener('loadedmetadata', () => this.updateDuration());
             // durationchange срабатывает когда браузер обновляет duration
-            // (например переходит из Infinity в реальное значение при буферизации)
+            // (например когда получает достаточно данных для её вычисления).
+            // Раньше здесь была JS-заплатка на случай audio.duration===Infinity
+            // (перемотка в конец файла, чтобы вынудить браузер её пересчитать) —
+            // убрана, т.к. дважды приводила к регрессиям (спонтанный 'ended',
+            // риск зависания при сике на паузе). Корень бага (некорректный
+            // размер data-чанка в WAV-заголовке) чинится сервером в
+            // api/player/stream.php, поэтому Infinity сюда больше не долетает.
             audio.addEventListener('durationchange', () => {
-                if (audio.duration === Infinity) {
-                    // Некоторые WAV-файлы (например записанные потоково, без
-                    // финализированного размера data-чанка в заголовке) браузер
-                    // не может продолжительность сразу — Chrome/Firefox репортят
-                    // Infinity. Это ломает и отображение времени, и перемотку.
-                    // Стандартный обход: попросить браузер перемотать в "конец"
-                    // (за пределы файла) — это заставляет его дозапросить хвост
-                    // файла по Range и вычислить реальную длительность.
-                    this.fixInfiniteDuration(audio);
-                } else if (isFinite(audio.duration) && audio.duration > 0) {
+                if (isFinite(audio.duration) && audio.duration > 0) {
                     this.updateDuration();
                     this.updateProgress();
                 }
@@ -309,13 +306,6 @@ class EpicPlayer {
                 window.dispatchEvent(new Event('trackPaused'));
             });
             audio.addEventListener('ended', () => {
-                // Наш собственный seek за пределы файла (fixInfiniteDuration) тоже
-                // приводит позицию к "концу" и может вызвать это же событие — это
-                // не настоящее завершение трека, игнорируем один такой случай.
-                if (audio._suppressNextEnded) {
-                    audio._suppressNextEnded = false;
-                    return;
-                }
                 this.onTrackEnded();
                 window.dispatchEvent(new Event('trackEnded'));
             });
@@ -891,46 +881,6 @@ class EpicPlayer {
         }
     }
     
-    fixInfiniteDuration(media) {
-        if (media._fixingInfiniteDuration) return;
-        media._fixingInfiniteDuration = true;
-
-        const resumeAt = media.currentTime;
-
-        // Сикая за пределы длительности, мы рискуем тем, что браузер решит,
-        // что "дошли до конца", и наряду с настоящим завершением трека
-        // выстрелит событием 'ended' — это глушится флагом ниже (см. слушатель
-        // 'ended' на audio) вместо паузы, чтобы не дёргать play/pause и не
-        // зависеть от того, продолжает ли браузер догружать данные на паузе.
-        media._suppressNextEnded = true;
-        media.currentTime = 1e101;
-
-        const finish = () => {
-            media.removeEventListener('seeked', onSeeked);
-            clearTimeout(safetyTimer);
-
-            media.currentTime = resumeAt;
-            media._fixingInfiniteDuration = false;
-            // Если 'ended' так и не пришёл за это время — он уже не придёт по
-            // мотивам ЭТОГО seek'а. Снимаем флаг, чтобы не проглотить случайно
-            // следующее НАСТОЯЩЕЕ завершение трека.
-            media._suppressNextEnded = false;
-
-            if (isFinite(media.duration) && media.duration > 0) {
-                this.updateDuration();
-                this.updateProgress();
-            }
-        };
-
-        const onSeeked = () => finish();
-
-        // 'seeked' должен прийти всегда (в отличие от 'timeupdate', который
-        // не гарантирован в некоторых движках при пустом буфере) — но на
-        // случай сетевой ошибки/edge-кейса не оставляем плеер зависшим.
-        const safetyTimer = setTimeout(finish, 4000);
-
-        media.addEventListener('seeked', onSeeked);
-    }
 
     updateProgress() {
         const media = this.getCurrentMedia();
