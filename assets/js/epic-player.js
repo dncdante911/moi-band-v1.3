@@ -264,7 +264,6 @@ class EpicPlayer {
                     window.trackStatsManager?.onTimeUpdate(audio.currentTime);
                 }
             });
-            audio.addEventListener('ended', () => this.onTrackEnded());
             audio.addEventListener('loadedmetadata', () => this.updateDuration());
             // durationchange срабатывает когда браузер обновляет duration
             // (например переходит из Infinity в реальное значение при буферизации)
@@ -310,6 +309,14 @@ class EpicPlayer {
                 window.dispatchEvent(new Event('trackPaused'));
             });
             audio.addEventListener('ended', () => {
+                // Наш собственный seek за пределы файла (fixInfiniteDuration) тоже
+                // приводит позицию к "концу" и может вызвать это же событие — это
+                // не настоящее завершение трека, игнорируем один такой случай.
+                if (audio._suppressNextEnded) {
+                    audio._suppressNextEnded = false;
+                    return;
+                }
+                this.onTrackEnded();
                 window.dispatchEvent(new Event('trackEnded'));
             });
             audio.addEventListener('error', (e) => this.handleMediaError(e, 'audio'));
@@ -888,33 +895,41 @@ class EpicPlayer {
         if (media._fixingInfiniteDuration) return;
         media._fixingInfiniteDuration = true;
 
-        const wasPlaying = !media.paused;
         const resumeAt = media.currentTime;
 
-        // Пауза здесь обязательна. Если сикать за пределы длительности у
-        // ИГРАЮЩЕГО элемента, браузер трактует это как "дошли до конца" и
-        // стреляет настоящим 'ended' — плеер тут же переключался на
-        // следующий трек, обнуляя счётчик прослушивания на каждом WAV-файле
-        // ещё до того, как накопится порог в 10 секунд.
-        media.pause();
+        // Сикая за пределы длительности, мы рискуем тем, что браузер решит,
+        // что "дошли до конца", и наряду с настоящим завершением трека
+        // выстрелит событием 'ended' — это глушится флагом ниже (см. слушатель
+        // 'ended' на audio) вместо паузы, чтобы не дёргать play/pause и не
+        // зависеть от того, продолжает ли браузер догружать данные на паузе.
+        media._suppressNextEnded = true;
         media.currentTime = 1e101;
 
-        const onTimeUpdate = () => {
-            media.removeEventListener('timeupdate', onTimeUpdate);
+        const finish = () => {
+            media.removeEventListener('seeked', onSeeked);
+            clearTimeout(safetyTimer);
+
             media.currentTime = resumeAt;
             media._fixingInfiniteDuration = false;
+            // Если 'ended' так и не пришёл за это время — он уже не придёт по
+            // мотивам ЭТОГО seek'а. Снимаем флаг, чтобы не проглотить случайно
+            // следующее НАСТОЯЩЕЕ завершение трека.
+            media._suppressNextEnded = false;
 
             if (isFinite(media.duration) && media.duration > 0) {
                 this.updateDuration();
                 this.updateProgress();
             }
-
-            if (wasPlaying) {
-                media.play().catch(() => {});
-            }
         };
 
-        media.addEventListener('timeupdate', onTimeUpdate);
+        const onSeeked = () => finish();
+
+        // 'seeked' должен прийти всегда (в отличие от 'timeupdate', который
+        // не гарантирован в некоторых движках при пустом буфере) — но на
+        // случай сетевой ошибки/edge-кейса не оставляем плеер зависшим.
+        const safetyTimer = setTimeout(finish, 4000);
+
+        media.addEventListener('seeked', onSeeked);
     }
 
     updateProgress() {
